@@ -40,7 +40,7 @@ public class Portfolio {
     @Column(name = "wedding_photos")
     private String weddingPhotos;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "wp_id")
-    private Long wpId;
+//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinColumn(name = "wp_id")
+//    private Long wpId;
 }
