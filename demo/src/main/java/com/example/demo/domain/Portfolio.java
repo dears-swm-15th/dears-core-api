@@ -1,7 +1,7 @@
 package com.example.demo.domain;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,32 +19,43 @@ public class Portfolio {
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @Column(name = "organization", nullable = false)
+    @Column(name = "organization", nullable = false, length = 20)
     private String organization;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "region", nullable = false)
-    private String region;
+    private Region region;
 
-    @Column(name = "introduction", nullable = false)
+    @Column(name = "introduction", nullable = false, length = 100)
     private String introduction;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "office_hours", nullable = false)
-    private String officeHours;
+    private OfficeHours officeHours;
 
-    @Column(name = "contact_info", nullable = false)
+    @Column(name = "contact_info", nullable = false, length = 100)
     private String contactInfo;
 
-    @Column(name = "image")
+    @Column(name = "image", columnDefinition = "TEXT")
     private String image;
 
     @Column(name = "consultation_fee")
-    private String consultationFee;
+    private Integer consultationFee;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 500)
     private String description;
 
-    @Column(name = "wedding_photos")
+    @Column(name = "wedding_photos", columnDefinition = "TEXT")
     private String weddingPhotos;
+
+    // Enums for region and office hours
+    public enum Region {
+        CHUNGDAM, GANGNAM
+    }
+
+    public enum OfficeHours {
+        MORNING, AFTERNOON, EVENING, FULL_DAY
+    }
 
 //    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    @JoinColumn(name = "wp_id")
