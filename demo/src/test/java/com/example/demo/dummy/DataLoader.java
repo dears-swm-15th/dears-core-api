@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.dummy;
 
 import com.example.demo.domain.Portfolio;
 import com.example.demo.repository.PortfolioRepository;
