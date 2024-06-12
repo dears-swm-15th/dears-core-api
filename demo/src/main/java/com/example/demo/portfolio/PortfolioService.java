@@ -1,7 +1,7 @@
-package com.example.demo.service;
+package com.example.demo.portfolio;
 
-import com.example.demo.domain.Portfolio;
-import com.example.demo.repository.PortfolioRepository;
+import com.example.demo.portfolio.Portfolio;
+import com.example.demo.portfolio.PortfolioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

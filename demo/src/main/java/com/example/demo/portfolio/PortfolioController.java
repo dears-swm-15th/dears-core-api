@@ -1,7 +1,7 @@
-package com.example.demo.controller;
+package com.example.demo.portfolio;
 
-import com.example.demo.domain.Portfolio;
-import com.example.demo.service.PortfolioService;
+import com.example.demo.portfolio.Portfolio;
+import com.example.demo.portfolio.PortfolioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

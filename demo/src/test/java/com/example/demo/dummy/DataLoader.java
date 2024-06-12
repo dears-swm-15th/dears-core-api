@@ -1,7 +1,9 @@
 package com.example.demo.dummy;
 
-import com.example.demo.domain.Portfolio;
-import com.example.demo.repository.PortfolioRepository;
+import com.example.demo.portfolio.Portfolio;
+import com.example.demo.portfolio.PortfolioRepository;
+import com.example.demo.enums.Region;
+import com.example.demo.enums.OfficeHours;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -16,24 +18,24 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Portfolio portfolio1 = Portfolio.builder()
                 .organization("Organization One")
-                .region("Region One")
+                .region(Region.CHUNGDAM)
                 .introduction("Introduction to Organization One.")
-                .officeHours("9 AM - 5 PM")
+                .officeHours(OfficeHours.MORNING)
                 .contactInfo("contact@organizationone.com")
                 .image("image1.jpg")
-                .consultationFee("$100")
+                .consultationFee(100)
                 .description("Description of services offered by Organization One.")
                 .weddingPhotos("wedding1.jpg")
                 .build();
 
         Portfolio portfolio2 = Portfolio.builder()
                 .organization("Organization Two")
-                .region("Region Two")
+                .region(Region.GANGNAM)
                 .introduction("Introduction to Organization Two.")
-                .officeHours("10 AM - 6 PM")
+                .officeHours(OfficeHours.AFTERNOON)
                 .contactInfo("contact@organizationtwo.com")
                 .image("image2.jpg")
-                .consultationFee("$200")
+                .consultationFee(200)
                 .description("Description of services offered by Organization Two.")
                 .weddingPhotos("wedding2.jpg")
                 .build();
