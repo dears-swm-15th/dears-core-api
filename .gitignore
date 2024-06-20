@@ -51,3 +51,4 @@ imgs/ModifyInboundSecurityGroupRules _ EC2 _ ap-northeast-2_files
 
 # ---------------------------------------------------
 
+!demo/gradle/wrapper/gradle-wrapper.jar
