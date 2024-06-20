@@ -5,7 +5,9 @@ on:
     branches: 
       - main
       - develop
-
+    paths:
+      - '.github/**'
+      - 'demo/**'
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -37,12 +39,15 @@ jobs:
           cache: 'gradle'
 
       - name: grant permission to gradle
+        working-directory: demo/
         run: chmod +x ./gradlew
 
       - name: run test
+        working-directory: demo/
         run: ./gradlew --info test
         
       - name: Build and Test with Gradle
+        working-directory: demo/
         run: ./gradlew build --no-daemon
 
       - name: Upload Test Result
