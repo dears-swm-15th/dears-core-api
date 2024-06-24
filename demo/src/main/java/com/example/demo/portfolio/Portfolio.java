@@ -50,7 +50,32 @@ public class Portfolio {
     @Column(name = "wedding_photos", columnDefinition = "TEXT")
     private String weddingPhotos;
 
-//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "wp_id")
-//    private Long wpId;
+    public static PortfolioDTO.Response convertToResponse(Portfolio portfolio) {
+        PortfolioDTO.Response response = new PortfolioDTO.Response();
+        response.setId(portfolio.getId());
+        response.setOrganization(portfolio.getOrganization());
+        response.setRegion(portfolio.getRegion().toString());
+        response.setIntroduction(portfolio.getIntroduction());
+        response.setOfficeHours(portfolio.getOfficeHours().toString());
+        response.setContactInfo(portfolio.getContactInfo());
+        response.setImage(portfolio.getImage());
+        response.setConsultationFee(portfolio.getConsultationFee());
+        response.setDescription(portfolio.getDescription());
+        response.setWeddingPhotos(portfolio.getWeddingPhotos());
+        return response;
+    }
+
+    public static Portfolio convertToEntity(PortfolioDTO.Request portfolioRequest) {
+        return Portfolio.builder()
+                .organization(portfolioRequest.getOrganization())
+                .region(Region.valueOf(portfolioRequest.getRegion()))
+                .introduction(portfolioRequest.getIntroduction())
+                .officeHours(OfficeHours.valueOf(portfolioRequest.getOfficeHours()))
+                .contactInfo(portfolioRequest.getContactInfo())
+                .image(portfolioRequest.getImage())
+                .consultationFee(portfolioRequest.getConsultationFee())
+                .description(portfolioRequest.getDescription())
+                .weddingPhotos(portfolioRequest.getWeddingPhotos())
+                .build();
+    }
 }
