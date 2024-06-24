@@ -25,7 +25,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // spring
+//  spring
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.projectlombok:lombok:1.18.28'
     implementation 'org.testng:testng:7.7.0'
@@ -33,27 +33,27 @@ dependencies {
     testImplementation 'junit:junit:4.13.1'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
 //	runtimeOnly 'com.h2database:h2'
     implementation 'mysql:mysql-connector-java:8.0.28'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
     implementation 'org.springframework.boot:spring-boot-starter'
     runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 //	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
 
+//  swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3'
+ 	implementation group: 'org.springdoc',name: 'springdoc-openapi-ui', version: '1.7.0'
+
+//  jwt
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
- 	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
- 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
- 	// implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3'
- 	implementation group: 'org.springdoc',name: 'springdoc-openapi-ui', version: '1.7.0'
-
-
+//  security
 //	testImplementation 'org.springframework.security:spring-security-test'
 //	implementation 'org.springframework.boot:spring-boot-starter-security'
 
