@@ -1,10 +1,12 @@
-package com.example.demo.domain;
+package com.example.demo.portfolio;
 
 import lombok.AllArgsConstructor;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import com.example.demo.enums.Region;
+import com.example.demo.enums.OfficeHours;
 
 @Entity
 @Getter
@@ -47,15 +49,6 @@ public class Portfolio {
 
     @Column(name = "wedding_photos", columnDefinition = "TEXT")
     private String weddingPhotos;
-
-    // Enums for region and office hours
-    public enum Region {
-        CHUNGDAM, GANGNAM
-    }
-
-    public enum OfficeHours {
-        MORNING, AFTERNOON, EVENING, FULL_DAY
-    }
 
 //    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    @JoinColumn(name = "wp_id")
