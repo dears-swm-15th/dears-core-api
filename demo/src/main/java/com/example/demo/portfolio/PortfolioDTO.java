@@ -1,11 +1,13 @@
 package com.example.demo.portfolio;
 
-import lombok.Data;
+import lombok.*;
 
 public class PortfolioDTO {
-    @Data
-    public static class Response {
-        private Long id;
+
+    @Getter
+    @ToString
+    @NoArgsConstructor
+    public static class Request {
         private String organization;
         private String region;
         private String introduction;
@@ -17,8 +19,12 @@ public class PortfolioDTO {
         private String weddingPhotos;
     }
 
-    @Data
-    public static class Request {
+    @Setter
+    @Getter
+    @ToString
+    @NoArgsConstructor
+    public static class Response {
+        private Long id;
         private String organization;
         private String region;
         private String introduction;

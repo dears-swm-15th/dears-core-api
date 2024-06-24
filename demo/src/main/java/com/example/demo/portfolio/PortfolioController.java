@@ -29,7 +29,7 @@ public class PortfolioController {
     @PostMapping
     public ResponseEntity<PortfolioDTO.Response> createPortfolio(@RequestBody PortfolioDTO.Request portfolioRequest) {
         PortfolioDTO.Response createdPortfolio = portfolioService.createPortfolio(portfolioRequest);
-        return ResponseEntity.status(201).body(createdPortfolio); // 201 Created status code
+        return ResponseEntity.status(201).body(createdPortfolio);
     }
 
     @PutMapping("/{id}")
