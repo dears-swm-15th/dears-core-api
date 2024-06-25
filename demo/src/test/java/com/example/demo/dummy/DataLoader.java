@@ -1,7 +1,7 @@
 package com.example.demo.dummy;
 
-import com.example.demo.portfolio.Portfolio;
-import com.example.demo.portfolio.PortfolioRepository;
+import com.example.demo.portfolio.domain.Portfolio;
+import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.enums.Region;
 import com.example.demo.enums.OfficeHours;
 import org.springframework.beans.factory.annotation.Autowired;
