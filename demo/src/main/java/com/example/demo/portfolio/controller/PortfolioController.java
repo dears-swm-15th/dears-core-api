@@ -3,10 +3,12 @@ package com.example.demo.portfolio.controller;
 import com.example.demo.portfolio.service.PortfolioService;
 import com.example.demo.portfolio.dto.PortfolioDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -25,7 +27,7 @@ public class PortfolioController {
     @GetMapping("/{id}")
     public ResponseEntity<PortfolioDTO.Response> getPortfolioById(@PathVariable Long id) {
         Optional<PortfolioDTO.Response> portfolio = portfolioService.getPortfolioById(id);
-        return portfolio.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return portfolio.map(ResponseEntity::ok).orElseThrow(NoSuchElementException::new);
     }
 
     @PostMapping("")
@@ -36,22 +38,23 @@ public class PortfolioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<PortfolioDTO.Response> updatePortfolio(@PathVariable Long id, @RequestBody PortfolioDTO.Request portfolioRequest) {
-        try {
-            PortfolioDTO.Response updatedPortfolio = portfolioService.updatePortfolio(id, portfolioRequest);
-            return ResponseEntity.ok(updatedPortfolio);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        PortfolioDTO.Response updatedPortfolio = portfolioService.updatePortfolio(id, portfolioRequest);
+        return ResponseEntity.ok(updatedPortfolio);
     }
 
     @PostMapping("/delete/{id}")
     public ResponseEntity<Void> deletePortfolio(@PathVariable Long id) {
-        try {
-            portfolioService.deletePortfolio(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        portfolioService.deletePortfolio(id);
+        return ResponseEntity.noContent().build();
     }
 
+    @ExceptionHandler(NoSuchElementException.class)
+    protected ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Portfolio not found");
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    protected ResponseEntity<String> handleRuntimeException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+    }
 }
