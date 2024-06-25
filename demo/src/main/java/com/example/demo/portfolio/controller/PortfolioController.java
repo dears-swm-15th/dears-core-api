@@ -49,12 +49,12 @@ public class PortfolioController {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
+    protected ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Portfolio not found");
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
+    protected ResponseEntity<String> handleRuntimeException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
     }
 }
