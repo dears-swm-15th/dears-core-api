@@ -1,7 +1,10 @@
-package com.example.demo.portfolio;
+package com.example.demo.portfolio.service;
 
 import com.example.demo.enums.OfficeHours;
 import com.example.demo.enums.Region;
+import com.example.demo.portfolio.repository.PortfolioRepository;
+import com.example.demo.portfolio.domain.Portfolio;
+import com.example.demo.portfolio.dto.PortfolioDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

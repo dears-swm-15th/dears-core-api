@@ -1,5 +1,7 @@
-package com.example.demo.portfolio;
+package com.example.demo.portfolio.controller;
 
+import com.example.demo.portfolio.service.PortfolioService;
+import com.example.demo.portfolio.dto.PortfolioDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +16,7 @@ public class PortfolioController {
 
     private final PortfolioService portfolioService;
 
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<List<PortfolioDTO.Response>> getAllPortfolios() {
         List<PortfolioDTO.Response> portfolios = portfolioService.getAllPortfolios();
         return ResponseEntity.ok(portfolios);
@@ -26,7 +28,7 @@ public class PortfolioController {
         return portfolio.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("")
     public ResponseEntity<PortfolioDTO.Response> createPortfolio(@RequestBody PortfolioDTO.Request portfolioRequest) {
         PortfolioDTO.Response createdPortfolio = portfolioService.createPortfolio(portfolioRequest);
         return ResponseEntity.status(201).body(createdPortfolio);
@@ -42,7 +44,7 @@ public class PortfolioController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/delete/{id}")
     public ResponseEntity<Void> deletePortfolio(@PathVariable Long id) {
         try {
             portfolioService.deletePortfolio(id);
@@ -51,4 +53,5 @@ public class PortfolioController {
             return ResponseEntity.notFound().build();
         }
     }
+
 }

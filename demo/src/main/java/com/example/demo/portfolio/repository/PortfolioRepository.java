@@ -1,6 +1,6 @@
-package com.example.demo.portfolio;
+package com.example.demo.portfolio.repository;
 
-import com.example.demo.portfolio.Portfolio;
+import com.example.demo.portfolio.domain.Portfolio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
