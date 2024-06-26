@@ -2,6 +2,8 @@ package com.example.demo.portfolio.controller;
 
 import com.example.demo.portfolio.service.PortfolioService;
 import com.example.demo.portfolio.dto.PortfolioDTO;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,9 @@ public class PortfolioController {
     private final PortfolioService portfolioService;
 
     @GetMapping("")
+//    @Parameters({
+//            @Parameter()
+//    })
     public ResponseEntity<List<PortfolioDTO.Response>> getAllPortfolios() {
         List<PortfolioDTO.Response> portfolios = portfolioService.getAllPortfolios();
         return ResponseEntity.ok(portfolios);
