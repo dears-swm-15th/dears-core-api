@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/portfolios")
+@RequestMapping("/api/v1/portfolios")
 public class PortfolioController {
 
     private final PortfolioService portfolioService;
