@@ -31,7 +31,6 @@ public class Portfolio {
 
     public static PortfolioDTO.Response convertToResponse(Portfolio portfolio) {
         PortfolioDTO.Response response = new PortfolioDTO.Response();
-        response.setId(portfolio.getId());
         response.setOrganization(portfolio.getOrganization());
         response.setRegion(portfolio.getRegion().name());
         response.setIntroduction(portfolio.getIntroduction());
