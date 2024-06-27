@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ public class PortfolioService {
 
     public PortfolioDTO.Response updatePortfolio(Long id, PortfolioDTO.Request portfolioRequest) {
         Portfolio existingPortfolio = portfolioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+                .orElseThrow(() -> new NoSuchElementException("Portfolio not found"));
 
         Portfolio updatedPortfolio = Portfolio.builder()
                 .id(existingPortfolio.getId())
