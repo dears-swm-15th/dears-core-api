@@ -9,31 +9,32 @@ public class PortfolioDTO {
     @ToString
     @NoArgsConstructor
     public static class Request {
-        @Schema(example = "에바웨딩스")
+
+        @Schema(type = "string", example = "에바웨딩스")
         private String organization;
 
-        @Schema(example = "GANGNAM")
+        @Schema(type = "string", example = "GANGNAM")
         private String region;
 
-        @Schema(example = "안녕하세요.")
+        @Schema(type = "string", example = "안녕하세요.")
         private String introduction;
 
-        @Schema(example = "LUNCH")
+        @Schema(type = "string", example = "LUNCH")
         private String officeHours;
 
-        @Schema(example = "010-1234-5678")
+        @Schema(type = "string", example = "010-1234-5678")
         private String contactInfo;
 
-        @Schema(example = "src/wedding_planner/imgs")
+        @Schema(type = "string", example = "src/wedding_planner/imgs")
         private String image;
 
-        @Schema(example = "30000")
+        @Schema(type = "integer", example = "30000")
         private Integer consultationFee;
 
-        @Schema(example = "웨딩 준비 도와드릴게요.")
+        @Schema(type = "string", example = "웨딩 준비 도와드릴게요.")
         private String description;
 
-        @Schema(example = "src/portfolio/imgs")
+        @Schema(type = "string", example = "src/portfolio/imgs")
         private String weddingPhotos;
     }
 
@@ -42,31 +43,31 @@ public class PortfolioDTO {
     @ToString
     @NoArgsConstructor
     public static class Response {
-        @Schema(example = "에바웨딩스")
+        @Schema(type = "string", example = "에바웨딩스")
         private String organization;
 
-        @Schema(example = "GANGNAM")
+        @Schema(type = "string", example = "GANGNAM")
         private String region;
 
-        @Schema(example = "안녕하세요.")
+        @Schema(type = "string", example = "안녕하세요.")
         private String introduction;
 
-        @Schema(example = "LUNCH")
+        @Schema(type = "string", example = "LUNCH")
         private String officeHours;
 
-        @Schema(example = "010-1234-5678")
+        @Schema(type = "string", example = "010-1234-5678")
         private String contactInfo;
 
-        @Schema(example = "src/wedding_planner/imgs")
+        @Schema(type = "string", example = "src/wedding_planner/imgs")
         private String image;
 
-        @Schema(example = "30000")
+        @Schema(type = "integer", example = "30000")
         private Integer consultationFee;
 
-        @Schema(example = "웨딩 준비 도와드릴게요.")
+        @Schema(type = "string", example = "웨딩 준비 도와드릴게요.")
         private String description;
 
-        @Schema(example = "src/portfolio/imgs")
+        @Schema(type = "string", example = "src/portfolio/imgs")
         private String weddingPhotos;
     }
 }
