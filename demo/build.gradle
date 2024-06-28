@@ -60,6 +60,10 @@ dependencies {
 //	implementation 'org.springframework.boot:spring-boot-starter-security'
 
     implementation group: 'org.javassist', name: 'javassist', version: '3.15.0-GA'
+
+    //AWS SDK for Java 1.x
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.529')
+    implementation 'com.amazonaws:aws-java-sdk-s3'
 }
 
 tasks.named('test') {
