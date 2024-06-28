@@ -55,6 +55,13 @@ dependencies {
 //  json parsing
     implementation 'com.google.code.gson:gson:2.9.0'
 
+//  mapstruct
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    implementation("org.mapstruct:mapstruct:1.5.3.Final")
+    implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+
+
 //  security
 //	testImplementation 'org.springframework.security:spring-security-test'
 //	implementation 'org.springframework.boot:spring-boot-starter-security'
