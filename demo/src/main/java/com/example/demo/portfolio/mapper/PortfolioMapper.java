@@ -9,6 +9,6 @@ import org.mapstruct.factory.Mappers;
 public interface PortfolioMapper {
     PortfolioMapper INSTANCE = Mappers.getMapper(PortfolioMapper.class);
 
-    PortfolioDTO entityToDTO(Portfolio portfolio);
-    Portfolio DTOToEntity(PortfolioDTO portfolioDTO);
+    PortfolioDTO.Response entityToResponse(Portfolio portfolio);
+    Portfolio requestToEntity(PortfolioDTO.Request portfolioRequest);
 }
