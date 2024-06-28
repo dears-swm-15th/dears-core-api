@@ -2,7 +2,6 @@ package com.example.demo.portfolio.domain;
 
 import com.example.demo.enums.OfficeHours;
 import com.example.demo.enums.Region;
-import com.example.demo.portfolio.dto.PortfolioDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

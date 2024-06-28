@@ -26,16 +26,17 @@ public class PortfolioController {
     @GetMapping("")
     @Operation(summary = "전체 포트폴리오 조회")
     public ResponseEntity<List<PortfolioDTO.Response>> getAllPortfolios() {
-        List<PortfolioDTO.Response> portfolios = portfolioService.getAllPortfolios();
-        return ResponseEntity.ok(portfolios);
+        List<PortfolioDTO.Response> portfolioResponses = portfolioService.getAllPortfolios();
+        return ResponseEntity.ok(portfolioResponses);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "특정 포트폴리오 조회")
+    @Operation(summary = "Get a specific portfolio by ID")
     public ResponseEntity<PortfolioDTO.Response> getPortfolioById(@PathVariable Long id) {
-        Optional<PortfolioDTO.Response> portfolio = portfolioService.getPortfolioById(id);
-        return portfolio.map(ResponseEntity::ok).orElseThrow(NoSuchElementException::new);
+        PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(id);
+        return ResponseEntity.ok(portfolioResponse);
     }
+
 
     @PostMapping("")
     @Operation(summary = "포트폴리오 작성")
