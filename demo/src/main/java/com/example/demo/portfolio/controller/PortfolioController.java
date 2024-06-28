@@ -12,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +29,7 @@ public class PortfolioController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get a specific portfolio by ID")
+    @Operation(summary = "특정 포트폴리오 조회")
     public ResponseEntity<PortfolioDTO.Response> getPortfolioById(@PathVariable Long id) {
         PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(id);
         return ResponseEntity.ok(portfolioResponse);
