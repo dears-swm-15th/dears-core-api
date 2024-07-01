@@ -2,6 +2,7 @@ package com.example.demo.config;
 
 
 import com.amazonaws.HttpMethod;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,5 +61,10 @@ public class S3Uploader {
     //get file from cloudfront not using presigned url
     private String getCloudfrontFilePath(String fileName) {
         return cloudfrontPath + fileName;
+    }
+
+    public void deleteFile(String fileName){
+        s3Config.amazonS3().deleteObject(new DeleteObjectRequest(bucket, fileName));
+        System.out.println(bucket);
     }
 }
