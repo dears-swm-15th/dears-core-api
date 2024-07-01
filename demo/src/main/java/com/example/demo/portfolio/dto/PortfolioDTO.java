@@ -43,7 +43,7 @@ public class PortfolioDTO {
         @Schema(type = "integer", example = "20000")
         private Integer minFee;
 
-        @Schema(type = "float", example = "4.3f")
+        @Schema(type = "float", example = "4.3")
         private Float rating;
 
         @Schema(type = "array", example = "[\"퍼스널 컬러 체크\", \"웨딩드레스 시착 1회 무료\"]")
@@ -90,7 +90,7 @@ public class PortfolioDTO {
         @Schema(type = "integer", example = "20000")
         private Integer minFee;
 
-        @Schema(type = "float", example = "4.3f")
+        @Schema(type = "float", example = "4.3")
         private Float rating;
 
         @Schema(type = "array", example = "[\"퍼스널 컬러 체크\", \"웨딩드레스 시착 1회 무료\"]")
