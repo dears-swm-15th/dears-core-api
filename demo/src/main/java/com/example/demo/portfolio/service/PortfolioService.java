@@ -48,12 +48,16 @@ public class PortfolioService {
                 .organization(portfolio.getOrganization())
                 .region(Region.valueOf(String.valueOf(portfolio.getRegion())))
                 .introduction(portfolio.getIntroduction())
-                .officeHours(OfficeHours.valueOf(String.valueOf(portfolio.getOfficeHours())))
                 .contactInfo(portfolio.getContactInfo())
-                .image(portfolio.getImage())
+                .profileImageUrl(portfolio.getProfileImageUrl())
                 .consultationFee(portfolio.getConsultationFee())
                 .description(portfolio.getDescription())
-                .weddingPhotos(portfolio.getWeddingPhotos())
+                .avgFee(portfolio.getAvgFee())
+                .minFee(portfolio.getMinFee())
+                .services(portfolio.getServices())
+                .rating(portfolio.getRating())
+                .weddingPhotoUrls(portfolio.getWeddingPhotoUrls())
+                .radar(portfolio.getRadar())
                 .build();
 
         Portfolio savedPortfolio = portfolioRepository.save(updatedPortfolio);
