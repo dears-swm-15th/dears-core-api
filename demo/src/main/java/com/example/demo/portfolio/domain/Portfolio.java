@@ -13,6 +13,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Setter
 public class Portfolio {
 
     @Id
