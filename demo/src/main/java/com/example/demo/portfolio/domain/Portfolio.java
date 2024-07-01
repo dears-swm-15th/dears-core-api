@@ -33,7 +33,10 @@ public class Portfolio extends BaseTimeEntity {
     private Integer avgFee;
     private Integer minFee;
     private Float rating;
-    private Integer count;
+
+    private Integer ratingCount;
+    private Integer feeCount;
+    private Integer radarCount;
 
     @ElementCollection
     @CollectionTable(name = "portfolio_services", joinColumns = @JoinColumn(name = "portfolio_id"))
