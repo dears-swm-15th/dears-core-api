@@ -5,6 +5,7 @@ import com.example.demo.enums.OfficeHours;
 import com.example.demo.enums.RadarKey;
 import com.example.demo.enums.Region;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.*;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public class Portfolio extends BaseTimeEntity {
     private Integer avgFee;
     private Integer minFee;
     private Float rating;
+    private Integer count;
 
     @ElementCollection
     @CollectionTable(name = "portfolio_services", joinColumns = @JoinColumn(name = "portfolio_id"))
