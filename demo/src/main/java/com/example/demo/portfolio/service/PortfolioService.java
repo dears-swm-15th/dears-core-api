@@ -8,6 +8,7 @@ import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,26 +38,12 @@ public class PortfolioService {
         return portfolioMapper.entityToResponse(portfolio);
     }
 
+    @Transactional
     public PortfolioDTO.Response updatePortfolio(Long id, PortfolioDTO.Request portfolioRequest) {
         Portfolio existingPortfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
-
-        Portfolio portfolio = portfolioMapper.requestToEntity(portfolioRequest);
-
-        Portfolio updatedPortfolio = Portfolio.builder()
-                .id(existingPortfolio.getId())
-                .organization(portfolio.getOrganization())
-                .region(Region.valueOf(String.valueOf(portfolio.getRegion())))
-                .introduction(portfolio.getIntroduction())
-                .officeHours(OfficeHours.valueOf(String.valueOf(portfolio.getOfficeHours())))
-                .contactInfo(portfolio.getContactInfo())
-                .image(portfolio.getImage())
-                .consultationFee(portfolio.getConsultationFee())
-                .description(portfolio.getDescription())
-                .weddingPhotos(portfolio.getWeddingPhotos())
-                .build();
-
-        Portfolio savedPortfolio = portfolioRepository.save(updatedPortfolio);
+        Portfolio savedPortfolio = portfolioMapper.updateFromRequest(portfolioRequest, existingPortfolio);
+        portfolioRepository.save(existingPortfolio);
         return portfolioMapper.entityToResponse(savedPortfolio);
     }
 
