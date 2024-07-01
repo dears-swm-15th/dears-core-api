@@ -13,9 +13,10 @@ import org.mapstruct.factory.Mappers;
 public interface PortfolioMapper {
     PortfolioMapper INSTANCE = Mappers.getMapper(PortfolioMapper.class);
 
-    PortfolioDTO.Response entityToResponse(Portfolio portfolio);
     @Mapping(target = "id", ignore = true)
     Portfolio requestToEntity(PortfolioDTO.Request portfolioRequest);
+
+    PortfolioDTO.Response entityToResponse(Portfolio portfolio);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Portfolio updateFromRequest(PortfolioDTO.Request portfolioRequest, @MappingTarget Portfolio portfolio);

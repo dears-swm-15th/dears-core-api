@@ -2,12 +2,15 @@ package com.example.demo.portfolio.domain;
 
 import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.OfficeHours;
+import com.example.demo.enums.RadarKey;
 import com.example.demo.enums.Region;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.*;
+
+import java.util.List;
+import java.util.Map;
+
 
 @Getter
 @Setter
@@ -23,11 +26,30 @@ public class Portfolio extends BaseTimeEntity {
     private String organization;
     private Region region;
     private String introduction;
-    private OfficeHours officeHours;
     private String contactInfo;
-    private String image;
+    private String profileImageUrl;
     private Integer consultationFee;
     private String description;
-    private String weddingPhotos;
-    
+
+    private Integer avgFee;
+    private Integer minFee;
+    private Float rating;
+    private Integer count;
+
+    @ElementCollection
+    @CollectionTable(name = "portfolio_services", joinColumns = @JoinColumn(name = "portfolio_id"))
+    @Column(name = "service_value")
+    private List<String> services;
+
+    @ElementCollection
+    @CollectionTable(name = "portfolio_wedding_photos", joinColumns = @JoinColumn(name = "portfolio_id"))
+    @Column(name = "photo_url")
+    private List<String> weddingPhotoUrls;
+
+    @ElementCollection
+    @CollectionTable(name = "portfolio_radar", joinColumns = @JoinColumn(name = "portfolio_id"))
+    @MapKeyColumn(name = "radar_key")
+    @Column(name = "radar_value")
+    private Map<RadarKey, Float> radar;
+
 }
