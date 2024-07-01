@@ -46,8 +46,17 @@ public class PortfolioDTO {
         @Schema(type = "float", example = "4.3")
         private Float rating;
 
+        @Schema(type = "integer", example = "10")
+        private Integer ratingCount;
+
+        @Schema(type = "integer", example = "5")
+        private Integer feeCount;
+
+        @Schema(type = "integer", example = "3")
+        private Integer radarCount;
+
         @Schema(type = "array", example = "[\"퍼스널 컬러 체크\", \"웨딩드레스 시착 1회 무료\"]")
-        private List <String> services;
+        private List<String> services;
 
         @Schema(type = "array", example = "[\"src/portfolio/img1.jpg\", \"src/portfolio/img2.jpg\"]")
         private List<String> weddingPhotoUrls;
@@ -93,8 +102,17 @@ public class PortfolioDTO {
         @Schema(type = "float", example = "4.3")
         private Float rating;
 
+        @Schema(type = "integer", example = "10")
+        private Integer ratingCount;
+
+        @Schema(type = "integer", example = "5")
+        private Integer feeCount;
+
+        @Schema(type = "integer", example = "3")
+        private Integer radarCount;
+
         @Schema(type = "array", example = "[\"퍼스널 컬러 체크\", \"웨딩드레스 시착 1회 무료\"]")
-        private List <String> services;
+        private List<String> services;
 
         @Schema(type = "array", example = "[\"src/portfolio/img1.jpg\", \"src/portfolio/img2.jpg\"]")
         private List<String> weddingPhotoUrls;
