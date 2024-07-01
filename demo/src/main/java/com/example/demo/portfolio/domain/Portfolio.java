@@ -1,5 +1,6 @@
 package com.example.demo.portfolio.domain;
 
+import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.OfficeHours;
 import com.example.demo.enums.Region;
 import jakarta.persistence.Entity;
@@ -13,7 +14,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Portfolio {
+public class Portfolio extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
