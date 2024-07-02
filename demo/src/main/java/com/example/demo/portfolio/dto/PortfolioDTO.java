@@ -41,22 +41,10 @@ public class PortfolioDTO {
         private String description;
 
         @Schema(type = "integer", example = "40000")
-        private Integer avgFee;
+        private Integer avgEstimate;
 
         @Schema(type = "integer", example = "20000")
-        private Integer minFee;
-
-        @Schema(type = "float", example = "4.3")
-        private Float rating;
-
-        @Schema(type = "integer", example = "10")
-        private Integer ratingCount;
-
-        @Schema(type = "integer", example = "5")
-        private Integer feeCount;
-
-        @Schema(type = "integer", example = "3")
-        private Integer radarCount;
+        private Integer minEstimate;
 
         @Schema(type = "array", example = "[\"퍼스널 컬러 체크\", \"웨딩드레스 시착 1회 무료\"]")
         private List<String> services;
@@ -65,7 +53,7 @@ public class PortfolioDTO {
         private List<String> weddingPhotoUrls;
 
         @Schema(type = "object", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_NATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6}")
-        private Map<RadarKey, Float> radar;
+        private Map<RadarKey, Float> avgRadar;
     }
 
     @Setter
@@ -100,22 +88,10 @@ public class PortfolioDTO {
         private String description;
 
         @Schema(type = "integer", example = "40000")
-        private Integer avgFee;
+        private Integer avgEstimate;
 
         @Schema(type = "integer", example = "20000")
-        private Integer minFee;
-
-        @Schema(type = "float", example = "4.3")
-        private Float rating;
-
-        @Schema(type = "integer", example = "10")
-        private Integer ratingCount;
-
-        @Schema(type = "integer", example = "5")
-        private Integer feeCount;
-
-        @Schema(type = "integer", example = "3")
-        private Integer radarCount;
+        private Integer minEstimate;
 
         @Schema(type = "array", example = "[\"퍼스널 컬러 체크\", \"웨딩드레스 시착 1회 무료\"]")
         private List<String> services;
@@ -124,7 +100,7 @@ public class PortfolioDTO {
         private List<String> weddingPhotoUrls;
 
         @Schema(type = "object", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_NATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6}")
-        private Map<RadarKey, Float> radar;
+        private Map<RadarKey, Float> avgRadar;
 
         @Schema(type = "string", example = "https://s3.amazonaws.com/bucket/profileImageUrl", description = "10분동안 유효하며 PUT으로 한 개의 이미지를 전송 가능합니다.")
         private String presignedProfileImageUrl;
