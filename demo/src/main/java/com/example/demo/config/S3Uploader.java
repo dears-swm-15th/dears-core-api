@@ -10,11 +10,13 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Component
-@Profile("test")
+@Profile("!test")
 public class S3Uploader {
 
     @Autowired
@@ -26,7 +28,7 @@ public class S3Uploader {
     @Value("${cloud.aws.cloudfront.path}")
     private String cloudfrontPath;
 
-    private final int PRESIGNED_URL_EXPIRATION = 60 * 1000; // 1분
+    private final int PRESIGNED_URL_EXPIRATION = 60 * 1000 * 10; // 10분
 
 
     public String getPresignedUrl(String fileName) {
@@ -55,9 +57,8 @@ public class S3Uploader {
         return expiration;
     }
 
-    private String getUniqueFilename(String fileName) {
-        String uuid = UUID.randomUUID().toString();
-        return "test/" + fileName + uuid;
+    public String getUniqueFilename(String fileName) {
+        return UUID.randomUUID().toString();
     }
 
     //get file from cloudfront not using presigned url
@@ -66,7 +67,28 @@ public class S3Uploader {
     }
 
     public void deleteFile(String fileName){
-        s3Config.amazonS3().deleteObject(new DeleteObjectRequest(bucket, fileName));
-        System.out.println(bucket);
+        if (fileName == null) {
+            return;
+        }
+        System.out.println(fileName);
+        s3Config.amazonS3().deleteObject(new DeleteObjectRequest(bucket, "test/"+fileName));
+        System.out.println(fileName);
+    }
+
+    public String uploadFile(String fileName){
+        return getPresignedUrl(fileName);
+    }
+
+    public List<String> uploadFileList(List<String> fileNameList){
+        List<String> presignedUrlList = new ArrayList<>();
+        for (String fileName : fileNameList) {
+            String uniqueFileName = getUniqueFilename(fileName);
+            presignedUrlList.add(getPresignedUrl(uniqueFileName));
+        }
+        return presignedUrlList;
+    }
+
+    public String getImageUrl(String uniqueFileName){
+        return getCloudfrontFilePath(uniqueFileName);
     }
 }
