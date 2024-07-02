@@ -74,6 +74,7 @@ public class PortfolioService {
         }
         //save portfolio, set presigned url and cloudfront url to response
         Portfolio updatedPortfolio = portfolioMapper.updateFromRequest(portfolioRequest, existingPortfolio);
+
         Portfolio savedPortfolio = portfolioRepository.save(updatedPortfolio);
         PortfolioDTO.Response response = portfolioMapper.entityToResponse(savedPortfolio);
         response.setPresignedProfileImageUrl(updatedPortfolio.getProfileImageUrl());
@@ -93,26 +94,5 @@ public class PortfolioService {
         }
         portfolioRepository.delete(portfolio);
     }
-//    private Integer calculateAvgFee(Integer existingAvgFee, Integer existingConsultationFee, Integer newConsultationFee, Integer count) {
-//        if (newConsultationFee == null) {
-//            return existingAvgFee;
-//        }
-//        int totalFee = (existingAvgFee * count) + newConsultationFee;
-//        return totalFee / (count + 1);
-//    }
-//
-//    private Integer calculateMinFee(Integer existingMinFee, Integer newConsultationFee) {
-//        if (newConsultationFee == null) {
-//            return existingMinFee;
-//        }
-//        return (existingMinFee == null || newConsultationFee < existingMinFee) ? newConsultationFee : existingMinFee;
-//    }
-//
-//    private Float calculateRating(Float existingRating, Float newRating, Integer count) {
-//        if (newRating == null) {
-//            return existingRating;
-//        }
-//        float totalRating = (existingRating * count) + newRating;
-//        return totalRating / (count + 1);
-//    }
+
 }
