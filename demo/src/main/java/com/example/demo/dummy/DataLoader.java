@@ -43,6 +43,7 @@ public class DataLoader implements CommandLineRunner {
 
         Portfolio portfolio1 = Portfolio.builder()
                 .organization("Organization One")
+                .plannerName("Jeff")
                 .region(Region.CHUNGDAM)
                 .introduction("Introduction to Organization One.")
                 .contactInfo("contact@organizationone.com")
@@ -62,6 +63,7 @@ public class DataLoader implements CommandLineRunner {
 
         Portfolio portfolio2 = Portfolio.builder()
                 .organization("Organization Two")
+                .plannerName("Clara")
                 .region(Region.GANGNAM)
                 .introduction("Introduction to Organization Two.")
                 .contactInfo("contact@organizationtwo.com")

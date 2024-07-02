@@ -23,6 +23,8 @@ public class Portfolio extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String plannerName;
     private String organization;
     private Region region;
     private String introduction;
