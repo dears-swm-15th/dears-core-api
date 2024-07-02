@@ -31,7 +31,7 @@ public class Portfolio extends BaseTimeEntity {
     private String introduction;
     private String contactInfo;
     private String profileImageUrl;
-    private Integer consultationFee;
+    private Integer consultingFee;
     private String description;
 
     @ElementCollection
@@ -44,7 +44,6 @@ public class Portfolio extends BaseTimeEntity {
     @Column(name = "photo_url")
     private List<String> weddingPhotoUrls;
 
-
     // Dynamic changed fields
     private Integer avgEstimate;
     private Integer minEstimate;
@@ -54,5 +53,6 @@ public class Portfolio extends BaseTimeEntity {
     @MapKeyColumn(name = "radar_key")
     @Column(name = "radar_value")
     private Map<RadarKey, Float> avgRadar;
+
 
 }
