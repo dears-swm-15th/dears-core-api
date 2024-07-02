@@ -24,6 +24,7 @@ public class Portfolio extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Static fields set by planner
     private String plannerName;
     private String organization;
     private Region region;
@@ -32,14 +33,6 @@ public class Portfolio extends BaseTimeEntity {
     private String profileImageUrl;
     private Integer consultationFee;
     private String description;
-
-    private Integer avgFee;
-    private Integer minFee;
-    private Float rating;
-
-    private Integer ratingCount;
-    private Integer feeCount;
-    private Integer radarCount;
 
     @ElementCollection
     @CollectionTable(name = "portfolio_services", joinColumns = @JoinColumn(name = "portfolio_id"))
@@ -51,10 +44,15 @@ public class Portfolio extends BaseTimeEntity {
     @Column(name = "photo_url")
     private List<String> weddingPhotoUrls;
 
+
+    // Dynamic changed fields
+    private Integer avgEstimation;
+    private Integer minEstimation;
+
     @ElementCollection
     @CollectionTable(name = "portfolio_radar", joinColumns = @JoinColumn(name = "portfolio_id"))
     @MapKeyColumn(name = "radar_key")
     @Column(name = "radar_value")
-    private Map<RadarKey, Float> radar;
+    private Map<RadarKey, Float> avgRadar;
 
 }

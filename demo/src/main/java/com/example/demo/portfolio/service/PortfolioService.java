@@ -74,6 +74,7 @@ public class PortfolioService {
         }
         //save portfolio, set presigned url and cloudfront url to response
         Portfolio updatedPortfolio = portfolioMapper.updateFromRequest(portfolioRequest, existingPortfolio);
+
         Portfolio savedPortfolio = portfolioRepository.save(updatedPortfolio);
         PortfolioDTO.Response response = portfolioMapper.entityToResponse(savedPortfolio);
         response.setPresignedProfileImageUrl(updatedPortfolio.getProfileImageUrl());
@@ -93,4 +94,5 @@ public class PortfolioService {
         }
         portfolioRepository.delete(portfolio);
     }
+
 }
