@@ -35,7 +35,7 @@ public class PortfolioDTO {
         private String profileImageUrl;
 
         @Schema(type = "integer", example = "30000")
-        private Integer consultationFee;
+        private Integer consultingFee;
 
         @Schema(type = "string", example = "웨딩 준비 도와드릴게요.")
         private String description;
@@ -44,6 +44,7 @@ public class PortfolioDTO {
         private Integer avgEstimate;
 
         @Schema(type = "integer", example = "20000")
+
         private Integer minEstimate;
 
         @Schema(type = "array", example = "[\"퍼스널 컬러 체크\", \"웨딩드레스 시착 1회 무료\"]")
@@ -82,7 +83,7 @@ public class PortfolioDTO {
         private String profileImageUrl;
 
         @Schema(type = "integer", example = "30000")
-        private Integer consultationFee;
+        private Integer consultingFee;
 
         @Schema(type = "string", example = "웨딩 준비 도와드릴게요.")
         private String description;
@@ -91,6 +92,7 @@ public class PortfolioDTO {
         private Integer avgEstimate;
 
         @Schema(type = "integer", example = "20000")
+
         private Integer minEstimate;
 
         @Schema(type = "array", example = "[\"퍼스널 컬러 체크\", \"웨딩드레스 시착 1회 무료\"]")
