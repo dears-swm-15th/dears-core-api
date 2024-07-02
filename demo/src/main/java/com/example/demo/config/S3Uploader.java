@@ -70,7 +70,6 @@ public class S3Uploader {
         if (fileName == null) {
             return;
         }
-        System.out.println(fileName);
         s3Config.amazonS3().deleteObject(new DeleteObjectRequest(bucket, "test/"+fileName));
         System.out.println(fileName);
     }
