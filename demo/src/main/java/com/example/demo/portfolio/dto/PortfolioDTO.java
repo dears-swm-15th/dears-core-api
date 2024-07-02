@@ -19,6 +19,9 @@ public class PortfolioDTO {
         @Schema(type = "string", example = "에바웨딩스")
         private String organization;
 
+        @Schema(type = "string", example = "김지수")
+        private String plannerName;
+
         @Schema(type = "string", example = "GANGNAM")
         private String region;
 
@@ -74,6 +77,9 @@ public class PortfolioDTO {
     public static class Response {
         @Schema(type = "string", example = "에바웨딩스")
         private String organization;
+
+        @Schema(type = "string", example = "김지수")
+        private String plannerName;
 
         @Schema(type = "string", example = "GANGNAM")
         private String region;
