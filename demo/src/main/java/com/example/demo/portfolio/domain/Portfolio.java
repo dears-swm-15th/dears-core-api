@@ -46,8 +46,8 @@ public class Portfolio extends BaseTimeEntity {
 
 
     // Dynamic changed fields
-    private Integer avgEstimation;
-    private Integer minEstimation;
+    private Integer avgEstimate;
+    private Integer minEstimate;
 
     @ElementCollection
     @CollectionTable(name = "portfolio_radar", joinColumns = @JoinColumn(name = "portfolio_id"))

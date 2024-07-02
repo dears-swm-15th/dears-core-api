@@ -50,15 +50,11 @@ public class DataLoader implements CommandLineRunner {
                 .profileImageUrl("image1.jpg")
                 .consultationFee(100)
                 .description("Description of services offered by Organization One.")
-                .avgFee(300)
-                .minFee(100)
-                .rating(4.5f)
-                .ratingCount(15)
-                .feeCount(10)
-                .radarCount(5)
+                .avgEstimate(300)
+                .minEstimate(100)
                 .services(services1)
                 .weddingPhotoUrls(weddingPhotos1)
-                .radar(radar1)
+                .avgRadar(radar1)
                 .build();
 
         Portfolio portfolio2 = Portfolio.builder()
@@ -70,15 +66,11 @@ public class DataLoader implements CommandLineRunner {
                 .profileImageUrl("image2.jpg")
                 .consultationFee(200)
                 .description("Description of services offered by Organization Two.")
-                .avgFee(500)
-                .minFee(200)
-                .rating(4.3f)
-                .ratingCount(20)
-                .feeCount(15)
-                .radarCount(10)
+                .avgEstimate(500)
+                .minEstimate(200)
                 .services(services2)
                 .weddingPhotoUrls(weddingPhotos2)
-                .radar(radar2)
+                .avgRadar(radar2)
                 .build();
 
         portfolioRepository.save(portfolio1);
