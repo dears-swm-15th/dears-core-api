@@ -56,8 +56,4 @@ public class Portfolio extends BaseTimeEntity {
     @Column(name = "radar_value")
     private Map<RadarKey, Float> avgRadar;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id")
-    private Review review;
-
 }
