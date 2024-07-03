@@ -51,6 +51,10 @@ public class PortfolioService {
         PortfolioDTO.Response response = portfolioMapper.entityToResponse(portfolio);
         response.setPresignedProfileImageUrl(presignedUrl);
         response.setPresignedWeddingPhotoUrls(presignedUrlList);
+        response.setProfileImageUrl(s3Uploader.getImageUrl(portfolio.getProfileImageUrl()));
+        response.setWeddingPhotoUrls(portfolio.getWeddingPhotoUrls().stream()
+                .map(s3Uploader::getImageUrl)
+                .collect(Collectors.toList()));
         return response;
     }
 
@@ -79,6 +83,10 @@ public class PortfolioService {
         PortfolioDTO.Response response = portfolioMapper.entityToResponse(savedPortfolio);
         response.setPresignedProfileImageUrl(updatedPortfolio.getProfileImageUrl());
         response.setPresignedWeddingPhotoUrls(updatedPortfolio.getWeddingPhotoUrls());
+        response.setProfileImageUrl(s3Uploader.getImageUrl(updatedPortfolio.getProfileImageUrl()));
+        response.setWeddingPhotoUrls(updatedPortfolio.getWeddingPhotoUrls().stream()
+                .map(s3Uploader::getImageUrl)
+                .collect(Collectors.toList()));
         return portfolioMapper.entityToResponse(savedPortfolio);
     }
 
