@@ -2,6 +2,7 @@ package com.example.demo.review.domain;
 
 import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.RadarKey;
+import com.example.demo.portfolio.domain.Portfolio;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,6 +19,7 @@ public class Review extends BaseTimeEntity {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "review_id")
         private Long id;
 
         private String reviewerName;
@@ -45,5 +47,8 @@ public class Review extends BaseTimeEntity {
         @Column(name = "radar_value")
         private Map<RadarKey, Float> radar;
 
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "portfolio_id")
+        private Portfolio portfolio;
 
 }
