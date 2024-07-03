@@ -10,10 +10,11 @@ import java.util.Map;
 public class PortfolioDTO {
 
     @Getter
+    @Setter
     @ToString
     @NoArgsConstructor
     @AllArgsConstructor
-    @Builder @Setter
+    @Builder
     public static class Request {
 
         @Schema(type = "string", example = "에바웨딩스")

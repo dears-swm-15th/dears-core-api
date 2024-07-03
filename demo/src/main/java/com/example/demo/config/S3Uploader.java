@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 @Profile("!test")
@@ -74,6 +75,15 @@ public class S3Uploader {
         System.out.println(fileName);
     }
 
+    public void deleteFiles(List<String> fileNames) {
+        if (fileNames == null || fileNames.isEmpty()) {
+            return;
+        }
+
+        fileNames.forEach(this::deleteFile);
+    }
+
+
     public String uploadFile(String fileName){
         return getPresignedUrl(fileName);
     }
@@ -89,5 +99,11 @@ public class S3Uploader {
 
     public String getImageUrl(String uniqueFileName){
         return getCloudfrontFilePath(uniqueFileName);
+    }
+
+    public List<String> getImageUrls(List<String> imageUrls) {
+        return imageUrls.stream()
+                .map(this::getImageUrl)
+                .collect(Collectors.toList());
     }
 }

@@ -4,6 +4,7 @@ import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.OfficeHours;
 import com.example.demo.enums.RadarKey;
 import com.example.demo.enums.Region;
+import com.example.demo.review.domain.Review;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.*;
@@ -22,6 +23,7 @@ public class Portfolio extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "portfolio_id")
     private Long id;
 
     // Static fields set by planner
@@ -54,5 +56,8 @@ public class Portfolio extends BaseTimeEntity {
     @Column(name = "radar_value")
     private Map<RadarKey, Float> avgRadar;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "review_id")
+    private Review review;
 
 }
