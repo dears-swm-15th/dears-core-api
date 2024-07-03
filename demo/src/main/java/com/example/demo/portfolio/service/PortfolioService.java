@@ -21,6 +21,7 @@ public class PortfolioService {
     private final PortfolioMapper portfolioMapper = PortfolioMapper.INSTANCE;
 
     private final S3Uploader s3Uploader;
+
     public List<PortfolioDTO.Response> getAllPortfolios() {
         return portfolioRepository.findAll().stream()
                 .map(portfolioMapper::entityToResponse)
@@ -51,6 +52,12 @@ public class PortfolioService {
         PortfolioDTO.Response response = portfolioMapper.entityToResponse(portfolio);
         response.setPresignedProfileImageUrl(presignedUrl);
         response.setPresignedWeddingPhotoUrls(presignedUrlList);
+
+        response.setProfileImageUrl(s3Uploader.getImageUrl(portfolio.getProfileImageUrl()));
+        response.setWeddingPhotoUrls(portfolio.getWeddingPhotoUrls().stream()
+                .map(s3Uploader::getImageUrl)
+                .collect(Collectors.toList()));
+
         return response;
     }
 
@@ -79,6 +86,12 @@ public class PortfolioService {
         PortfolioDTO.Response response = portfolioMapper.entityToResponse(savedPortfolio);
         response.setPresignedProfileImageUrl(updatedPortfolio.getProfileImageUrl());
         response.setPresignedWeddingPhotoUrls(updatedPortfolio.getWeddingPhotoUrls());
+
+        response.setProfileImageUrl(s3Uploader.getImageUrl(updatedPortfolio.getProfileImageUrl()));
+        response.setWeddingPhotoUrls(updatedPortfolio.getWeddingPhotoUrls().stream()
+                .map(s3Uploader::getImageUrl)
+                .collect(Collectors.toList()));
+
         return portfolioMapper.entityToResponse(savedPortfolio);
     }
 
@@ -86,11 +99,15 @@ public class PortfolioService {
     public void deletePortfolio(Long id) {
         Portfolio portfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
-        if (portfolio.getProfileImageUrl() != null) {
+
+        String profileImageUrl = portfolio.getProfileImageUrl();
+        List<String> weddingPhotoUrls = portfolio.getWeddingPhotoUrls();
+
+        if (profileImageUrl != null) {
             s3Uploader.deleteFile(portfolio.getProfileImageUrl());
         }
-        if (portfolio.getWeddingPhotoUrls() != null) {
-            portfolio.getWeddingPhotoUrls().forEach(s3Uploader::deleteFile);
+        if (weddingPhotoUrls != null) {
+            weddingPhotoUrls.forEach(s3Uploader::deleteFile);
         }
         portfolioRepository.delete(portfolio);
     }
