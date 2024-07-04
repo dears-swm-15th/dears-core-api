@@ -21,15 +21,15 @@ import java.util.Map;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE portfolio SET deleted = true WHERE portfolio_id = ?")
-@Where(clause = "deleted = false")
+@SQLDelete(sql = "UPDATE portfolio SET is_deleted = true WHERE portfolio_id = ?")
+@Where(clause = "is_deleted = false")
 public class Portfolio extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "portfolio_id")
     private Long id;
-    private boolean deleted = Boolean.FALSE;
+    private boolean isDeleted = Boolean.FALSE;
 
     // Static fields set by planner
     private String plannerName;

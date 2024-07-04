@@ -17,15 +17,15 @@ import java.util.Map;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE portfolio SET deleted = true WHERE review_id = ?")
-@Where(clause = "deleted = false")
+@SQLDelete(sql = "UPDATE portfolio SET is_deleted = true WHERE review_id = ?")
+@Where(clause = "is_deleted = false")
 public class Review extends BaseTimeEntity {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "review_id")
         private Long id;
-        private boolean deleted = Boolean.FALSE;
+        private boolean isDeleted = Boolean.FALSE;
 
         private String reviewerName;
         private String content;
