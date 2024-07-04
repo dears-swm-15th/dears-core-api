@@ -1,12 +1,9 @@
 package com.example.demo.portfolio.domain;
 
 import com.example.demo.base.BaseTimeEntity;
-import com.example.demo.enums.OfficeHours;
 import com.example.demo.enums.RadarKey;
 import com.example.demo.enums.Region;
-import com.example.demo.review.domain.Review;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
