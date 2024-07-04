@@ -43,6 +43,7 @@ public class PortfolioService {
         portfolioRequest.setWeddingPhotoUrls(portfolioRequest.getWeddingPhotoUrls().stream()
                 .map(s3Uploader::getUniqueFilename)
                 .collect(Collectors.toList()));
+
         //Upload image to s3
         String presignedUrl = s3Uploader.uploadFile(portfolioRequest.getProfileImageUrl());
         List<String> presignedUrlList = s3Uploader.uploadFileList(portfolioRequest.getWeddingPhotoUrls());
@@ -111,5 +112,11 @@ public class PortfolioService {
         }
         portfolioRepository.delete(portfolio);
     }
+
+//    public List<PortfolioDTO.Response> getAllSoftDeletedPortfolios() {
+//        return portfolioRepository.findSoftDeletedPortfolios().stream()
+//                .map(portfolioMapper::entityToResponse)
+//                .collect(Collectors.toList());
+//    }
 
 }
