@@ -8,6 +8,8 @@ import com.example.demo.review.domain.Review;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 import java.util.Map;
@@ -19,12 +21,15 @@ import java.util.Map;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE portfolio SET deleted = true WHERE portfolio_id = ?")
+@Where(clause = "deleted = false")
 public class Portfolio extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "portfolio_id")
     private Long id;
+    private boolean deleted = Boolean.FALSE;
 
     // Static fields set by planner
     private String plannerName;
