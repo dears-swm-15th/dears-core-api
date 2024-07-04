@@ -112,6 +112,7 @@ public class DataLoader implements CommandLineRunner {
                 .tags(reviewTags1)
                 .weddingPhotoUrls(reviewPhotos1)
                 .radar(reviewRadar1)
+                .wroteAt("24.07.12")
                 .build();
 
         Review review2 = Review.builder()
@@ -123,6 +124,7 @@ public class DataLoader implements CommandLineRunner {
                 .tags(reviewTags2)
                 .weddingPhotoUrls(reviewPhotos2)
                 .radar(reviewRadar2)
+                .wroteAt("24.08.12")
                 .build();
 
         reviewRepository.save(review1);

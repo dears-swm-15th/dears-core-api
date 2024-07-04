@@ -30,6 +30,7 @@ public class Review extends BaseTimeEntity {
         private String reviewerName;
         private String content;
         private Boolean isProvided;
+        private String wroteAt;
 
         private Float rating;
         private Integer estimate;
