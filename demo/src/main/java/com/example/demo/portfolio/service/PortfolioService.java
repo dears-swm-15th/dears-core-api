@@ -113,10 +113,10 @@ public class PortfolioService {
         portfolioRepository.delete(portfolio);
     }
 
-//    public List<PortfolioDTO.Response> getAllSoftDeletedPortfolios() {
-//        return portfolioRepository.findSoftDeletedPortfolios().stream()
-//                .map(portfolioMapper::entityToResponse)
-//                .collect(Collectors.toList());
-//    }
+    public List<PortfolioDTO.Response> getAllSoftDeletedPortfolios() {
+        return portfolioRepository.findSoftDeletedPortfolios().stream()
+                .map(portfolioMapper::entityToResponse)
+                .collect(Collectors.toList());
+    }
 
 }

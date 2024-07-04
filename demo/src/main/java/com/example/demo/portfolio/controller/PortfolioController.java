@@ -52,11 +52,11 @@ public class PortfolioController {
         return ResponseEntity.noContent().build();
     }
 
-//    @GetMapping("/soft-deleted")
-//    @Operation(summary = "soft-deleted 포트폴리오 조회")
-//    public ResponseEntity<List<PortfolioDTO.Response>> getAllSoftDeleted() {
-//        List<PortfolioDTO.Response> softDeletedPortfolios = portfolioService.getAllSoftDeletedPortfolios();
-//        return ResponseEntity.ok(softDeletedPortfolios);
-//    }
+    @GetMapping("/soft-deleted")
+    @Operation(summary = "soft-deleted 포트폴리오 조회")
+    public ResponseEntity<List<PortfolioDTO.Response>> getAllSoftDeleted() {
+        List<PortfolioDTO.Response> softDeletedPortfolios = portfolioService.getAllSoftDeletedPortfolios();
+        return ResponseEntity.ok(softDeletedPortfolios);
+    }
 
 }

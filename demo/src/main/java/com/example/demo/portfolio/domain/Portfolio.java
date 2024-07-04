@@ -61,4 +61,5 @@ public class Portfolio extends BaseTimeEntity {
     @Column(name = "radar_value")
     private Map<RadarKey, Float> avgRadar;
 
+
 }

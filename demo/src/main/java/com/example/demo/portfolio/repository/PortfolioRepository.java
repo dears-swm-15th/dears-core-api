@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
 
-//    @Query(value = "SELECT portfolio from Portfolio portfolio WHERE portfolio.isDeleted = true")
-//    List<Portfolio> findSoftDeletedPortfolios();
+    @Query(value = "SELECT * from Portfolio portfolio WHERE portfolio.is_deleted = true", nativeQuery = true)
+    List<Portfolio> findSoftDeletedPortfolios();
 
 }
