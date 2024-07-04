@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/portfolio")
-@Tag(name = "portfolios", description = "포트폴리오 API")
+@Tag(name = "portfolio", description = "포트폴리오 API")
 public class PortfolioController {
 
     private final PortfolioService portfolioService;
@@ -45,6 +45,7 @@ public class PortfolioController {
         PortfolioDTO.Response updatedPortfolio = portfolioService.updatePortfolio(id, portfolioRequest);
         return ResponseEntity.ok(updatedPortfolio);
     }
+
     @PostMapping("/delete/{id}")
     @Operation(summary = "특정 포트폴리오 삭제")
     public ResponseEntity<Void> deletePortfolio(@PathVariable Long id) {

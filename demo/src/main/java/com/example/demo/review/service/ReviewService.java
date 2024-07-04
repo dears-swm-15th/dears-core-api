@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,12 @@ public class ReviewService {
     private final ReviewMapper reviewMapper = ReviewMapper.INSTANCE;
 
     private final S3Uploader s3Uploader;
+
+    public List<ReviewDTO.Response> getAllReviews() {
+        return reviewRepository.findAll().stream()
+                .map(reviewMapper::entityToResponse)
+                .collect(Collectors.toList());
+    }
 
     public ReviewDTO.Response getReviewById(Long id) {
         Review review = reviewRepository.findById(id)
@@ -53,11 +60,16 @@ public class ReviewService {
                 .map(s3Uploader::getImageUrl)
                 .collect(Collectors.toList()));
 
+        // Set wroteAt using createdAt formatted as 'yy.MM.dd'
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd");
+        String wroteAt = response.getCreatedAt().format(formatter);
+        response.setWroteAt(wroteAt);
+
         return response;
     }
 
     @Transactional
-    public ReviewDTO.Response updatePortfolio(Long id, ReviewDTO.Request reviewRequest) {
+    public ReviewDTO.Response updateReview(Long id, ReviewDTO.Request reviewRequest) {
         Review existingReview = reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
@@ -98,6 +110,12 @@ public class ReviewService {
         }
 
         reviewRepository.delete(review);
+    }
+
+    public List<ReviewDTO.Response> getAllSoftDeletedReviews() {
+        return reviewRepository.findSoftDeletedReviews().stream()
+                .map(reviewMapper::entityToResponse)
+                .collect(Collectors.toList());
     }
 
 
