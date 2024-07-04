@@ -5,6 +5,8 @@ import com.example.demo.enums.RadarKey;
 import com.example.demo.portfolio.domain.Portfolio;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 import java.util.Map;
@@ -15,12 +17,15 @@ import java.util.Map;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE portfolio SET is_deleted = true WHERE review_id = ?")
+@Where(clause = "is_deleted = false")
 public class Review extends BaseTimeEntity {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "review_id")
         private Long id;
+        private boolean isDeleted = Boolean.FALSE;
 
         private String reviewerName;
         private String content;
@@ -46,6 +51,5 @@ public class Review extends BaseTimeEntity {
         @MapKeyColumn(name = "radar_key")
         @Column(name = "radar_value")
         private Map<RadarKey, Float> radar;
-
 
 }
