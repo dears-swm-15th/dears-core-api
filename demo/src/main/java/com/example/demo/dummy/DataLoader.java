@@ -1,7 +1,7 @@
 package com.example.demo.dummy;
 
-import com.example.demo.enums.RadarKey;
-import com.example.demo.enums.Region;
+import com.example.demo.enums.review.RadarKey;
+import com.example.demo.enums.portfolio.Region;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.review.domain.Review;

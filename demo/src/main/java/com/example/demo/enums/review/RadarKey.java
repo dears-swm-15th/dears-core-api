@@ -1,4 +1,4 @@
-package com.example.demo.enums;
+package com.example.demo.enums.review;
 
 public enum RadarKey {
     COMMUNICATION, // 의사소통
