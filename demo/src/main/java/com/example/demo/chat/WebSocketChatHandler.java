@@ -1,6 +1,6 @@
 package com.example.demo.chat;
 
-import com.example.demo.chat.dto.ChatMessageDTO;
+import com.example.demo.chat.dto.MessageDTO;
 import com.example.demo.enums.chat.MessageType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -54,10 +54,10 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         log.info("payload: {}", payload);
 
         // convert payload to chatMessageDto
-        ChatMessageDTO chatMessageDTO = mapper.readValue(payload, ChatMessageDTO.class);
-        log.info("session: {}", chatMessageDTO.toString());
+        MessageDTO messageDTO = mapper.readValue(payload, MessageDTO.class);
+        log.info("session: {}", messageDTO.toString());
 
-        Long chatRoomId = chatMessageDTO.getChatRoomId();
+        Long chatRoomId = messageDTO.getRoomId();
         // make session about chatRoom when it doesn't exist at memory
         if(!chatRoomSessionMap.containsKey(chatRoomId)){
             chatRoomSessionMap.put(chatRoomId,new HashSet<>());
@@ -65,14 +65,14 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(chatRoomId);
 
         // check message type(ENTER)
-        if (chatMessageDTO.getMessageType().equals(MessageType.ENTER)) {
+        if (messageDTO.getMessageType().equals(MessageType.ENTER)) {
             chatRoomSession.add(session);
         }
         // [!] test for 3 chatRoom First.
         if (chatRoomSession.size() >= MAX_CHATROOM_SESSION) {
             removeClosedSession(chatRoomSession);
         }
-        sendMessageToChatRoom(chatMessageDTO, chatRoomSession);
+        sendMessageToChatRoom(messageDTO, chatRoomSession);
 
     }
 
@@ -89,8 +89,8 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         chatRoomSession.removeIf(sess -> !sessions.contains(sess));
     }
 
-    private void sendMessageToChatRoom(ChatMessageDTO chatMessageDto, Set<WebSocketSession> chatRoomSession) {
-        chatRoomSession.parallelStream().forEach(sess -> sendMessage(sess, chatMessageDto));//2
+    private void sendMessageToChatRoom(MessageDTO messageDto, Set<WebSocketSession> chatRoomSession) {
+        chatRoomSession.parallelStream().forEach(sess -> sendMessage(sess, messageDto));//2
     }
 
 

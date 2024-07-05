@@ -11,7 +11,6 @@ import org.hibernate.annotations.Where;
 import java.util.List;
 import java.util.Map;
 
-
 @Getter
 @Setter
 @Builder
@@ -62,3 +61,4 @@ public class Portfolio extends BaseTimeEntity {
 
 
 }
+
