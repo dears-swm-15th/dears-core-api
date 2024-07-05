@@ -2,7 +2,7 @@ package com.example.demo.portfolio.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import com.example.demo.enums.RadarKey;
+import com.example.demo.enums.review.RadarKey;
 
 import java.time.LocalDateTime;
 import java.util.List;

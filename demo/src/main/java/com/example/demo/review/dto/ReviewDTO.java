@@ -1,6 +1,6 @@
 package com.example.demo.review.dto;
 
-import com.example.demo.enums.RadarKey;
+import com.example.demo.enums.review.RadarKey;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 

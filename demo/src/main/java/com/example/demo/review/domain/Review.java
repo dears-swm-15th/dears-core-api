@@ -1,8 +1,7 @@
 package com.example.demo.review.domain;
 
 import com.example.demo.base.BaseTimeEntity;
-import com.example.demo.enums.RadarKey;
-import com.example.demo.portfolio.domain.Portfolio;
+import com.example.demo.enums.review.RadarKey;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
