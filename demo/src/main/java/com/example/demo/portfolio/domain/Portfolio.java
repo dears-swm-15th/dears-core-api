@@ -26,6 +26,8 @@ public class Portfolio extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "portfolio_id")
     private Long id;
+
+    @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 
     // Static fields set by planner
