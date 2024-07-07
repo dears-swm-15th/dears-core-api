@@ -4,7 +4,6 @@ import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.chat.MessageType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @Getter

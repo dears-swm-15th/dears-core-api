@@ -5,7 +5,6 @@ import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import java.util.List;
