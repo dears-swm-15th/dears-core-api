@@ -13,7 +13,6 @@ import org.hibernate.annotations.Where;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE message SET message.is_deleted = true WHERE message_id = ?")
 @Where(clause = "is_deleted = false")
 public class Message extends BaseTimeEntity {
 

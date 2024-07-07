@@ -17,7 +17,6 @@ import java.util.Map;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE portfolio SET is_deleted = true WHERE portfolio_id = ?")
 @Where(clause = "is_deleted = false")
 public class Portfolio extends BaseTimeEntity {
 

@@ -110,7 +110,8 @@ public class PortfolioService {
         if (weddingPhotoUrls != null) {
             weddingPhotoUrls.forEach(s3Uploader::deleteFile);
         }
-        portfolioRepository.delete(portfolio);
+
+        portfolioRepository.softDeleteById(id);
     }
 
     public List<PortfolioDTO.Response> getAllSoftDeletedPortfolios() {

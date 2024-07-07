@@ -12,7 +12,6 @@ import org.hibernate.annotations.Where;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE room SET room.is_deleted = true WHERE room_id = ?")
 @Where(clause = "is_deleted = false")
 public class Room extends BaseTimeEntity {
 

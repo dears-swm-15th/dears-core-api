@@ -109,7 +109,7 @@ public class ReviewService {
             s3Uploader.deleteFiles(weddingPhotoUrls);
         }
 
-        reviewRepository.delete(review);
+        reviewRepository.softDeleteById(id);
     }
 
     public List<ReviewDTO.Response> getAllSoftDeletedReviews() {
