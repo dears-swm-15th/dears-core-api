@@ -2,10 +2,14 @@ package com.example.demo.member.domain;
 
 import com.example.demo.enums.member.MemberRole;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 @Entity
 @Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Member {
 
     @Id
@@ -19,10 +23,4 @@ public class Member {
     @Column //중복x, nullx, 멤버 구분자
     private String name;
 
-    public Member (MemberRole role, String name) {
-        this.role = role;
-        this.name = name;
-    }
-    public Member() {
-    }
 }

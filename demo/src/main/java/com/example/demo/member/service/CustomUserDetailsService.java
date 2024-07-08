@@ -41,7 +41,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional
     public MemberAuthDTO.Response join(){
         // TODO : 웨딩플래너와 customer를 구분하여 생성하는 로직
-        Member member = new Member(MemberRole.CUSTOMER, UUID.randomUUID().toString());
+        Member member = Member.builder()
+                .role(MemberRole.CUSTOMER)
+                .name(UUID.randomUUID().toString()).build();
         memberRepository.save(member);
         return memberMapper.entityToResponse(member);
     }
