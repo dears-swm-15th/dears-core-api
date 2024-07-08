@@ -4,7 +4,6 @@ import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.review.RadarKey;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.Map;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE portfolio SET is_deleted = true WHERE review_id = ?")
 @Where(clause = "is_deleted = false")
 public class Review extends BaseTimeEntity {
 

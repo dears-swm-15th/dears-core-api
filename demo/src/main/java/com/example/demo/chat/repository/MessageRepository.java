@@ -1,5 +1,6 @@
-package com.example.demo.portfolio.repository;
+package com.example.demo.chat.repository;
 
+import com.example.demo.chat.domain.Message;
 import com.example.demo.portfolio.domain.Portfolio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,13 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
+public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE Portfolio p SET p.isDeleted = true WHERE p.id = :id")
+    @Query("UPDATE Message m SET m.isDeleted = true WHERE m.id = :id")
     void softDeleteById(@Param("id") Long id);
 
-    @Query(value = "SELECT * from Portfolio portfolio WHERE portfolio.is_deleted = true", nativeQuery = true)
-    List<Portfolio> findSoftDeletedPortfolios();
+    @Query(value = "SELECT * from Message message WHERE room.is_deleted = true", nativeQuery = true)
+    List<Portfolio> findSoftDeletedMessages();
+
 }
+

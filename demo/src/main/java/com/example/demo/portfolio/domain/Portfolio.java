@@ -5,12 +5,10 @@ import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import java.util.List;
 import java.util.Map;
-
 
 @Getter
 @Setter
@@ -18,7 +16,6 @@ import java.util.Map;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE portfolio SET is_deleted = true WHERE portfolio_id = ?")
 @Where(clause = "is_deleted = false")
 public class Portfolio extends BaseTimeEntity {
 
@@ -62,3 +59,4 @@ public class Portfolio extends BaseTimeEntity {
 
 
 }
+
