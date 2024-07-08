@@ -26,9 +26,6 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String BEARER_PREFIX = "Bearer ";
 
-    /*
-     * 클라이언트에서 전송된 JWT를 검증하고, 유효한 경우 해당 JWT에서 추출된 사용자 정보를 사용하여 SecurityContextHolder에 인증 객체를 저장
-     * */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
