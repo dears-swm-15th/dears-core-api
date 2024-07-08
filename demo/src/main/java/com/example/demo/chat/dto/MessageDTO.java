@@ -23,7 +23,7 @@ public class MessageDTO {
         private Long senderId;
 
         @Schema(type = "string", example = "문의 드립니다.")
-        private String content;
+        private String contents;
     }
 
     @Getter
@@ -43,7 +43,7 @@ public class MessageDTO {
         private Long senderId;
 
         @Schema(type = "string", example = "문의 드립니다.")
-        private String content;
+        private String contents;
     }
 
 }

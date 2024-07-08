@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -21,5 +23,8 @@ public class Room extends BaseTimeEntity {
 
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
+
+    @OneToMany(mappedBy = "roomId")
+    private List<Message> messages;
 
 }
