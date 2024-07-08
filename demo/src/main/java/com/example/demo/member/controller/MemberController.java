@@ -22,7 +22,7 @@ public class MemberController {
     @PostMapping("/token")
     @Operation(summary = "토큰이 없을 때 유저 생성")
     public ResponseEntity<MemberAuthDTO.Response> createMember(@RequestBody MemberAuthDTO.Request memberAuthRequest){
-        MemberAuthDTO.Response createdMember = customUserDetailsService.join(memberAuthRequest.getRole());
+        MemberAuthDTO.Response createdMember = customUserDetailsService.join();
         return ResponseEntity.status(201).body(createdMember);
     }
 }

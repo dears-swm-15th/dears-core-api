@@ -1,5 +1,6 @@
 package com.example.demo.member.service;
 
+import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Member;
 import com.example.demo.member.domain.MemberContext;
 import com.example.demo.member.dto.MemberAuthDTO;
@@ -32,14 +33,15 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("해당 이름을 가진 사용자를 찾을 수 없습니다."));
 
         List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority(member.getRole()));
+        roles.add(new SimpleGrantedAuthority(member.getRole().getRoleName()));
 
         return new MemberContext(member, roles);
     }
 
     @Transactional
-    public MemberAuthDTO.Response join(String role){
-        Member member = new Member(role, UUID.randomUUID().toString());
+    public MemberAuthDTO.Response join(){
+        // TODO : 웨딩플래너와 customer를 구분하여 생성하는 로직
+        Member member = new Member(MemberRole.CUSTOMER, UUID.randomUUID().toString());
         memberRepository.save(member);
         return memberMapper.entityToResponse(member);
     }
