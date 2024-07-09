@@ -3,6 +3,7 @@ package com.example.demo.portfolio.domain;
 import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
+import com.example.demo.wishlist.domain.WishList;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
@@ -57,6 +58,8 @@ public class Portfolio extends BaseTimeEntity {
     @Column(name = "radar_value")
     private Map<RadarKey, Float> avgRadar;
 
+    @OneToMany(mappedBy = "portfolio")
+    private List<WishList> wishList;
 
 }
 
