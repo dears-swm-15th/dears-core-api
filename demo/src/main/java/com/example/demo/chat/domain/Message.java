@@ -23,9 +23,9 @@ public class Message extends BaseTimeEntity {
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 
-    private MessageType messageType;
     private Long roomId;
     private Long senderId;
     private String contents;
+    private Boolean isOtherRead;
 
 }

@@ -20,6 +20,12 @@ public class RoomDTO {
         @Schema(type = "List<Message>", example = "")
         private List<Message> messages;
 
+        @Schema(type = "long", example = "1")
+        private Long memberId;
+
+        @Schema(type = "long", example = "21")
+        private Long weddingPlannerId;
+
         @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
         private LocalDateTime createdAt;
 
@@ -37,6 +43,12 @@ public class RoomDTO {
 
         @Schema(type = "List<Message>", example = "")
         private List<Message> messages;
+
+        @Schema(type = "long", example = "1")
+        private Long memberId;
+
+        @Schema(type = "long", example = "21")
+        private Long weddingPlannerId;
 
         @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
         private LocalDateTime createdAt;

@@ -24,6 +24,10 @@ public class Room extends BaseTimeEntity {
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 
+    private Long memberId;
+
+    private Long weddingPlannerId;
+
     @OneToMany(mappedBy = "roomId")
     private List<Message> messages;
 

@@ -4,6 +4,8 @@ import com.example.demo.enums.chat.MessageType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 public class MessageDTO {
 
     @Getter
@@ -13,8 +15,6 @@ public class MessageDTO {
     @AllArgsConstructor
     @Builder
     public static class Request {
-        @Schema(type = "string", example = "ENTER")
-        private MessageType messageType;
 
         @Schema(type = "long", example = "21")
         private Long roomId;
@@ -24,6 +24,13 @@ public class MessageDTO {
 
         @Schema(type = "string", example = "문의 드립니다.")
         private String contents;
+
+        @Schema(type = "boolean", example = "false")
+        private Boolean isOtherRead;
+
+        @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
+        private LocalDateTime createdAt;
+
     }
 
     @Getter
@@ -33,8 +40,6 @@ public class MessageDTO {
     @AllArgsConstructor
     @Builder
     public static class Response {
-        @Schema(type = "string", example = "ENTER")
-        private MessageType messageType;
 
         @Schema(type = "long", example = "21")
         private Long roomId;
@@ -44,6 +49,13 @@ public class MessageDTO {
 
         @Schema(type = "string", example = "문의 드립니다.")
         private String contents;
+
+        @Schema(type = "boolean", example = "false")
+        private Boolean isOtherRead;
+
+        @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
+        private LocalDateTime createdAt;
+
     }
 
 }
