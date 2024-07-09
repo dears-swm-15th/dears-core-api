@@ -2,6 +2,8 @@ package com.example.demo.dummy;
 
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
+import com.example.demo.member.domain.Member;
+import com.example.demo.member.repository.MemberRepository;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.review.domain.Review;
@@ -15,6 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.demo.enums.member.MemberRole.CUSTOMER;
+import static com.example.demo.enums.member.MemberRole.WEDDING_PLANNER;
+
 @Component
 public class DataLoader implements CommandLineRunner {
 
@@ -23,6 +28,9 @@ public class DataLoader implements CommandLineRunner {
 
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -129,6 +137,25 @@ public class DataLoader implements CommandLineRunner {
 
         reviewRepository.save(review1);
         reviewRepository.save(review2);
+
+        Member member1 = Member.builder()
+                .name("Clara")
+                .role(WEDDING_PLANNER)
+                .build();
+
+        Member member2 = Member.builder()
+                .name("Jeff")
+                .role(WEDDING_PLANNER)
+                .build();
+
+        Member member3 = Member.builder()
+                .name("Tom")
+                .role(CUSTOMER)
+                .build();
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
 
         System.out.println("Sample data loaded.");
     }
