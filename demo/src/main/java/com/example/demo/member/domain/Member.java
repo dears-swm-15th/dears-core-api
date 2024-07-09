@@ -1,8 +1,10 @@
 package com.example.demo.member.domain;
 
 import com.example.demo.enums.member.MemberRole;
+import com.example.demo.wishlist.domain.WishList;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,4 +25,6 @@ public class Member {
     @Column //중복x, nullx, 멤버 구분자
     private String name;
 
+    @OneToMany(mappedBy = "member")
+    private List<WishList> wishList;
 }

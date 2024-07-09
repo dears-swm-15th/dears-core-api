@@ -7,16 +7,21 @@ import com.example.demo.member.dto.MemberAuthDTO;
 import com.example.demo.member.mapper.MemberMapper;
 import com.example.demo.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -46,5 +51,14 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .name(UUID.randomUUID().toString()).build();
         memberRepository.save(member);
         return memberMapper.entityToResponse(member);
+    }
+
+    public Optional<Member> getCurrentAuthenticatedMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+            String memberName = authentication.getName();
+            return memberRepository.findByName(memberName);
+        }
+        throw new UsernameNotFoundException("인증된 사용자를 찾을 수 없습니다.");
     }
 }
