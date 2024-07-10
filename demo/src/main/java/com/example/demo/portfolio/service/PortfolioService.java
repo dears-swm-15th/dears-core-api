@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -120,4 +119,12 @@ public class PortfolioService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public Portfolio addWishListCount(Long id) {
+        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(id)
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        portfolio.addWishListCount();
+        portfolioRepository.save(portfolio);
+        return portfolio;
+    }
 }
