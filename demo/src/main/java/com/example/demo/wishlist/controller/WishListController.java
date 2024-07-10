@@ -21,7 +21,7 @@ public class WishListController {
     private final WishListService wishListService;
 
     @GetMapping("")
-    @Operation(summary = "위시리스트 목록 조회")
+    @Operation(summary = "위시리스트 목록 조회", description = "자신의 위시리스트 목록을 조회합니다.")
     public ResponseEntity<List<PortfolioOverviewDTO.Response>> getWishListByMember(@RequestParam(value = "page", defaultValue = "0") int page,
                                                                             @RequestParam(value = "size", defaultValue = "10") int size){
         List<PortfolioOverviewDTO.Response> portfolioOverviews = wishListService.getWishListByMember(page, size);
@@ -29,7 +29,7 @@ public class WishListController {
     }
 
     @PostMapping("")
-    @Operation(summary = "위시리스트 추가")
+    @Operation(summary = "위시리스트 추가", description = "자신이 원하는 포트폴리오를 위시리스트에 추가합니다.")
     public ResponseEntity<Void> addWishList(@RequestBody WishListDto.Request request){
         wishListService.addWishList(request);
         return ResponseEntity.ok().build();

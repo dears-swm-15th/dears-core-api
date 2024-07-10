@@ -29,7 +29,7 @@ public class PortfolioRepositoryTest {
     }
 
     @Test
-    @DisplayName("포트폴리오 전체 조회 테스트")
+    @DisplayName("Pagination을 활용하여 포트폴리오 리스트를 조회")
     void findAllByPage() {
         PageRequest pageRequest = PageRequest.of(0, 1, Sort.by("id").ascending());
 

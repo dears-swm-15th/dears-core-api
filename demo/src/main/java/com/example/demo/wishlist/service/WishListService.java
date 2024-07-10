@@ -5,7 +5,7 @@ import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioOverviewDTO;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
-import com.example.demo.portfolio.repository.PortfolioRepository;
+import com.example.demo.portfolio.service.PortfolioService;
 import com.example.demo.wishlist.domain.WishList;
 import com.example.demo.wishlist.dto.WishListDto;
 import com.example.demo.wishlist.repository.WishListRepository;
@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WishListService {
 
-    private final PortfolioRepository portfolioRepository;
+    private final PortfolioService portfolioService;
     private final CustomUserDetailsService memberService;
     private final WishListRepository wishListRepository;
     private final PortfolioMapper portfolioMapper;
@@ -38,9 +39,10 @@ public class WishListService {
         return portfolioOverviewDtos;
     }
 
+    @Transactional
     public void addWishList(WishListDto.Request request) {
         Member member = memberService.getCurrentAuthenticatedMember().orElseThrow();
-        Portfolio portfolio = portfolioRepository.findById(request.getPortfolioId()).orElseThrow();
+        Portfolio portfolio = portfolioService.addWishListCount(request.getPortfolioId());
         WishList wishList = WishList.builder()
                 .member(member)
                 .portfolio(portfolio)
