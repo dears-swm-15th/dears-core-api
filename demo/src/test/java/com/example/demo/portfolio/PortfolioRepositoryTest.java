@@ -13,10 +13,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest //JPA Repository들에 대한 빈 등록하여 테스트 가능
 @DisplayName("Portfolio Test")
 @Transactional
+@ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class PortfolioRepositoryTest {
 
@@ -25,7 +27,7 @@ public class PortfolioRepositoryTest {
 
 
     @Before
-    void setUp() {
+    public void setUp() {
     }
 
     @Test
