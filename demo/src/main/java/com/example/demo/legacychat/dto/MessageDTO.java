@@ -1,4 +1,4 @@
-package com.example.demo.chat.dto;
+package com.example.demo.legacychat.dto;
 
 import com.example.demo.enums.chat.MessageType;
 import io.swagger.v3.oas.annotations.media.Schema;

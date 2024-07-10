@@ -1,6 +1,6 @@
-package com.example.demo.chat.repository;
+package com.example.demo.legacychat.repository;
 
-import com.example.demo.chat.domain.Room;
+import com.example.demo.legacychat.domain.Message;
 import com.example.demo.portfolio.domain.Portfolio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,14 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-public interface RoomRepository extends JpaRepository<Room, Long> {
+public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE Room r SET r.isDeleted = true WHERE r.id = :id")
+    @Query("UPDATE Message m SET m.isDeleted = true WHERE m.id = :id")
     void softDeleteById(@Param("id") Long id);
 
-    @Query(value = "SELECT * from Room room WHERE room.is_deleted = true", nativeQuery = true)
-    List<Portfolio> findSoftDeletedRooms();
+    @Query(value = "SELECT * from Message message WHERE room.is_deleted = true", nativeQuery = true)
+    List<Portfolio> findSoftDeletedMessages();
 
 }
+

@@ -1,13 +1,13 @@
-package com.example.demo.chat.mapper;
+package com.example.demo.legacychat.mapper;
 
-import com.example.demo.chat.domain.Message;
-import com.example.demo.chat.dto.MessageDTO;
+import com.example.demo.legacychat.domain.Message;
+import com.example.demo.legacychat.dto.MessageDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface MessageMapper {
-    com.example.demo.chat.mapper.MessageMapper INSTANCE = Mappers.getMapper(com.example.demo.chat.mapper.MessageMapper.class);
+    MessageMapper INSTANCE = Mappers.getMapper(MessageMapper.class);
 
     @Mapping(target = "id", ignore = true)
     Message requestToEntity(MessageDTO.Request messageRequest);

@@ -1,4 +1,4 @@
-package com.example.demo.chat.domain;
+package com.example.demo.legacychat.domain;
 
 import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.chat.MessageType;
@@ -26,6 +26,6 @@ public class Message extends BaseTimeEntity {
     private Long roomId;
     private Long senderId;
     private String contents;
-    private Boolean isOtherRead;
+    private Integer readCount;
 
 }

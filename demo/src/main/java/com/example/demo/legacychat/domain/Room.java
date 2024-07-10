@@ -1,10 +1,11 @@
-package com.example.demo.chat.domain;
+package com.example.demo.legacychat.domain;
 
 import com.example.demo.base.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -24,11 +25,20 @@ public class Room extends BaseTimeEntity {
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 
-    private Long memberId;
+    private Long customerId;
 
     private Long weddingPlannerId;
 
+//    private Long
+
+    // unreadCount = lastMessageId - lastUnreadMessageId
+    private Integer lastUnreadMessageId;
+
+    private String lastMessageContents;
+
+    // last message's createdAt
+    private LocalDateTime recentTime;
+
     @OneToMany(mappedBy = "roomId")
     private List<Message> messages;
-
 }
