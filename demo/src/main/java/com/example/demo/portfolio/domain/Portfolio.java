@@ -57,6 +57,13 @@ public class Portfolio extends BaseTimeEntity {
     @Column(name = "radar_value")
     private Map<RadarKey, Float> avgRadar;
 
+    private Integer wishListCount;
 
+    public void addWishListCount() {
+        if (this.wishListCount == null) {
+            this.wishListCount = 0;
+        }
+        this.wishListCount++;
+    }
 }
 
