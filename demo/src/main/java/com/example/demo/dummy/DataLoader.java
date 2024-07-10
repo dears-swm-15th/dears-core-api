@@ -69,6 +69,7 @@ public class DataLoader implements CommandLineRunner {
                 .services(services1)
                 .weddingPhotoUrls(weddingPhotos1)
                 .avgRadar(radar1)
+                .wishListCount(0)
                 .build();
 
         Portfolio portfolio2 = Portfolio.builder()
@@ -85,6 +86,7 @@ public class DataLoader implements CommandLineRunner {
                 .services(services2)
                 .weddingPhotoUrls(weddingPhotos2)
                 .avgRadar(radar2)
+                .wishListCount(0)
                 .build();
 
         portfolioRepository.save(portfolio1);

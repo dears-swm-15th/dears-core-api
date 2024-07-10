@@ -2,6 +2,7 @@ package com.example.demo.portfolio.mapper;
 
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
+import com.example.demo.portfolio.dto.PortfolioOverviewDTO;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,4 +22,6 @@ public interface PortfolioMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     Portfolio updateFromRequest(PortfolioDTO.Request portfolioRequest, @MappingTarget Portfolio portfolio);
+
+    PortfolioOverviewDTO.Response entityToOverviewResponse(Portfolio portfolio);
 }
