@@ -15,4 +15,8 @@ public interface WishListRepository extends JpaRepository<WishList, Long> {
 
     @Query("SELECT COUNT(w) FROM WishList w WHERE w.portfolio = :portfolioId")
     long countByPortfolioId(@Param("portfolioId") Long portfolioId);
+
+    void deleteByMemberIdAndPortfolioId(Long memberId, Long portfolioId);
+
+    boolean existsByMemberIdAndPortfolioId(Long memberId, Long portfolioId);
 }

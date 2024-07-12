@@ -72,6 +72,16 @@ public class Portfolio extends BaseTimeEntity {
         this.wishListCount++;
     }
 
+    public void decreaseWishListCount() {
+        if (this.wishListCount == null) {
+            this.wishListCount = 0;
+        }else if (this.wishListCount > 0){
+            this.wishListCount--;
+        }else {
+            this.wishListCount = 0;
+        }
+    }
+
     public void increaseRatingCount(Float rating) {
         if (this.ratingCount == null) {
             this.ratingCount = 0;

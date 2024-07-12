@@ -34,4 +34,11 @@ public class WishListController {
         wishListService.addWishList(request);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/delete")
+    @Operation(summary = "위시리스트 삭제", description = "자신의 위시리스트에서 포트폴리오를 삭제합니다.")
+    public ResponseEntity<Void> deleteWishList(@RequestBody WishListDto.Request request){
+        wishListService.deleteWishList(request);
+        return ResponseEntity.ok().build();
+    }
 }

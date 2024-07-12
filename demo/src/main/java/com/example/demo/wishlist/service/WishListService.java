@@ -42,11 +42,21 @@ public class WishListService {
     @Transactional
     public void addWishList(WishListDto.Request request) {
         Member member = memberService.getCurrentAuthenticatedMember().orElseThrow();
-        Portfolio portfolio = portfolioService.addWishListCount(request.getPortfolioId());
+        if (wishListRepository.existsByMemberIdAndPortfolioId(member.getId(), request.getPortfolioId())) {
+            return;
+        }
+        Portfolio portfolio = portfolioService.increaseWishListCount(request.getPortfolioId());
         WishList wishList = WishList.builder()
                 .member(member)
                 .portfolio(portfolio)
                 .build();
         wishListRepository.save(wishList);
+    }
+
+    @Transactional
+    public void deleteWishList(WishListDto.Request request) {
+        Member member = memberService.getCurrentAuthenticatedMember().orElseThrow();
+        Portfolio portfolio = portfolioService.decreaseListCount(request.getPortfolioId());
+        wishListRepository.deleteByMemberIdAndPortfolioId(member.getId(), portfolio.getId());
     }
 }

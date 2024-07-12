@@ -124,11 +124,21 @@ public class PortfolioService {
     }
 
     @Transactional
-    public Portfolio addWishListCount(Long id) {
+    public Portfolio increaseWishListCount(Long id) {
         Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(id)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
         portfolio.increaseWishListCount();
+        portfolioRepository.save(portfolio);
+        return portfolio;
+    }
+
+    @Transactional
+    public Portfolio decreaseListCount(Long id) {
+        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(id)
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+
+        portfolio.decreaseWishListCount();
         portfolioRepository.save(portfolio);
         return portfolio;
     }
