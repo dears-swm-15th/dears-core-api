@@ -51,7 +51,7 @@ public class Portfolio extends BaseTimeEntity {
     private Float ratingSum;
     private Integer ratingCount;
 
-    private Float estimateSum;
+    private Integer estimateSum;
     private Integer estimateCount;
     private Integer minEstimate;
 
@@ -72,42 +72,90 @@ public class Portfolio extends BaseTimeEntity {
         this.wishListCount++;
     }
 
-    public void increaseRatingCount() {
+    public void increaseRatingCount(Float rating) {
         if (this.ratingCount == null) {
             this.ratingCount = 0;
         }
-        this.ratingCount++;
+        if (rating != null) {
+            this.ratingCount++;
+        }
     }
 
-    public void increaseEstimateCount() {
+    public void increaseEstimateCount(Integer estimate) {
         if (this.estimateCount == null) {
             this.estimateCount = 0;
         }
-        this.estimateCount++;
+        if (estimate != null) {
+            this.estimateCount++;
+        }
+
     }
 
-    public void increaseRadarCount() {
+    public void increaseRadarCount(Map<RadarKey, Float> radar) {
         if (this.radarCount == null) {
             this.radarCount = 0;
         }
-        this.radarCount++;
+        if (radar != null) {
+            this.radarCount++;
+        }
+
     }
 
     public void accumulateRatingSum(Float addition) {
+        if (this.ratingSum == null) {
+            this.ratingSum = 0f;
+        }
+        if (addition == null) {
+            addition = 0f;
+        }
         this.ratingSum += addition;
     }
 
-    public void accumulateEstimate(Float addition) {
+    public void accumulateEstimate(Integer addition) {
+        if (this.estimateSum == null) {
+            this.estimateSum = 0;
+        }
+        if (addition == null) {
+            addition = 0;
+        }
         this.estimateSum += addition;
     }
 
-    public void updateMinEstimate(Integer minEstimate) {
-        this.minEstimate = Math.min(this.minEstimate, minEstimate);
+    public void updateMinEstimate(Integer estimate) {
+        if (this.minEstimate == null) {
+            this.minEstimate = estimate;
+        }
+        this.minEstimate = Math.min(this.minEstimate, estimate);
     }
 
-    public void accumulateRadar(Map<RadarKey, Float> addition) {
+    public void accumulateRadarSum(Map<RadarKey, Float> addition) {
+        if (this.radarSum == null) {
+            this.radarSum = RadarKey.initializeRadarMap();
+        }
+        if (addition == null) {
+            addition = RadarKey.initializeRadarMap();
+        }
         addition.forEach((key, value) ->
                 this.radarSum.put(key, this.radarSum.get(key) + value));
+    }
+
+    public void reduceRatingSum(Float subtraction) {
+        if (this.ratingSum != null) {
+            this.ratingSum -= subtraction;
+        }
+    }
+
+    public void reduceEstimateSum(Integer subtraction) {
+        if (this.estimateSum != null) {
+            this.estimateSum -= subtraction;
+        }
+    }
+
+    public void reduceRadarSum(Map<RadarKey, Float> subtraction) {
+        if (this.radarSum != null) {
+            subtraction.forEach((key, value) ->
+                    this.radarSum.put(key, this.radarSum.get(key) - value));
+        }
     }
 }
 
