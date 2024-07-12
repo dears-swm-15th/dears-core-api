@@ -33,6 +33,9 @@ public class ReviewDTO {
         @Schema(type = "integer", example = "1500000")
         private Integer estimate;
 
+        @Schema(type = "integer", example = "1000000")
+        private Integer minEstimate;
+
         @Schema(type = "array", example = "[\"비동행\", \"신혼여행\"]")
         private List<String> tags;
 
@@ -47,6 +50,9 @@ public class ReviewDTO {
 
         @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
         private LocalDateTime updatedAt;
+
+        @Schema(type = "integer", example = "2")
+        private Long portfolioId;
 
     }
 
@@ -91,7 +97,7 @@ public class ReviewDTO {
         @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
         private LocalDateTime updatedAt;
 
-        @Schema(type = "string", example = "24.07.04")
-        private String wroteAt;
+        @Schema(type = "integer", example = "2")
+        private Long portfolioId;
     }
 }

@@ -2,8 +2,10 @@ package com.example.demo.dummy;
 
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
-import com.example.demo.member.domain.Member;
-import com.example.demo.member.repository.MemberRepository;
+import com.example.demo.member.domain.Customer;
+import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.member.repository.CustomerRepository;
+import com.example.demo.member.repository.WeddingPlannerRepository;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.review.domain.Review;
@@ -30,7 +32,10 @@ public class DataLoader implements CommandLineRunner {
     private ReviewRepository reviewRepository;
 
     @Autowired
-    private MemberRepository memberRepository;
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private WeddingPlannerRepository weddingPlannerRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -64,11 +69,11 @@ public class DataLoader implements CommandLineRunner {
                 .profileImageUrl("image1.jpg")
                 .consultingFee(100)
                 .description("Description of services offered by Organization One.")
-                .avgEstimate(300)
+                .estimateSum(300)
                 .minEstimate(100)
                 .services(services1)
                 .weddingPhotoUrls(weddingPhotos1)
-                .avgRadar(radar1)
+                .radarSum(radar1)
                 .wishListCount(0)
                 .build();
 
@@ -81,11 +86,11 @@ public class DataLoader implements CommandLineRunner {
                 .profileImageUrl("image2.jpg")
                 .consultingFee(200)
                 .description("Description of services offered by Organization Two.")
-                .avgEstimate(500)
+                .estimateSum(500)
                 .minEstimate(200)
                 .services(services2)
                 .weddingPhotoUrls(weddingPhotos2)
-                .avgRadar(radar2)
+                .radarSum(radar2)
                 .wishListCount(0)
                 .build();
 
@@ -122,7 +127,6 @@ public class DataLoader implements CommandLineRunner {
                 .tags(reviewTags1)
                 .weddingPhotoUrls(reviewPhotos1)
                 .radar(reviewRadar1)
-                .wroteAt("24.07.12")
                 .build();
 
         Review review2 = Review.builder()
@@ -134,30 +138,32 @@ public class DataLoader implements CommandLineRunner {
                 .tags(reviewTags2)
                 .weddingPhotoUrls(reviewPhotos2)
                 .radar(reviewRadar2)
-                .wroteAt("24.08.12")
                 .build();
 
         reviewRepository.save(review1);
         reviewRepository.save(review2);
 
-        Member member1 = Member.builder()
+        Customer customer1 = Customer.builder()
                 .name("Clara")
-                .role(WEDDING_PLANNER)
-                .build();
-
-        Member member2 = Member.builder()
-                .name("Jeff")
-                .role(WEDDING_PLANNER)
-                .build();
-
-        Member member3 = Member.builder()
-                .name("Tom")
+                .UUID("51fc7d6b-7f86-43cf-b5c7-de4c46046d71")
                 .role(CUSTOMER)
                 .build();
 
-        memberRepository.save(member1);
-        memberRepository.save(member2);
-        memberRepository.save(member3);
+        Customer customer2 = Customer.builder()
+                .name("Jeff")
+                .UUID("ed21f25b-f51c-4e07-b1f5-4ffb2d9a0531")
+                .role(CUSTOMER)
+                .build();
+
+        WeddingPlanner member3 = WeddingPlanner.builder()
+                .name("Alice")
+                .UUID("f47ac10b-58cc-4372-a567-0e02b2c3d479")
+                .role(WEDDING_PLANNER)
+                .build();
+
+        customerRepository.save(customer1);
+        customerRepository.save(customer2);
+        weddingPlannerRepository.save(member3);
 
         System.out.println("Sample data loaded.");
     }

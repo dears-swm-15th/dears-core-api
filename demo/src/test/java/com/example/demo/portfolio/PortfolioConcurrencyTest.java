@@ -5,11 +5,13 @@ import com.example.demo.config.S3Uploader;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.service.PortfolioService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -18,8 +20,8 @@ import java.util.concurrent.Executors;
 import static org.testng.Assert.assertEquals;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class PortfolioConcurrencyTest {
-
 
     @MockBean
     private S3Uploader s3Uploader;
@@ -41,6 +43,12 @@ public class PortfolioConcurrencyTest {
         portfolio = portfolioRepository.findById(1L).orElseThrow();
     }
 
+    @AfterEach
+    public void after() {
+        portfolio.setWishListCount(0);
+        portfolioRepository.save(portfolio);
+    }
+
     @Test
     public void 텀을_두고_100개_요청() throws InterruptedException {
         int threadCount = 100;
@@ -50,7 +58,7 @@ public class PortfolioConcurrencyTest {
             Thread.sleep(100);
             executorService.submit(() -> {
                 try {
-                    portfolioService.addWishListCount(portfolio.getId());
+                    portfolioService.addWishListCount(1L);
                 } finally {
                     countDownLatch.countDown();
                 }
