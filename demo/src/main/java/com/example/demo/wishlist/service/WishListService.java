@@ -7,7 +7,6 @@ import com.example.demo.portfolio.dto.PortfolioOverviewDTO;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
 import com.example.demo.portfolio.service.PortfolioService;
 import com.example.demo.wishlist.domain.WishList;
-import com.example.demo.wishlist.dto.WishListDto;
 import com.example.demo.wishlist.repository.WishListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,12 +39,12 @@ public class WishListService {
     }
 
     @Transactional
-    public void addWishList(WishListDto.Request request) {
+    public void addWishList(Long portfolioId) {
         Member member = memberService.getCurrentAuthenticatedMember().orElseThrow();
-        if (wishListRepository.existsByMemberIdAndPortfolioId(member.getId(), request.getPortfolioId())) {
+        if (wishListRepository.existsByMemberIdAndPortfolioId(member.getId(), portfolioId)) {
             return;
         }
-        Portfolio portfolio = portfolioService.increaseWishListCount(request.getPortfolioId());
+        Portfolio portfolio = portfolioService.increaseWishListCount(portfolioId);
         WishList wishList = WishList.builder()
                 .member(member)
                 .portfolio(portfolio)
@@ -54,9 +53,12 @@ public class WishListService {
     }
 
     @Transactional
-    public void deleteWishList(WishListDto.Request request) {
+    public void deleteWishList(Long portfolioId) {
         Member member = memberService.getCurrentAuthenticatedMember().orElseThrow();
-        Portfolio portfolio = portfolioService.decreaseListCount(request.getPortfolioId());
+        if (wishListRepository.existsByMemberIdAndPortfolioId(member.getId(), portfolioId)) {
+            return;
+        }
+        Portfolio portfolio = portfolioService.decreaseListCount(portfolioId);
         wishListRepository.deleteByMemberIdAndPortfolioId(member.getId(), portfolio.getId());
     }
 }
