@@ -4,7 +4,7 @@ spring:
     url: jdbc:mysql://localhost:3306/dears?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
     #  url: jdbc:mysql://localhost:8080/everytime?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul?useSSL=false
     username: root
-    password: ${LOCAL_DB_PS}
+    password: ${LOCAL_DB_PS:dearsPW}
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
