@@ -1,5 +1,9 @@
 package com.example.demo.dummy;
 
+import com.example.demo.chat.domain.CustomerMessage;
+import com.example.demo.chat.domain.WeddingPlannerMessage;
+import com.example.demo.chat.repository.CustomerMessageRepository;
+import com.example.demo.chat.repository.WeddingPlannerMessageRepository;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
 import com.example.demo.member.domain.Customer;
@@ -36,6 +40,12 @@ public class DataLoader implements CommandLineRunner {
 
     @Autowired
     private WeddingPlannerRepository weddingPlannerRepository;
+
+    @Autowired
+    private CustomerMessageRepository customerMessageRepository;
+
+    @Autowired
+    private WeddingPlannerMessageRepository weddingPlannerMessageRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -155,7 +165,7 @@ public class DataLoader implements CommandLineRunner {
                 .role(CUSTOMER)
                 .build();
 
-        WeddingPlanner member3 = WeddingPlanner.builder()
+        WeddingPlanner planner1 = WeddingPlanner.builder()
                 .name("Alice")
                 .UUID("f47ac10b-58cc-4372-a567-0e02b2c3d479")
                 .role(WEDDING_PLANNER)
@@ -163,7 +173,34 @@ public class DataLoader implements CommandLineRunner {
 
         customerRepository.save(customer1);
         customerRepository.save(customer2);
-        weddingPlannerRepository.save(member3);
+        weddingPlannerRepository.save(planner1);
+
+//        Customer customer1 = customerRepository.findByName("Clara");
+//        Customer customer2 = customerRepository.findByName("Jeff");
+//        WeddingPlanner planner1 = weddingPlannerRepository.findByName("Alice");
+
+        CustomerMessage customerMessage1 = CustomerMessage.builder()
+                .customer(customer1)
+                .contents("Hello, I would like to inquire about your wedding planning services.")
+                .unreadCount(1)
+                .build();
+
+        CustomerMessage customerMessage2 = CustomerMessage.builder()
+                .customer(customer2)
+                .contents("Can you provide more details on the packages offered?")
+                .unreadCount(2)
+                .build();
+
+        WeddingPlannerMessage weddingPlannerMessage1 = WeddingPlannerMessage.builder()
+                .weddingplanner(planner1)
+                .contents("Sure, we offer a range of packages tailored to your needs.")
+                .unreadCount(0)
+                .build();
+
+        weddingPlannerMessageRepository.save(weddingPlannerMessage1);
+        customerMessageRepository.save(customerMessage1);
+        customerMessageRepository.save(customerMessage2);
+
 
         System.out.println("Sample data loaded.");
     }

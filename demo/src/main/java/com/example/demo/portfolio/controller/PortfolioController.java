@@ -39,7 +39,7 @@ public class PortfolioController {
         return ResponseEntity.status(201).body(createdPortfolio);
     }
 
-    @PostMapping("update/{id}")
+    @PostMapping("/update/{id}")
     @Operation(summary = "특정 포트폴리오 업데이트")
     public ResponseEntity<PortfolioDTO.Response> updatePortfolio(@PathVariable Long id, @RequestBody PortfolioDTO.Request portfolioRequest) {
         PortfolioDTO.Response updatedPortfolio = portfolioService.updatePortfolio(id, portfolioRequest);
