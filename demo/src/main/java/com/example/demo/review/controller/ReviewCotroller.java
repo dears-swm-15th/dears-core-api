@@ -41,7 +41,7 @@ public class ReviewCotroller {
     @PostMapping("update/{id}")
     @Operation(summary = "특정 리뷰 업데이트")
     public ResponseEntity<ReviewDTO.Response> updateReview(@PathVariable Long id, @RequestBody ReviewDTO.Request reviewRequest) {
-        ReviewDTO.Response updatedReview = reviewService.updateReview(id, reviewRequest);
+        ReviewDTO.Response updatedReview = reviewService.modifyReview(id, reviewRequest);
         return ResponseEntity.ok(updatedReview);
     }
 

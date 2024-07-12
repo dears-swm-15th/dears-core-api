@@ -2,6 +2,7 @@ package com.example.demo.review.domain;
 
 import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.review.RadarKey;
+import com.example.demo.portfolio.domain.Portfolio;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
@@ -29,7 +30,6 @@ public class Review extends BaseTimeEntity {
         private String reviewerName;
         private String content;
         private Boolean isProvided;
-        private String wroteAt;
 
         private Float rating;
         private Integer estimate;
@@ -51,5 +51,9 @@ public class Review extends BaseTimeEntity {
         @MapKeyColumn(name = "radar_key")
         @Column(name = "radar_value")
         private Map<RadarKey, Float> radar;
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "portfolio_id")
+        private Portfolio portfolio;
 
 }
