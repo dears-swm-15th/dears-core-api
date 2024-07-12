@@ -2,7 +2,7 @@ package com.example.demo.review.service;
 
 import com.example.demo.config.S3Uploader;
 import com.example.demo.portfolio.domain.Portfolio;
-import com.example.demo.portfolio.dto.PortfolioDTO;
+import com.example.demo.portfolio.service.PortfolioService;
 import com.example.demo.review.domain.Review;
 import com.example.demo.review.dto.ReviewDTO;
 import com.example.demo.review.mapper.ReviewMapper;
@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +19,8 @@ import java.util.stream.Collectors;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewMapper reviewMapper = ReviewMapper.INSTANCE;
+
+    private final PortfolioService portfolioService;
 
     private final S3Uploader s3Uploader;
 
@@ -51,7 +52,9 @@ public class ReviewService {
 
         //save preview, set presigned url and cloudfront url to response
         Review review = reviewMapper.requestToEntity(reviewRequest);
-        review = reviewRepository.save(review);
+        Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
+        review.setPortfolio(portfolio);
+
         ReviewDTO.Response response = reviewMapper.entityToResponse(review);
 
         response.setPresignedWeddingPhotoUrls(presignedUrlList);
@@ -60,16 +63,13 @@ public class ReviewService {
                 .map(s3Uploader::getImageUrl)
                 .collect(Collectors.toList()));
 
-        // Set wroteAt using createdAt formatted as 'yy.MM.dd'
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd");
-        String wroteAt = response.getCreatedAt().format(formatter);
-        response.setWroteAt(wroteAt);
+        reviewRepository.save(review);
 
         return response;
     }
 
     @Transactional
-    public ReviewDTO.Response updateReview(Long id, ReviewDTO.Request reviewRequest) {
+    public ReviewDTO.Response modifyReview(Long id, ReviewDTO.Request reviewRequest) {
         Review existingReview = reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
@@ -85,16 +85,19 @@ public class ReviewService {
 
         //save review, set presigned url and cloudfront url to response
         Review updatedReview = reviewMapper.updateFromRequest(reviewRequest, existingReview);
+        Portfolio portfolio = portfolioService.reflectModifiedReview(reviewRequest, existingReview);
+        updatedReview.setPortfolio(portfolio);
 
-        Review savedReview= reviewRepository.save(updatedReview);
-        ReviewDTO.Response response = reviewMapper.entityToResponse(savedReview);
+        ReviewDTO.Response response = reviewMapper.entityToResponse(updatedReview);
         response.setPresignedWeddingPhotoUrls(updatedReview.getWeddingPhotoUrls());
 
         response.setWeddingPhotoUrls(updatedReview.getWeddingPhotoUrls().stream()
                 .map(s3Uploader::getImageUrl)
                 .collect(Collectors.toList()));
 
-        return reviewMapper.entityToResponse(savedReview);
+        reviewRepository.save(updatedReview);
+
+        return reviewMapper.entityToResponse(updatedReview);
     }
 
 

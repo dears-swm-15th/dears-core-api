@@ -2,5 +2,5 @@ package com.example.demo.enums.chat;
 
 public enum MessageType{
     ENTER,
-    TALK
+    CHAT
 }

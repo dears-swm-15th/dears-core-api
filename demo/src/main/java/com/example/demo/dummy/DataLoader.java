@@ -64,11 +64,11 @@ public class DataLoader implements CommandLineRunner {
                 .profileImageUrl("image1.jpg")
                 .consultingFee(100)
                 .description("Description of services offered by Organization One.")
-                .avgEstimate(300)
+                .estimateSum(300)
                 .minEstimate(100)
                 .services(services1)
                 .weddingPhotoUrls(weddingPhotos1)
-                .avgRadar(radar1)
+                .radarSum(radar1)
                 .wishListCount(0)
                 .build();
 
@@ -81,11 +81,11 @@ public class DataLoader implements CommandLineRunner {
                 .profileImageUrl("image2.jpg")
                 .consultingFee(200)
                 .description("Description of services offered by Organization Two.")
-                .avgEstimate(500)
+                .estimateSum(500)
                 .minEstimate(200)
                 .services(services2)
                 .weddingPhotoUrls(weddingPhotos2)
-                .avgRadar(radar2)
+                .radarSum(radar2)
                 .wishListCount(0)
                 .build();
 
@@ -122,7 +122,6 @@ public class DataLoader implements CommandLineRunner {
                 .tags(reviewTags1)
                 .weddingPhotoUrls(reviewPhotos1)
                 .radar(reviewRadar1)
-                .wroteAt("24.07.12")
                 .build();
 
         Review review2 = Review.builder()
@@ -134,7 +133,6 @@ public class DataLoader implements CommandLineRunner {
                 .tags(reviewTags2)
                 .weddingPhotoUrls(reviewPhotos2)
                 .radar(reviewRadar2)
-                .wroteAt("24.08.12")
                 .build();
 
         reviewRepository.save(review1);

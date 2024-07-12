@@ -1,15 +1,19 @@
 package com.example.demo.portfolio.service;
 
 import com.example.demo.config.S3Uploader;
+import com.example.demo.enums.review.RadarKey;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
+import com.example.demo.review.domain.Review;
+import com.example.demo.review.dto.ReviewDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -123,8 +127,65 @@ public class PortfolioService {
     public Portfolio addWishListCount(Long id) {
         Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(id)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
-        portfolio.addWishListCount();
+
+        portfolio.increaseWishListCount();
         portfolioRepository.save(portfolio);
         return portfolio;
     }
+
+    @Transactional
+    public Portfolio reflectNewReview(ReviewDTO.Request reviewRequest) {
+        Long portfolioId = reviewRequest.getPortfolioId();
+        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(portfolioId)
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+
+        Float rating = reviewRequest.getRating();
+        Integer estimate = reviewRequest.getEstimate();
+        Map<RadarKey, Float> radar = reviewRequest.getRadar();
+
+        portfolio.accumulateRatingSum(rating);
+        portfolio.accumulateEstimate(estimate);
+        portfolio.updateMinEstimate(estimate);
+        portfolio.accumulateRadarSum(radar);
+
+        portfolio.increaseRatingCount(rating);
+        portfolio.increaseEstimateCount(estimate);
+        portfolio.increaseRadarCount(radar);
+
+        portfolioRepository.save(portfolio);
+
+        return portfolio;
+    }
+
+    @Transactional
+    public Portfolio reflectModifiedReview(ReviewDTO.Request reviewRequest, Review existingReview) {
+        Long portfolioId = reviewRequest.getPortfolioId();
+        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(portfolioId)
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+
+        Float existingRating = existingReview.getRating();
+        Integer existingEstimate = existingReview.getEstimate();
+        // existingEstimate가 동시에 minEstimate이면 이 리뷰의 estimate가 수정되는 경우 문제 생김.
+        Map<RadarKey, Float> existingRadar = existingReview.getRadar();
+
+        portfolio.reduceRatingSum(existingRating);
+        portfolio.reduceEstimateSum(existingEstimate);
+        portfolio.reduceRadarSum(existingRadar);
+
+        Float newRating = reviewRequest.getRating();
+        Integer newEstimate = reviewRequest.getEstimate();
+        // Integer minEstimate = reviewRequest.getMinEstimate();
+        Map<RadarKey, Float> newRadar = reviewRequest.getRadar();
+
+        portfolio.accumulateRatingSum(newRating);
+        portfolio.accumulateEstimate(newEstimate);
+        portfolio.accumulateRadarSum(newRadar);
+
+        portfolioRepository.save(portfolio);
+
+        return portfolio;
+
+    }
+
+
 }
