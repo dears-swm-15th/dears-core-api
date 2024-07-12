@@ -40,8 +40,8 @@ public class WishListService {
 
     @Transactional
     public void addWishList(Long portfolioId) {
-        Member member = memberService.getCurrentAuthenticatedMember().orElseThrow();
-        if (wishListRepository.existsByMemberIdAndPortfolioId(member.getId(), portfolioId)) {
+        Customer customer = memberService.getCurrentAuthenticatedCustomer().orElseThrow();
+        if (wishListRepository.existsByCustomerIdAndPortfolioId(customer.getId(), portfolioId)) {
             return;
         }
         Portfolio portfolio = portfolioService.increaseWishListCount(portfolioId);
@@ -54,11 +54,11 @@ public class WishListService {
 
     @Transactional
     public void deleteWishList(Long portfolioId) {
-        Member member = memberService.getCurrentAuthenticatedMember().orElseThrow();
-        if (wishListRepository.existsByMemberIdAndPortfolioId(member.getId(), portfolioId)) {
+        Customer customer = memberService.getCurrentAuthenticatedCustomer().orElseThrow();
+        if (wishListRepository.existsByCustomerIdAndPortfolioId(customer.getId(), portfolioId)) {
             return;
         }
         Portfolio portfolio = portfolioService.decreaseListCount(portfolioId);
-        wishListRepository.deleteByMemberIdAndPortfolioId(member.getId(), portfolio.getId());
+        wishListRepository.deleteByCustomerIdAndPortfolioId(customer.getId(), portfolio.getId());
     }
 }
