@@ -58,7 +58,7 @@ public class PortfolioConcurrencyTest {
             Thread.sleep(100);
             executorService.submit(() -> {
                 try {
-                    portfolioService.addWishListCount(1L);
+                    portfolioService.increaseWishListCount(1L);
                 } finally {
                     countDownLatch.countDown();
                 }
@@ -78,7 +78,7 @@ public class PortfolioConcurrencyTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    portfolioService.addWishListCount(1L);
+                    portfolioService.increaseWishListCount(1L);
                 } finally {
                     countDownLatch.countDown();
                 }
