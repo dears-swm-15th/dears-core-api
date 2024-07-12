@@ -1,7 +1,7 @@
 package com.example.demo.wishlist.domain;
 
 import com.example.demo.base.BaseTimeEntity;
-import com.example.demo.member.domain.Member;
+import com.example.demo.member.domain.Customer;
 import com.example.demo.portfolio.domain.Portfolio;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,8 +19,8 @@ public class WishList extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_id")

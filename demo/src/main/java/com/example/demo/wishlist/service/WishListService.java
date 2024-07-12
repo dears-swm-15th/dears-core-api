@@ -1,6 +1,6 @@
 package com.example.demo.wishlist.service;
 
-import com.example.demo.member.domain.Member;
+import com.example.demo.member.domain.Customer;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioOverviewDTO;
@@ -28,9 +28,9 @@ public class WishListService {
     private final PortfolioMapper portfolioMapper;
 
     public List<PortfolioOverviewDTO.Response> getWishListByMember(int page, int size) {
-        Long memberId = memberService.getCurrentAuthenticatedMember().orElseThrow().getId();
+        Long memberId = memberService.getCurrentAuthenticatedCustomer().orElseThrow().getId();
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        Page<WishList> wishLists = wishListRepository.findAllByMemberId(memberId, pageRequest);
+        Page<WishList> wishLists = wishListRepository.findAllByCustomerId(memberId, pageRequest);
         List<PortfolioOverviewDTO.Response> portfolioOverviewDtos = wishLists.stream()
                 .map(wishList -> portfolioMapper.entityToOverviewResponse(wishList.getPortfolio()))
                 .toList();
@@ -46,7 +46,7 @@ public class WishListService {
         }
         Portfolio portfolio = portfolioService.increaseWishListCount(portfolioId);
         WishList wishList = WishList.builder()
-                .member(member)
+                .customer(customer)
                 .portfolio(portfolio)
                 .build();
         wishListRepository.save(wishList);

@@ -2,8 +2,10 @@ package com.example.demo.dummy;
 
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
-import com.example.demo.member.domain.Member;
-import com.example.demo.member.repository.MemberRepository;
+import com.example.demo.member.domain.Customer;
+import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.member.repository.CustomerRepository;
+import com.example.demo.member.repository.WeddingPlannerRepository;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.review.domain.Review;
@@ -30,7 +32,10 @@ public class DataLoader implements CommandLineRunner {
     private ReviewRepository reviewRepository;
 
     @Autowired
-    private MemberRepository memberRepository;
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private WeddingPlannerRepository weddingPlannerRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -138,24 +143,27 @@ public class DataLoader implements CommandLineRunner {
         reviewRepository.save(review1);
         reviewRepository.save(review2);
 
-        Member member1 = Member.builder()
+        Customer customer1 = Customer.builder()
                 .name("Clara")
-                .role(WEDDING_PLANNER)
-                .build();
-
-        Member member2 = Member.builder()
-                .name("Jeff")
-                .role(WEDDING_PLANNER)
-                .build();
-
-        Member member3 = Member.builder()
-                .name("Tom")
+                .UUID("51fc7d6b-7f86-43cf-b5c7-de4c46046d71")
                 .role(CUSTOMER)
                 .build();
 
-        memberRepository.save(member1);
-        memberRepository.save(member2);
-        memberRepository.save(member3);
+        Customer customer2 = Customer.builder()
+                .name("Jeff")
+                .UUID("ed21f25b-f51c-4e07-b1f5-4ffb2d9a0531")
+                .role(CUSTOMER)
+                .build();
+
+        WeddingPlanner member3 = WeddingPlanner.builder()
+                .name("Alice")
+                .UUID("f47ac10b-58cc-4372-a567-0e02b2c3d479")
+                .role(WEDDING_PLANNER)
+                .build();
+
+        customerRepository.save(customer1);
+        customerRepository.save(customer2);
+        weddingPlannerRepository.save(member3);
 
         System.out.println("Sample data loaded.");
     }

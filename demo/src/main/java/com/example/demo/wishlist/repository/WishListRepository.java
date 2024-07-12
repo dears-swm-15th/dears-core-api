@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WishListRepository extends JpaRepository<WishList, Long> {
 
-    Page<WishList> findAllByMemberId(Long memberId, Pageable pageable);
+    Page<WishList> findAllByCustomerId(Long customerId, Pageable pageable);
 
     @Query("SELECT COUNT(w) FROM WishList w WHERE w.portfolio = :portfolioId")
     long countByPortfolioId(@Param("portfolioId") Long portfolioId);
