@@ -81,6 +81,10 @@ dependencies {
     //jwt & security
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation("org.springframework.boot:spring-boot-starter-security")
+
+    //TestDB
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
+
 }
 
 tasks.named('test') {
