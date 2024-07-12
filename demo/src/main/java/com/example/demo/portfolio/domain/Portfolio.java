@@ -48,22 +48,66 @@ public class Portfolio extends BaseTimeEntity {
     private List<String> weddingPhotoUrls;
 
     // Dynamic changed fields
-    private Integer avgEstimate;
+    private Float ratingSum;
+    private Integer ratingCount;
+
+    private Float estimateSum;
+    private Integer estimateCount;
     private Integer minEstimate;
 
     @ElementCollection
     @CollectionTable(name = "portfolio_radar", joinColumns = @JoinColumn(name = "portfolio_id"))
     @MapKeyColumn(name = "radar_key")
     @Column(name = "radar_value")
-    private Map<RadarKey, Float> avgRadar;
+    private Map<RadarKey, Float> radarSum;
+    private Integer radarCount;
 
     private Integer wishListCount;
 
-    public void addWishListCount() {
+
+    public void increaseWishListCount() {
         if (this.wishListCount == null) {
             this.wishListCount = 0;
         }
         this.wishListCount++;
+    }
+
+    public void increaseRatingCount() {
+        if (this.ratingCount == null) {
+            this.ratingCount = 0;
+        }
+        this.ratingCount++;
+    }
+
+    public void increaseEstimateCount() {
+        if (this.estimateCount == null) {
+            this.estimateCount = 0;
+        }
+        this.estimateCount++;
+    }
+
+    public void increaseRadarCount() {
+        if (this.radarCount == null) {
+            this.radarCount = 0;
+        }
+        this.radarCount++;
+    }
+
+    public void accumulateRatingSum(Float addition) {
+        this.ratingSum += addition;
+    }
+
+    public void accumulateEstimate(Float addition) {
+        this.estimateSum += addition;
+    }
+
+    public void updateMinEstimate(Integer minEstimate) {
+        this.minEstimate = Math.min(this.minEstimate, minEstimate);
+    }
+
+    public void accumulateRadar(Map<RadarKey, Float> addition) {
+        addition.forEach((key, value) ->
+                this.radarSum.put(key, this.radarSum.get(key) + value));
     }
 }
 
