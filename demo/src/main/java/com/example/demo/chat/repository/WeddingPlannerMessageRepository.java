@@ -1,6 +1,6 @@
 package com.example.demo.chat.repository;
 
-import com.example.demo.chat.domain.ChatRoom;
+import com.example.demo.chat.domain.WeddingPlannerMessage;
 import com.example.demo.portfolio.domain.Portfolio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
+public interface WeddingPlannerMessageRepository extends JpaRepository<WeddingPlannerMessage, Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE ChatRoom c SET c.isDeleted = true WHERE c.id = :id")
+    @Query("UPDATE WeddingPlannerMessage w SET w.isDeleted = true WHERE w.id = :id")
     void softDeleteById(@Param("id") Long id);
 
-    @Query(value = "SELECT * from ChatRoom chat_room WHERE chat_room.is_deleted = true", nativeQuery = true)
+    @Query(value = "SELECT * from WeddingPlannerMessage w WHERE w.is_deleted = true", nativeQuery = true)
     List<Portfolio> findSoftDeletedChatRooms();
 
 }

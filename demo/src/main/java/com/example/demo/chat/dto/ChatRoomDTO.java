@@ -11,6 +11,7 @@ public class ChatRoomDTO {
     @AllArgsConstructor
     @Builder
     public static class Request {
+        private Long id;
 
     }
 
@@ -20,6 +21,7 @@ public class ChatRoomDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class Response {}
-
+    public static class Response {
+        private Long id;
+    }
 }
