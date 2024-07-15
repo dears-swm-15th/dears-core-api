@@ -54,8 +54,8 @@ jobs:
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v20
         with:
-          aws_access_key: ${{secrets.AWS_ACCESS_KEY}}
-          aws_secret_key: ${{secrets.AWS_SECRET_KEY}}
+          aws_access_key: ${{secrets.EB_ACCESS_KEY}}
+          aws_secret_key: ${{secrets.EB_SECRET_KEY}}
           application_name: dears-core-server
           environment_name: Dears-core-server-env
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }} 
