@@ -1,9 +1,5 @@
 package com.example.demo.dummy;
 
-import com.example.demo.chat.domain.CustomerMessage;
-import com.example.demo.chat.domain.WeddingPlannerMessage;
-import com.example.demo.chat.repository.CustomerMessageRepository;
-import com.example.demo.chat.repository.WeddingPlannerMessageRepository;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
 import com.example.demo.member.domain.Customer;

@@ -8,6 +8,9 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import org.hibernate.annotations.Where;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Where(clause = "is_deleted = false")
 public class ChatRoom extends BaseTimeEntity {
@@ -27,11 +30,13 @@ public class ChatRoom extends BaseTimeEntity {
     @JoinColumn(name = "weddingplanner_id")
     private WeddingPlanner weddingplanner;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "portfolio_id")
-    private Portfolio portfolio;
+    @OneToMany(mappedBy = "chatRoom")
+    @OrderBy("createdAt asc")
+    private List<Message> messages;
 
-//    @OneToMany(mappedBy = "chatRoom")
-//    @OrderBy("createdAt asc")
-//    private List<Message> messageLogs = new ArrayList<>();
+    @OneToMany(mappedBy = "chatRoom")
+    @OrderBy("createdAt asc")
+    private List<ReadFlag> readFlags;
+
+
 }
