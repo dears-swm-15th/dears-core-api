@@ -1,4 +1,6 @@
-## 운영환경
+server:
+  port: 8080
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -17,9 +19,6 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         show_sql: true
         format_sql: true
-
-server:
-  port: 8080
 
 springdoc:
   api-docs:
