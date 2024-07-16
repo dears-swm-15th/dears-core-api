@@ -2,7 +2,8 @@ package com.example.demo.enums.chat;
 
 public enum MessageType{
     CONNECT,
+    DISCONNECT,
     SEND,
-    SUBSCRIBE,
-    UNSUBSCRIBE
+    ENTER,
+    LEAVE
 }
