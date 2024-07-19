@@ -30,7 +30,7 @@ public class ChatRoomController {
 
     @GetMapping("")
     @Operation(summary = "현재 사용자의 모든 채팅방 조회")
-    public ResponseEntity<List<ChatRoomDTO.Response>> getCurrentUsersAllChatRoom() {
+    public ResponseEntity<List<ChatRoomOverviewDTO.Response>> getCurrentUsersAllChatRoom() {
         List<ChatRoomOverviewDTO.Response> currentUsersAllChatRoom = chatRoomService.getCurrentUsersAllChatRoom();
         return ResponseEntity.status(200).body(currentUsersAllChatRoom);
     }
