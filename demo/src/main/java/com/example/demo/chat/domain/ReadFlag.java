@@ -14,6 +14,7 @@ import org.hibernate.annotations.Where;
 @AllArgsConstructor
 @Where(clause = "is_deleted = false")
 public class ReadFlag extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "read_flag_id")
@@ -24,4 +25,5 @@ public class ReadFlag extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
+
 }

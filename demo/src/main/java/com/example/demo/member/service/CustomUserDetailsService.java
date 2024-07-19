@@ -105,4 +105,20 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
         throw new UsernameNotFoundException("인증된 WeddingPlanner를 찾을 수 없습니다.");
     }
+
+    public String getCurrentAuthenticatedUserRoleName() {
+        Optional<Customer> currentAuthenticatedCustomer = getCurrentAuthenticatedCustomer();
+        Optional<WeddingPlanner> currentAuthenticatedWeddingPlanner = getCurrentAuthenticatedWeddingPlanner();
+
+        if (currentAuthenticatedCustomer.isPresent()) {
+            return currentAuthenticatedCustomer.get().getRole().getRoleName();
+        } else if (currentAuthenticatedWeddingPlanner.isPresent()) {
+            return currentAuthenticatedWeddingPlanner.get().getRole().getRoleName();
+        }
+        throw new UsernameNotFoundException("인증된 사용자를 찾을 수 없습니다.");
+    }
+
+    public boolean isCustomer() {
+        return getCurrentAuthenticatedUserRoleName().equals(MemberRole.CUSTOMER.getRoleName());
+    }
 }

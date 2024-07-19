@@ -19,7 +19,7 @@ public class PortfolioController {
     private final PortfolioService portfolioService;
 
     @GetMapping("")
-    @Operation(summary = "전체 포트폴리오 조회")
+    @Operation(summary = "전체 포트@폴리오 조회")
     public ResponseEntity<List<PortfolioDTO.Response>> getAllPortfolios() {
         List<PortfolioDTO.Response> portfolioResponses = portfolioService.getAllPortfolios();
         return ResponseEntity.ok(portfolioResponses);

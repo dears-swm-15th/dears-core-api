@@ -3,6 +3,7 @@ package com.example.demo.portfolio.domain;
 import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
+import com.example.demo.member.domain.WeddingPlanner;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
@@ -36,6 +37,9 @@ public class Portfolio extends BaseTimeEntity {
     private String profileImageUrl;
     private Integer consultingFee;
     private String description;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "portfolio")
+    private WeddingPlanner weddingPlanner;
 
     @ElementCollection
     @CollectionTable(name = "portfolio_services", joinColumns = @JoinColumn(name = "portfolio_id"))

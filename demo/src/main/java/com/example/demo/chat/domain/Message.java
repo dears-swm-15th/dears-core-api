@@ -32,7 +32,4 @@ public class Message extends BaseTimeEntity {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    //    customer.getRole().getRoleName()
-
-
 }
