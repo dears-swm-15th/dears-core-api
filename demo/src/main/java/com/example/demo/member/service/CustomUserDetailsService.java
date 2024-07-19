@@ -6,6 +6,7 @@ import com.example.demo.member.domain.CustomerContext;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.domain.WeddingPlannerContext;
 import com.example.demo.member.dto.AuthDTO;
+import com.example.demo.member.dto.MypageDTO;
 import com.example.demo.member.mapper.CustomerMapper;
 import com.example.demo.member.mapper.WeddingPlannerMapper;
 import com.example.demo.member.repository.CustomerRepository;
@@ -22,6 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,14 +76,14 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .UUID(UUID.randomUUID().toString()).build();
 
             weddingPlannerRepository.save(weddingPlanner);
-            return weddingPlannerMapper.entityToResponse(weddingPlanner);
+            return weddingPlannerMapper.entityToAuthDTOResponse(weddingPlanner);
         } else if (role.equals(MemberRole.CUSTOMER.getRoleName())) {
             Customer customer = Customer.builder()
                     .role(MemberRole.CUSTOMER)
                     .UUID(UUID.randomUUID().toString()).build();
 
             customerRepository.save(customer);
-            return customerMapper.entityToResponse(customer);
+            return customerMapper.entityToAuthDTOResponse(customer);
         } else {
             throw new IllegalArgumentException("잘못된 회원가입 요청입니다.");
         }
@@ -104,5 +106,15 @@ public class CustomUserDetailsService implements UserDetailsService {
             return weddingPlannerRepository.findByUUID(memberName);
         }
         throw new UsernameNotFoundException("인증된 WeddingPlanner를 찾을 수 없습니다.");
+    }
+
+    public MypageDTO.CustomerResponse getCustomerMyPage() {
+        Customer customer = getCurrentAuthenticatedCustomer().orElseThrow();
+        return customerMapper.entityToMypageDTOResponse(customer);
+    }
+
+    public MypageDTO.WeddingPlannerResponse getWeddingPlannerMyPage() {
+        WeddingPlanner weddingPlanner = getCurrentAuthenticatedWeddingPlanner().orElseThrow();
+        return weddingPlannerMapper.entityToMypageDTOResponse(weddingPlanner);
     }
 }

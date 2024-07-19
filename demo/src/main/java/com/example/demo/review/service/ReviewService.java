@@ -1,6 +1,9 @@
 package com.example.demo.review.service;
 
 import com.example.demo.config.S3Uploader;
+import com.example.demo.member.domain.Customer;
+import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.service.PortfolioService;
 import com.example.demo.review.domain.Review;
@@ -8,10 +11,12 @@ import com.example.demo.review.dto.ReviewDTO;
 import com.example.demo.review.mapper.ReviewMapper;
 import com.example.demo.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +28,8 @@ public class ReviewService {
     private final PortfolioService portfolioService;
 
     private final S3Uploader s3Uploader;
+
+    private final CustomUserDetailsService customUserDetailsService;
 
     public List<ReviewDTO.Response> getAllReviews() {
         return reviewRepository.findAll().stream()
@@ -121,5 +128,20 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
+    public List<ReviewDTO.Response> getMyReviewsForCustomer() throws UsernameNotFoundException {
+        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer().orElseThrow();
+        return reviewRepository.findReviewsForCustomer(customer.getId()).stream()
+                .map(reviewMapper::entityToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<ReviewDTO.Response> getMyReviewsForWeddingplanner() throws UsernameNotFoundException {
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().orElseThrow();
+
+        return reviewRepository.findReviewsForWeddingPlanner(weddingPlanner.getId()).stream()
+                        .map(reviewMapper::entityToResponse)
+                        .collect(Collectors.toList());
+
+    }
 
 }
