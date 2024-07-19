@@ -1,7 +1,7 @@
 package com.example.demo.chat.domain;
 
 import com.example.demo.base.BaseTimeEntity;
-import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.enums.member.MemberRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
@@ -12,13 +12,15 @@ import org.hibernate.annotations.Where;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Where(clause = "is_deleted = false")
+//@Where(clause = "is_deleted = false")
 public class ReadFlag extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "read_flag_id")
     private Long id;
+
+    private MemberRole memberRole;
 
     private Long lastReadMessageId;
 

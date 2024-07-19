@@ -23,7 +23,7 @@ public class ChatRoomController {
 
     @PostMapping("/{portfolioId}")
     @Operation(summary = "포트폴리오 아이디로 채팅방 입장(생성 및 입장)")
-    public ResponseEntity<ChatRoomDTO.Response> createChatRoomByPortfolioId(Long portfolioId) {
+    public ResponseEntity<ChatRoomDTO.Response> enterChatRoomByPortfolioId(Long portfolioId) {
         ChatRoomDTO.Response createdChatRoom = chatRoomService.enterChatRoomByPortfolioId(portfolioId);
         return ResponseEntity.status(201).body(createdChatRoom);
     }

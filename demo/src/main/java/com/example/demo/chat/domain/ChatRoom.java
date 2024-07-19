@@ -10,6 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +44,8 @@ public class ChatRoom extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "chatRoom")
     @OrderBy("createdAt asc")
-    private Map<MemberRole, ReadFlag> readFlags;
+    @Builder.Default
+    private Map<MemberRole, ReadFlag> readFlags = new HashMap<>();
 
     public void addReadFlag(MemberRole memberRole, ReadFlag readFlag) {
         this.readFlags.put(memberRole, readFlag);
