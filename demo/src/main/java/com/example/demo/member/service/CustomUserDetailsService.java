@@ -116,5 +116,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public MypageDTO.WeddingPlannerResponse getWeddingPlannerMyPage() {
         WeddingPlanner weddingPlanner = getCurrentAuthenticatedWeddingPlanner().orElseThrow();
         return weddingPlannerMapper.entityToMypageDTOResponse(weddingPlanner);
+
     }
 }

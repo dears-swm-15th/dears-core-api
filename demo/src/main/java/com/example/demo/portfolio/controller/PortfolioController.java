@@ -19,7 +19,7 @@ public class PortfolioController {
     private final PortfolioService portfolioService;
 
     @GetMapping("")
-    @Operation(summary = "전체 포트폴리오 조회")
+    @Operation(summary = "전체 포트@폴리오 조회")
     public ResponseEntity<List<PortfolioDTO.Response>> getAllPortfolios() {
         List<PortfolioDTO.Response> portfolioResponses = portfolioService.getAllPortfolios();
         return ResponseEntity.ok(portfolioResponses);
@@ -39,7 +39,7 @@ public class PortfolioController {
         return ResponseEntity.status(201).body(createdPortfolio);
     }
 
-    @PostMapping("update/{id}")
+    @PostMapping("/update/{id}")
     @Operation(summary = "특정 포트폴리오 업데이트")
     public ResponseEntity<PortfolioDTO.Response> updatePortfolio(@PathVariable Long id, @RequestBody PortfolioDTO.Request portfolioRequest) {
         PortfolioDTO.Response updatedPortfolio = portfolioService.updatePortfolio(id, portfolioRequest);
