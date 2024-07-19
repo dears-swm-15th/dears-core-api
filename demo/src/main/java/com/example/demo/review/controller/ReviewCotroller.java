@@ -58,4 +58,19 @@ public class ReviewCotroller {
         List<ReviewDTO.Response> softDeletedReviews = reviewService.getAllSoftDeletedReviews();
         return ResponseEntity.ok(softDeletedReviews);
     }
+
+    @GetMapping("/customer/myreview")
+    @Operation(summary = "[예비신랑신부용] 내 리뷰 조회")
+    public ResponseEntity<List<ReviewDTO.Response>> getMyReviewsForCustomer() {
+        List<ReviewDTO.Response> myReviews = reviewService.getMyReviewsForCustomer();
+        return ResponseEntity.ok(myReviews);
+    }
+
+    @GetMapping("/weddingplanner/myreview")
+    @Operation(summary = "[웨딩플래너용] 내 리뷰 조회")
+    public ResponseEntity<List<ReviewDTO.Response>> getMyReviewsForWeddingplanner() {
+
+        List<ReviewDTO.Response> myReviews = reviewService.getMyReviewsForWeddingplanner();
+        return ResponseEntity.ok(myReviews);
+    }
 }
