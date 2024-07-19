@@ -2,12 +2,10 @@ package com.example.demo.chat.mapper;
 
 import com.example.demo.chat.domain.ChatRoom;
 import com.example.demo.chat.dto.ChatRoomDTO;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
+@Mapper(componentModel = "spring")
 public interface ChatRoomMapper {
     com.example.demo.chat.mapper.ChatRoomMapper INSTANCE = Mappers.getMapper(com.example.demo.chat.mapper.ChatRoomMapper.class);
 

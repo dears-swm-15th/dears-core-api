@@ -5,7 +5,7 @@ import com.example.demo.chat.dto.MessageDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
-
+@Mapper(componentModel = "spring")
 public interface MessageMapper {
         com.example.demo.chat.mapper.MessageMapper INSTANCE = Mappers.getMapper(com.example.demo.chat.mapper.MessageMapper.class);
 
