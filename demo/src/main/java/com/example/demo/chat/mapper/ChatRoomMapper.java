@@ -2,6 +2,9 @@ package com.example.demo.chat.mapper;
 
 import com.example.demo.chat.domain.ChatRoom;
 import com.example.demo.chat.dto.ChatRoomDTO;
+import com.example.demo.chat.dto.ChatRoomOverviewDTO;
+import com.example.demo.portfolio.domain.Portfolio;
+import com.example.demo.portfolio.dto.PortfolioOverviewDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -16,5 +19,8 @@ public interface ChatRoomMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     ChatRoom updateFromRequest(ChatRoomDTO.Request chatRoomRequest, @MappingTarget ChatRoom chatRoom);
+
+    ChatRoomOverviewDTO.Response entityToOverviewResponse(ChatRoom chatRoom);
+
 
 }

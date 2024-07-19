@@ -1,6 +1,7 @@
 package com.example.demo.chat.controller;
 
 import com.example.demo.chat.dto.ChatRoomDTO;
+import com.example.demo.chat.dto.ChatRoomOverviewDTO;
 import com.example.demo.chat.service.ChatRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +31,7 @@ public class ChatRoomController {
     @GetMapping("")
     @Operation(summary = "현재 사용자의 모든 채팅방 조회")
     public ResponseEntity<List<ChatRoomDTO.Response>> getCurrentUsersAllChatRoom() {
-        List<ChatRoomDTO.Response> currentUsersAllChatRoom = chatRoomService.getCurrentUsersAllChatRoom();
+        List<ChatRoomOverviewDTO.Response> currentUsersAllChatRoom = chatRoomService.getCurrentUsersAllChatRoom();
         return ResponseEntity.status(200).body(currentUsersAllChatRoom);
     }
 

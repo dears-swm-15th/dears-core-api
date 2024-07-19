@@ -4,12 +4,14 @@ package com.example.demo.chat.service;
 import com.example.demo.chat.domain.ChatRoom;
 import com.example.demo.chat.domain.ReadFlag;
 import com.example.demo.chat.dto.ChatRoomDTO;
+import com.example.demo.chat.dto.ChatRoomOverviewDTO;
 import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.service.CustomUserDetailsService;
+import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.portfolio.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
@@ -67,13 +69,24 @@ public class ChatRoomService {
 
     }
 
-    public List<ChatRoomDTO.Response> getCurrentUsersAllChatRoom() {
+    public List<ChatRoomOverviewDTO.Response> getCurrentUsersAllChatRoom() {
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer().get();
-
         List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
 
-        return chatRoomRepository.findByCustomerId(customer.getId()).stream()
-                .map(chatRoomMapper::entityToResponse)
+        return chatRooms.stream()
+                .map(chatRoom -> {
+                    Portfolio portfolio = portfolioService.getPortfolioByWeddingPlannerId(chatRoom.getWeddingPlanner().getId());
+                    PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolio.getId());
+
+                    return ChatRoomOverviewDTO.Response.builder()
+                            .weddingPlannerProfileImageUrl(portfolioResponse.getWeddingPlanner().getProfileImageUrl())
+                            .weddingPlannerName(portfolioResponse.getWeddingPlanner().getName())
+                            .lastMessage(chatRoom.getMessages().get(chatRoom.getMessages().size() - 1).getContents())
+                            .lastMessageCreatedAt(chatRoom.getMessages().get(chatRoom.getMessages().size() - 1).getCreatedAt())
+                            .organizationName(portfolioResponse.getOrganization())
+                            .portfolioId(portfolioResponse.getWeddingPlanner().getId())
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
