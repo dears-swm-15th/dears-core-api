@@ -1,19 +1,21 @@
 package com.example.demo.chat.domain;
 
 import com.example.demo.base.BaseTimeEntity;
+import com.example.demo.enums.member.MemberRole;
+import com.example.demo.member.domain.Customer;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Where;
 
+@Getter
+@Setter
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "DTYPE")
-@SuperBuilder
-@NoArgsConstructor
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public abstract class Message {
+@Where(clause = "is_deleted = false")
+public class Message extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +26,10 @@ public abstract class Message {
     private boolean isDeleted = Boolean.FALSE;
 
     private String contents;
-    private Integer unreadCount;
+    private MemberRole memberRole;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_room_id")
+    private ChatRoom chatRoom;
 
 }

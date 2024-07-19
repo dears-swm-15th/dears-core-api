@@ -2,7 +2,7 @@ package com.example.demo.chat.dto;
 
 import lombok.*;
 
-public class ChatRoomDTO {
+public class MessageDTO {
 
     @Getter
     @Setter
@@ -12,10 +12,6 @@ public class ChatRoomDTO {
     @Builder
     public static class Request {
         private Long id;
-
-        private Long portfolioId;
-
-        private Long weddingPlannerId;
 
     }
 

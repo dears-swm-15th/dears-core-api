@@ -14,6 +14,11 @@ import java.util.List;
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
+    Boolean existsByCustomerIdAndWeddingPlannerId(Long customerId, Long weddingPlannerId);
+
+    List<ChatRoom> findByCustomerId(Long customerId);
+    ChatRoom findByCustomerIdAndWeddingPlannerId(Long customerId, Long weddingPlannerId);
+
     @Transactional
     @Modifying
     @Query("UPDATE ChatRoom c SET c.isDeleted = true WHERE c.id = :id")
