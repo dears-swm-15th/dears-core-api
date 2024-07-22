@@ -1,6 +1,8 @@
 package com.example.demo.portfolio.controller;
 
 import com.example.demo.portfolio.dto.PortfolioDTO;
+import com.example.demo.portfolio.dto.PortfolioSearchDTO;
+import com.example.demo.portfolio.service.PortfolioSearchService;
 import com.example.demo.portfolio.service.PortfolioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,6 +19,8 @@ import java.util.List;
 public class PortfolioController {
 
     private final PortfolioService portfolioService;
+
+    private final PortfolioSearchService portfolioSearchService;
 
     @GetMapping("")
     @Operation(summary = "전체 포트폴리오 조회")
@@ -58,6 +62,13 @@ public class PortfolioController {
     public ResponseEntity<List<PortfolioDTO.Response>> getAllSoftDeleted() {
         List<PortfolioDTO.Response> softDeletedPortfolios = portfolioService.getAllSoftDeletedPortfolios();
         return ResponseEntity.ok(softDeletedPortfolios);
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "포트폴리오 검색")
+    public ResponseEntity<List<PortfolioSearchDTO.Response>> getSearchPortfolio(@RequestParam String content) {
+        List<PortfolioSearchDTO.Response> searchResult = portfolioSearchService.search(content);
+        return ResponseEntity.ok(searchResult);
     }
 
 }
