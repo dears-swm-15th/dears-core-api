@@ -4,7 +4,6 @@ import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.member.MemberRole;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Where;
 
 @Getter
 @Setter
@@ -12,7 +11,6 @@ import org.hibernate.annotations.Where;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-//@Where(clause = "is_deleted = false")
 public class ReadFlag extends BaseTimeEntity {
 
     @Id

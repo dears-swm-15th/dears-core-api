@@ -54,10 +54,12 @@ public class ChatRoomService {
 
         ReadFlag customerReadFlag = ReadFlag.builder()
                 .chatRoom(chatRoom)
+                .lastReadMessageId(0L)
                 .build();
 
         ReadFlag weddingPlannerReadFlag = ReadFlag.builder()
                 .chatRoom(chatRoom)
+                .lastReadMessageId(0L)
                 .build();
 
         chatRoom.addReadFlag(MemberRole.CUSTOMER, customerReadFlag);

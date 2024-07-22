@@ -44,10 +44,12 @@ public class ChatRoom extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "chatRoom")
     @OrderBy("createdAt asc")
-    @Builder.Default
-    private Map<MemberRole, ReadFlag> readFlags = new HashMap<>();
+    private Map<MemberRole, ReadFlag> readFlags;
 
     public void addReadFlag(MemberRole memberRole, ReadFlag readFlag) {
+        if (this.readFlags == null) {
+            this.readFlags = new HashMap<>();
+        }
         this.readFlags.put(memberRole, readFlag);
     }
 }
