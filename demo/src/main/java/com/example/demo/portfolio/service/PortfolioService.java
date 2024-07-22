@@ -25,6 +25,8 @@ public class PortfolioService {
 
     private final S3Uploader s3Uploader;
 
+    private final PortfolioSearchService portfolioSearchService;
+
     public List<PortfolioDTO.Response> getAllPortfolios() {
         return portfolioRepository.findAll().stream()
                 .map(portfolioMapper::entityToResponse)
@@ -61,7 +63,7 @@ public class PortfolioService {
         response.setWeddingPhotoUrls(portfolio.getWeddingPhotoUrls().stream()
                 .map(s3Uploader::getImageUrl)
                 .collect(Collectors.toList()));
-
+        portfolioSearchService.indexDocumentUsingDTO(portfolio);
         return response;
     }
 
@@ -95,7 +97,7 @@ public class PortfolioService {
         response.setWeddingPhotoUrls(updatedPortfolio.getWeddingPhotoUrls().stream()
                 .map(s3Uploader::getImageUrl)
                 .collect(Collectors.toList()));
-
+        portfolioSearchService.updateDocumentUsingDTO(savedPortfolio);
         return portfolioMapper.entityToResponse(savedPortfolio);
     }
 
@@ -115,6 +117,7 @@ public class PortfolioService {
         }
 
         portfolioRepository.softDeleteById(id);
+        portfolioSearchService.deleteDocumentById(id); //검색으로는 나타나지 못하도록 구현
     }
 
     public List<PortfolioDTO.Response> getAllSoftDeletedPortfolios() {
@@ -130,6 +133,7 @@ public class PortfolioService {
 
         portfolio.increaseWishListCount();
         portfolioRepository.save(portfolio);
+        portfolioSearchService.updateDocumentUsingDTO(portfolio);
         return portfolio;
     }
 
@@ -140,6 +144,7 @@ public class PortfolioService {
 
         portfolio.decreaseWishListCount();
         portfolioRepository.save(portfolio);
+        portfolioSearchService.updateDocumentUsingDTO(portfolio);
         return portfolio;
     }
 
@@ -163,6 +168,7 @@ public class PortfolioService {
         portfolio.increaseRadarCount(radar);
 
         portfolioRepository.save(portfolio);
+        portfolioSearchService.updateDocumentUsingDTO(portfolio);
 
         return portfolio;
     }
@@ -192,6 +198,8 @@ public class PortfolioService {
         portfolio.accumulateRadarSum(newRadar);
 
         portfolioRepository.save(portfolio);
+        portfolioSearchService.updateDocumentUsingDTO(portfolio);
+
 
         return portfolio;
 

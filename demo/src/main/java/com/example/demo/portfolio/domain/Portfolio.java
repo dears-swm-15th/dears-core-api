@@ -4,6 +4,7 @@ import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
 import com.example.demo.member.domain.WeddingPlanner;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
@@ -17,6 +18,7 @@ import java.util.Map;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@JsonIgnoreProperties (ignoreUnknown=true)
 @Where(clause = "is_deleted = false")
 public class Portfolio extends BaseTimeEntity {
 
@@ -38,15 +40,15 @@ public class Portfolio extends BaseTimeEntity {
     private Integer consultingFee;
     private String description;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "portfolio")
+    @OneToOne(fetch = FetchType.EAGER, mappedBy = "portfolio")
     private WeddingPlanner weddingPlanner;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "portfolio_services", joinColumns = @JoinColumn(name = "portfolio_id"))
     @Column(name = "service_value")
     private List<String> services;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "portfolio_wedding_photos", joinColumns = @JoinColumn(name = "portfolio_id"))
     @Column(name = "photo_url")
     private List<String> weddingPhotoUrls;
@@ -59,7 +61,7 @@ public class Portfolio extends BaseTimeEntity {
     private Integer estimateCount;
     private Integer minEstimate;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "portfolio_radar", joinColumns = @JoinColumn(name = "portfolio_id"))
     @MapKeyColumn(name = "radar_key")
     @Column(name = "radar_value")

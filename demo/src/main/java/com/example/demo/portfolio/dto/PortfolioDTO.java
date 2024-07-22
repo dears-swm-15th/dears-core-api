@@ -19,6 +19,9 @@ public class PortfolioDTO {
     @Builder
     public static class Request {
 
+        @Schema(type = "Long", example = "1")
+        private Long id;
+
         @Schema(type = "string", example = "에바웨딩스")
         private String organization;
 
@@ -70,11 +73,6 @@ public class PortfolioDTO {
         @Schema(type = "integer", example = "62")
         private Integer radarCount;
 
-        @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
-        private LocalDateTime createdAt;
-
-        @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
-        private LocalDateTime updatedAt;
     }
 
     @Setter
@@ -84,6 +82,10 @@ public class PortfolioDTO {
     @AllArgsConstructor
     @Builder
     public static class Response {
+
+        @Schema(type = "Long", example = "1")
+        private Long id;
+
         @Schema(type = "string", example = "에바웨딩스")
         private String organization;
 
