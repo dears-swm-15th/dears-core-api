@@ -4,7 +4,6 @@ import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
-import com.example.demo.portfolio.domain.Portfolio;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;

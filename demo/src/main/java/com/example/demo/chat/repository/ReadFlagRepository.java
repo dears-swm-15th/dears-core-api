@@ -1,7 +1,6 @@
 package com.example.demo.chat.repository;
 
-import com.example.demo.chat.domain.ChatRoom;
-import com.example.demo.chat.domain.Message;
+import com.example.demo.chat.domain.ReadFlag;
 import com.example.demo.portfolio.domain.Portfolio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -13,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-public interface MessageRepository extends JpaRepository<Message, Long> {
+public interface ReadFlagRepository extends JpaRepository<ReadFlag, Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE Message m SET m.isDeleted = true WHERE m.id = :id")
+    @Query("UPDATE Message r SET r.isDeleted = true WHERE r.id = :id")
     void softDeleteById(@Param("id") Long id);
 
-    @Query(value = "SELECT * from Message m WHERE m.is_deleted = true", nativeQuery = true)
+    @Query(value = "SELECT * from ReadFlag r WHERE r.is_deleted = true", nativeQuery = true)
     List<Portfolio> findSoftDeletedMessages();
 
 }
