@@ -198,7 +198,7 @@ public class PortfolioService {
     }
 
     public Portfolio getPortfolioByWeddingPlannerId(Long weddingPlannerId) {
-        return portfolioRepository.findByWeddingPlannerId(weddingPlannerId);
+        return portfolioRepository.findByWeddingPlannerId(weddingPlannerId)
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
     }
-
 }

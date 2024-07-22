@@ -17,7 +17,7 @@ import java.util.Optional;
 @Repository
 public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
 
-    Portfolio findByWeddingPlannerId(Long weddingPlannerId);
+    Optional<Portfolio> findByWeddingPlannerId(Long weddingPlannerId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Portfolio p where p.id = :id")
