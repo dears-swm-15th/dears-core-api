@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
-    Boolean existsByCustomerIdAndWeddingPlannerId(Long customerId, Long weddingPlannerId);
+    boolean existsByCustomerIdAndWeddingPlannerId(Long customerId, Long weddingPlannerId);
 
     List<ChatRoom> findByCustomerId(Long customerId);
     ChatRoom findByCustomerIdAndWeddingPlannerId(Long customerId, Long weddingPlannerId);

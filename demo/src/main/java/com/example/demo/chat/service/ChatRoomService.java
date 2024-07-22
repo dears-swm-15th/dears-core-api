@@ -35,7 +35,7 @@ public class ChatRoomService {
 
         WeddingPlanner weddingPlanner = portfolioResponse.getWeddingPlanner();
 
-        if (Boolean.FALSE.equals(isChatRoomExist(customer, weddingPlanner))) {
+        if (isChatRoomExist(customer, weddingPlanner)) {
             return createChatRoomByPortfolioId(customer, portfolioId);
         }
 
@@ -107,7 +107,7 @@ public class ChatRoomService {
     }
 
 
-    public Boolean isChatRoomExist(Customer customer, WeddingPlanner weddingPlanner) {
+    public boolean isChatRoomExist(Customer customer, WeddingPlanner weddingPlanner) {
         return chatRoomRepository.existsByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
     }
 }
