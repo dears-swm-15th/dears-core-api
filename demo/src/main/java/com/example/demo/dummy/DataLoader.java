@@ -155,7 +155,7 @@ public class DataLoader implements CommandLineRunner {
                 .role(CUSTOMER)
                 .build();
 
-        WeddingPlanner member3 = WeddingPlanner.builder()
+        WeddingPlanner planner1 = WeddingPlanner.builder()
                 .name("Alice")
                 .UUID("b1b3825f-304f-4bce-b3b7-91b70fe79cb7")
                 .role(WEDDING_PLANNER)
@@ -163,7 +163,34 @@ public class DataLoader implements CommandLineRunner {
 
         customerRepository.save(customer1);
         customerRepository.save(customer2);
-        weddingPlannerRepository.save(member3);
+        weddingPlannerRepository.save(planner1);
+
+//        Customer customer1 = customerRepository.findByName("Clara");
+//        Customer customer2 = customerRepository.findByName("Jeff");
+//        WeddingPlanner planner1 = weddingPlannerRepository.findByName("Alice");
+
+//        CustomerMessage customerMessage1 = CustomerMessage.builder()
+//                .customer(customer1)
+//                .contents("Hello, I would like to inquire about your wedding planning services.")
+//                .unreadCount(1)
+//                .build();
+//
+//        CustomerMessage customerMessage2 = CustomerMessage.builder()
+//                .customer(customer2)
+//                .contents("Can you provide more details on the packages offered?")
+//                .unreadCount(2)
+//                .build();
+//
+//        WeddingPlannerMessage weddingPlannerMessage1 = WeddingPlannerMessage.builder()
+//                .weddingplanner(planner1)
+//                .contents("Sure, we offer a range of packages tailored to your needs.")
+//                .unreadCount(0)
+//                .build();
+//
+//        weddingPlannerMessageRepository.save(weddingPlannerMessage1);
+//        customerMessageRepository.save(customerMessage1);
+//        customerMessageRepository.save(customerMessage2);
+
 
         System.out.println("Sample data loaded.");
     }

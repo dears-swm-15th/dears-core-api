@@ -1,5 +1,7 @@
 package com.example.demo.member.domain;
 
+import com.example.demo.chat.domain.ChatRoom;
+import com.example.demo.chat.domain.Message;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.portfolio.domain.Portfolio;
 import jakarta.persistence.*;
@@ -47,7 +49,8 @@ public class WeddingPlanner {
     private List<Customer> customerList;
 
     //chatroom 1:N
-    //@OneToMany(mappedBy = "customer")
-    //private List<ChatRoom> chatRoomList;
+    @OneToMany
+    @JoinColumn(name = "weddingplanner_id")
+    private List<ChatRoom> chatRooms;
 
 }

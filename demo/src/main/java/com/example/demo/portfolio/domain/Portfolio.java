@@ -3,6 +3,7 @@ package com.example.demo.portfolio.domain;
 import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
+import com.example.demo.member.domain.WeddingPlanner;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,6 +39,9 @@ public class Portfolio extends BaseTimeEntity {
     private String profileImageUrl;
     private Integer consultingFee;
     private String description;
+
+    @OneToOne(fetch = FetchType.EAGER, mappedBy = "portfolio")
+    private WeddingPlanner weddingPlanner;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "portfolio_services", joinColumns = @JoinColumn(name = "portfolio_id"))

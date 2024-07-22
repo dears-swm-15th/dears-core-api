@@ -1,5 +1,6 @@
 package com.example.demo.portfolio.dto;
 
+import com.example.demo.member.domain.WeddingPlanner;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import com.example.demo.enums.review.RadarKey;
@@ -123,6 +124,9 @@ public class PortfolioDTO {
 
         @Schema(type = "integer", example = "20000")
         private Integer minEstimate;
+
+        @Schema(type = "weddingPlanner", example = "weddingPlannerEntity")
+        private WeddingPlanner weddingPlanner;
 
         @Schema(type = "array", example = "[\"퍼스널 컬러 체크\", \"웨딩드레스 시착 1회 무료\"]")
         private List<String> services;
