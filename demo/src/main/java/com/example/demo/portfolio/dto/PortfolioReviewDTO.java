@@ -46,6 +46,9 @@ public class PortfolioReviewDTO {
     @Builder
     public static class Response {
 
+        @Schema(type = "Long", example = "1")
+        private Long id;
+
         @Schema(type = "float", example = "3.723123")
         private Float avgRating;
 

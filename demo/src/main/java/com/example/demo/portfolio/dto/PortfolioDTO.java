@@ -19,9 +19,6 @@ public class PortfolioDTO {
     @Builder
     public static class Request {
 
-        @Schema(type = "Long", example = "1")
-        private Long id;
-
         @Schema(type = "string", example = "에바웨딩스")
         private String organization;
 

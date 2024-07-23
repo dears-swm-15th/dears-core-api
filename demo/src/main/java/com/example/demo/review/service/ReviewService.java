@@ -48,7 +48,7 @@ public class ReviewService {
 
     @Transactional
     public ReviewDTO.Response createReviewForWeddingPlanner(ReviewDTO.Request reviewRequest) {
-        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().orElseThrow();
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
         reviewRequest.setWeddingPhotoUrls(reviewRequest.getWeddingPhotoUrls().stream()
                 .map(s3Uploader::getUniqueFilename)
@@ -79,7 +79,7 @@ public class ReviewService {
 
     @Transactional
     public ReviewDTO.Response createReviewForCustomer(ReviewDTO.Request reviewRequest) {
-        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer().orElseThrow();
+        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
 
         //Change image name to be unique
         reviewRequest.setWeddingPhotoUrls(reviewRequest.getWeddingPhotoUrls().stream()
@@ -111,13 +111,13 @@ public class ReviewService {
 
     @Transactional
     public ReviewDTO.Response modifyReviewForWeddingPlanner(Long id, ReviewDTO.Request reviewRequest) {
-        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().orElseThrow();
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
         Review existingReview = reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
         if (existingReview.getReviewerId() != weddingPlanner.getId()) {
-            throw new RuntimeException("권한이 없습니다.");
+            throw new RuntimeException("Not authorized to modify this review");
         }
         List<String> weddingPhotoUrls = existingReview.getWeddingPhotoUrls();
         if (weddingPhotoUrls != null) {
@@ -148,13 +148,13 @@ public class ReviewService {
 
     @Transactional
     public ReviewDTO.Response modifyReviewForCustomer(Long id, ReviewDTO.Request reviewRequest) {
-        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer().orElseThrow();
+        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
 
         Review existingReview = reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
         if (existingReview.getReviewerId() != customer.getId()) {
-            throw new RuntimeException("권한이 없습니다.");
+            throw new RuntimeException("Not authorized to modify this review");
         }
 
         List<String> weddingPhotoUrls = existingReview.getWeddingPhotoUrls();
@@ -187,13 +187,13 @@ public class ReviewService {
 
     @Transactional
     public void deleteReviewForWeddingPlanner(Long id) {
-        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().orElseThrow();
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
         if (review.getReviewerId() != weddingPlanner.getId()) {
-            throw new RuntimeException("권한이 없습니다.");
+            throw new RuntimeException("Not authorized to delete this review");
         }
         List<String> weddingPhotoUrls = review.getWeddingPhotoUrls();
 
@@ -206,13 +206,13 @@ public class ReviewService {
 
     @Transactional
     public void deleteReviewForCustomer(Long id) {
-        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer().orElseThrow();
+        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
 
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
         if (review.getReviewerId() != customer.getId()) {
-            throw new RuntimeException("권한이 없습니다.");
+            throw new RuntimeException("Not authorized to delete this review");
         }
         List<String> weddingPhotoUrls = review.getWeddingPhotoUrls();
 
@@ -230,14 +230,14 @@ public class ReviewService {
     }
 
     public List<ReviewDTO.Response> getMyReviewsForCustomer() throws UsernameNotFoundException {
-        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer().orElseThrow();
+        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
         return reviewRepository.findReviewsForCustomer(customer.getId()).stream()
                 .map(reviewMapper::entityToResponse)
                 .collect(Collectors.toList());
     }
 
     public List<ReviewDTO.Response> getMyReviewsForWeddingplanner() throws UsernameNotFoundException {
-        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().orElseThrow();
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
         return reviewRepository.findReviewsForWeddingPlanner(weddingPlanner.getId()).stream()
                         .map(reviewMapper::entityToResponse)

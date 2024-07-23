@@ -46,25 +46,23 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String UUID) throws UsernameNotFoundException {
         // 먼저 customerRepository에서 사용자 찾기
-        Customer customer = customerRepository.findByUUID(UUID)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 이름을 가진 사용자를 찾을 수 없습니다."));
+        Optional<Customer> customer = customerRepository.findByUUID(UUID);
 
-        if (customer != null) {
+        if (customer.isPresent()) {
             List<GrantedAuthority> roles = new ArrayList<>();
-            roles.add(new SimpleGrantedAuthority(customer.getRole().getRoleName()));
-            return new CustomerContext(customer, roles);
+            roles.add(new SimpleGrantedAuthority(customer.get().getRole().getRoleName()));
+            return new CustomerContext(customer.get(), roles);
         }
 
         // customerRepository에서 찾지 못하면 weddingPlannerRepository에서 사용자 찾기
-        WeddingPlanner planner = weddingPlannerRepository.findByUUID(UUID)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 이름을 가진 사용자를 찾을 수 없습니다."));
+        Optional<WeddingPlanner> planner = weddingPlannerRepository.findByUUID(UUID);
 
-        if (planner != null) {
+        if (planner.isPresent()) {
             List<GrantedAuthority> roles = new ArrayList<>();
-            roles.add(new SimpleGrantedAuthority(planner.getRole().getRoleName()));
-            return new WeddingPlannerContext(planner, roles);
+            roles.add(new SimpleGrantedAuthority(planner.get().getRole().getRoleName()));
+            return new WeddingPlannerContext(planner.get(), roles);
         }
-        throw new UsernameNotFoundException("해당 이름을 가진 사용자를 찾을 수 없습니다.");
+        throw new UsernameNotFoundException("User with the given UUID could not be found");
     }
 
     @Transactional
@@ -85,36 +83,39 @@ public class CustomUserDetailsService implements UserDetailsService {
             customerRepository.save(customer);
             return customerMapper.entityToAuthDTOResponse(customer);
         } else {
-            throw new IllegalArgumentException("잘못된 회원가입 요청입니다.");
+            throw new IllegalArgumentException("Invalid role type");
         }
     }
 
-    public Optional<Customer> getCurrentAuthenticatedCustomer() {
+    public Customer getCurrentAuthenticatedCustomer() throws UsernameNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             String memberName = authentication.getName();
-            return customerRepository.findByUUID(memberName);
+            return customerRepository.findByUUID(memberName)
+                    .orElseThrow(() -> new UsernameNotFoundException("Authenticated customer not found"));
         }
-        throw new UsernameNotFoundException("인증된 Customer를 찾을 수 없습니다.");
+        throw new UsernameNotFoundException("Authenticated customer not found");
     }
 
-    public Optional<WeddingPlanner> getCurrentAuthenticatedWeddingPlanner() {
+    public WeddingPlanner getCurrentAuthenticatedWeddingPlanner() throws UsernameNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             String memberName = authentication.getName();
-            return weddingPlannerRepository.findByUUID(memberName);
+            System.out.println(memberName);
+            return weddingPlannerRepository.findByUUID(memberName)
+                    .orElseThrow(() -> new UsernameNotFoundException("Authenticated weddingplanner not found"));
         }
-        throw new UsernameNotFoundException("인증된 WeddingPlanner를 찾을 수 없습니다.");
+        throw new UsernameNotFoundException("Authenticated weddingplanner not found");
     }
 
     public MypageDTO.CustomerResponse getCustomerMyPage() {
-        Customer customer = getCurrentAuthenticatedCustomer().orElseThrow();
+        Customer customer = getCurrentAuthenticatedCustomer();
         return customerMapper.entityToMypageDTOResponse(customer);
     }
 
     public MypageDTO.WeddingPlannerResponse getWeddingPlannerMyPage() {
-        WeddingPlanner weddingPlanner = getCurrentAuthenticatedWeddingPlanner().orElseThrow();
+        WeddingPlanner weddingPlanner = getCurrentAuthenticatedWeddingPlanner();
         return weddingPlannerMapper.entityToMypageDTOResponse(weddingPlanner);
 
     }

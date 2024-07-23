@@ -44,7 +44,6 @@ public class PortfolioSearchService {
                             .document(request)
             );
             IndexResponse response = openSearchClient.index(indexRequest);
-            System.out.println("RESPONSE: "+response);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,7 +61,6 @@ public class PortfolioSearchService {
             );
 
             UpdateResponse updateResponse = openSearchClient.update(updateRequest, PortfolioSearchDTO.Request.class);
-            System.out.println("Update Response: " + updateResponse.get());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -106,7 +104,6 @@ public class PortfolioSearchService {
 
             SearchResponse<PortfolioSearchDTO.Request> response = openSearchClient.search(request, PortfolioSearchDTO.Request.class);
             List<Hit<PortfolioSearchDTO.Request>> hits = response.hits().hits();
-            System.out.println("HITS: "+hits);
             for (Hit<PortfolioSearchDTO.Request> hit : hits) {
                 resultList.add(portfolioMapper.requestToSearchResponse(hit.source()));
             }
@@ -125,7 +122,6 @@ public class PortfolioSearchService {
                             .id(String.valueOf(id))
             );
             DeleteResponse response = openSearchClient.delete(deleteRequest);
-            System.out.println("Delete Response: " + response);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -30,7 +30,7 @@ public class ChatRoomService {
     private final PortfolioService portfolioService;
 
     public ChatRoomDTO.Response enterChatRoomByPortfolioId(Long portfolioId) {
-        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer().get();
+        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
         PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolioId);
 
         WeddingPlanner weddingPlanner = portfolioResponse.getWeddingPlanner();
@@ -72,7 +72,7 @@ public class ChatRoomService {
     }
 
     public List<ChatRoomOverviewDTO.Response> getCurrentUsersAllChatRoom() {
-        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer().get();
+        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
         List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
 
         return chatRooms.stream()

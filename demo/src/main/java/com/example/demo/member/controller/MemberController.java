@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +25,7 @@ public class MemberController {
         return ResponseEntity.status(201).body(createdMember);
     }
 
+    @ExceptionHandler(MissingRequestHeaderException.class)
     @GetMapping("/customer/mypage/get")
     @Operation(summary = "[신랑신부] 마이페이지 조회", description = "토큰을 통해 마이페이지 정보를 조회합니다.")
     public ResponseEntity<MypageDTO.CustomerResponse> getCustomerMyPage(){

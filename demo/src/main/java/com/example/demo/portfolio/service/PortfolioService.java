@@ -11,6 +11,7 @@ import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.review.domain.Review;
 import com.example.demo.review.dto.ReviewDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,8 +49,7 @@ public class PortfolioService {
     @Transactional
     public PortfolioDTO.Response createPortfolio(PortfolioDTO.Request portfolioRequest) {
 
-        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner()
-                .orElseThrow(() -> new RuntimeException("WeddingPlanner not found"));
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
         //Change image name to be unique
         portfolioRequest.setProfileImageUrl(s3Uploader.getUniqueFilename(portfolioRequest.getProfileImageUrl()));
@@ -80,8 +80,7 @@ public class PortfolioService {
     @Transactional
     public PortfolioDTO.Response updatePortfolio(Long id, PortfolioDTO.Request portfolioRequest) {
 
-        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner()
-                .orElseThrow(() -> new RuntimeException("WeddingPlanner not found"));
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
         Portfolio existingPortfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
@@ -119,8 +118,7 @@ public class PortfolioService {
     @Transactional
     public void deletePortfolio(Long id) {
 
-        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner()
-                .orElseThrow(() -> new RuntimeException("WeddingPlanner not found"));
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
         Portfolio portfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
