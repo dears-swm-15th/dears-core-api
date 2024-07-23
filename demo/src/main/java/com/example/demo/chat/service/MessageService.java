@@ -20,12 +20,12 @@ public class MessageService {
     private final ChatRoomService chatRoomService;
     private final ChatRoomMapper chatRoomMapper = ChatRoomMapper.INSTANCE;
 
-
     public MessageDTO.Response saveMessage(MessageDTO.Request messageRequest) {
         ChatRoom chatRoom = chatRoomService.getChatRoomById(messageRequest.getChatRoomId());
         Message message = messageMapper.requestToEntity(messageRequest);
         message.setChatRoom(chatRoom);
         Message savedMessage = messageRepository.save(message);
+
         return messageMapper.entityToResponse(savedMessage);
     }
 }

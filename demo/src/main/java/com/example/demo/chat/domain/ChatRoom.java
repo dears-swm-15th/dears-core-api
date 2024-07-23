@@ -37,9 +37,4 @@ public class ChatRoom extends BaseTimeEntity {
     @JoinColumn(name = "weddingplanner_id")
     private WeddingPlanner weddingPlanner;
 
-//    @OneToMany(mappedBy = "chatRoom")
-//    @OrderBy("createdAt asc")
-//    private List<Message> messages = new ArrayList<>();
-
-
 }

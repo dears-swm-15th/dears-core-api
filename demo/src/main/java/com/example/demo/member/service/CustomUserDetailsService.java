@@ -119,4 +119,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         return weddingPlannerMapper.entityToMypageDTOResponse(weddingPlanner);
 
     }
+
+    public WeddingPlanner getWeddingPlannerById(Long weddingPlannerId) {
+        return weddingPlannerRepository.findById(weddingPlannerId)
+                .orElseThrow(() -> new RuntimeException("WeddingPlanner not found"));
+    }
 }
