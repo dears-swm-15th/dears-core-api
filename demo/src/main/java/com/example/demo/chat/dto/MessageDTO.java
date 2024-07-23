@@ -1,5 +1,6 @@
 package com.example.demo.chat.dto;
 
+import com.example.demo.enums.chat.MessageType;
 import lombok.*;
 
 public class MessageDTO {
@@ -13,6 +14,11 @@ public class MessageDTO {
     public static class Request {
         private Long id;
 
+        private MessageType messageType;
+
+        private String contents;
+
+        private Long chatRoomId;
     }
 
     @Getter
@@ -23,5 +29,27 @@ public class MessageDTO {
     @Builder
     public static class Response {
         private Long id;
+
+        private MessageType messageType;
+
+        private String contents;
+
+        private Long chatRoomId;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class PortfolioRequest {
+        private Long id;
+
+        private MessageType messageType;
+
+        private String contents;
+
+        private Long portfolioId;
     }
 }

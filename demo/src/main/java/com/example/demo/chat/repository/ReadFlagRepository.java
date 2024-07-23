@@ -1,6 +1,7 @@
 package com.example.demo.chat.repository;
 
 import com.example.demo.chat.domain.ReadFlag;
+import com.example.demo.enums.member.MemberRole;
 import com.example.demo.portfolio.domain.Portfolio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -10,9 +11,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReadFlagRepository extends JpaRepository<ReadFlag, Long> {
+    Optional<ReadFlag> findByChatRoomIdAndMemberRole(Long chatRoomId, MemberRole memberRole);
 
     @Transactional
     @Modifying
