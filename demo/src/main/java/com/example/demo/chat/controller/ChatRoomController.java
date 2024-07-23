@@ -24,6 +24,12 @@ public class ChatRoomController {
         ChatRoomDTO.Response createdChatRoom = chatRoomService.enterChatRoomByPortfolioId(portfolioId);
         return ResponseEntity.status(201).body(createdChatRoom);
     }
+    @PostMapping("/{chatRoomId}")
+    @Operation(summary = "[웨딩플래너] 채팅방 아이디로 채팅방 입장")
+    public ResponseEntity<ChatRoomDTO.Response> getChatRoomByIdForWeddingPlanner(@PathVariable Long chatRoomId) {
+        ChatRoomDTO.Response chatRoomByChatRoomId = chatRoomService.getChatRoomByChatRoomId(chatRoomId);
+        return ResponseEntity.status(200).body(chatRoomByChatRoomId);
+    }
 
     @GetMapping("")
     @Operation(summary = "현재 사용자의 모든 채팅방 조회")
