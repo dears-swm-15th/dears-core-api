@@ -28,7 +28,6 @@ public class Message extends BaseTimeEntity {
 
     private MessageType messageType;
     private String contents;
-//    private MemberRole memberRole;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
