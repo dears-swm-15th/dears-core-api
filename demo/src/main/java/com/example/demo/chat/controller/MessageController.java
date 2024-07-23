@@ -40,7 +40,7 @@ public class MessageController {
 
     @MessageMapping(value = "/send")
     public void send(MessageDTO.Request messageRequest){
-        // TODO : readFlag(lastReadMessageId) 갱신 필요
+        // TODO : readFlag(lastReadMessㄴageId) 갱신 필요
 
         messageService.saveMessage(messageRequest);
 

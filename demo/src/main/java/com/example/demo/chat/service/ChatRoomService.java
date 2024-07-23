@@ -53,7 +53,8 @@ public class ChatRoomService {
             return createChatRoomByPortfolioId(customer, weddingPlanner);
         }
         System.out.println("ChatRoom exist");
-        return getChatRoomByCustomerAndWeddingPlanner(customer, weddingPlanner);
+        Long chatRoomId = getChatRoomIdByCustomerAndWeddingPlanner(customer, weddingPlanner);
+        return getChatRoomByChatRoomId(chatRoomId);
     }
 
     public ChatRoomDTO.Response createChatRoomByPortfolioId(Customer customer, WeddingPlanner weddingPlanner) {
@@ -106,8 +107,14 @@ public class ChatRoomService {
                 .collect(Collectors.toList());
     }
 
-    public ChatRoomDTO.Response getChatRoomByCustomerAndWeddingPlanner(Customer customer, WeddingPlanner weddingPlanner) {
+    public Long getChatRoomIdByCustomerAndWeddingPlanner(Customer customer, WeddingPlanner weddingPlanner) {
         ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
+        return chatRoom.getId();
+    }
+
+    public ChatRoomDTO.Response getChatRoomByChatRoomId(Long chatRoomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
 
         ReadFlag customerReadFlag = readFlagRepository.findByChatRoomIdAndMemberRole(chatRoom.getId(), MemberRole.CUSTOMER)
                 .orElseThrow(() -> new RuntimeException("ReadFlag not found"));
@@ -124,6 +131,7 @@ public class ChatRoomService {
 
         return response;
     }
+
 
     public void deleteChatRoom(Long chatRoomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
