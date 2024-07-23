@@ -7,6 +7,7 @@ import com.example.demo.chat.dto.ChatRoomDTO;
 import com.example.demo.chat.dto.ChatRoomOverviewDTO;
 import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
+import com.example.demo.chat.repository.ReadFlagRepository;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
@@ -29,43 +30,47 @@ public class ChatRoomService {
     private final CustomUserDetailsService customUserDetailsService;
     private final PortfolioService portfolioService;
 
+    private final ReadFlagRepository readFlagRepository;
+
+    public ChatRoom getChatRoomById(Long chatRoomId) {
+        return chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
+    }
+
     public ChatRoomDTO.Response enterChatRoomByPortfolioId(Long portfolioId) {
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
         PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolioId);
 
         WeddingPlanner weddingPlanner = portfolioResponse.getWeddingPlanner();
 
-        if (isChatRoomExist(customer, weddingPlanner)) {
-            return createChatRoomByPortfolioId(customer, portfolioId);
+        if (!isChatRoomExist(customer, weddingPlanner)) {
+            return createChatRoomByPortfolioId(customer, weddingPlanner);
         }
-
         return getChatRoomByCustomerAndWeddingPlanner(customer, weddingPlanner);
     }
 
-    public ChatRoomDTO.Response createChatRoomByPortfolioId(Customer customer, Long portfolioId) {
+    public ChatRoomDTO.Response createChatRoomByPortfolioId(Customer customer, WeddingPlanner weddingPlanner) {
 
         ChatRoom chatRoom = ChatRoom.builder().build();
-        PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolioId);
-
-        WeddingPlanner weddingPlanner = portfolioResponse.getWeddingPlanner();
 
         chatRoom.setCustomer(customer);
         chatRoom.setWeddingPlanner(weddingPlanner);
 
         ReadFlag customerReadFlag = ReadFlag.builder()
-                .chatRoom(chatRoom)
+                .memberRole(MemberRole.CUSTOMER)
                 .lastReadMessageId(0L)
+                .chatRoom(chatRoom)
                 .build();
 
         ReadFlag weddingPlannerReadFlag = ReadFlag.builder()
-                .chatRoom(chatRoom)
+                .memberRole(MemberRole.WEDDING_PLANNER)
                 .lastReadMessageId(0L)
+                .chatRoom(chatRoom)
                 .build();
 
-        chatRoom.addReadFlag(MemberRole.CUSTOMER, customerReadFlag);
-        chatRoom.addReadFlag(MemberRole.WEDDING_PLANNER, weddingPlannerReadFlag);
-
         chatRoomRepository.save(chatRoom);
+        readFlagRepository.save(customerReadFlag);
+        readFlagRepository.save(weddingPlannerReadFlag);
 
         return chatRoomMapper.entityToResponse(chatRoom);
 

@@ -41,14 +41,15 @@ public class ChatRoom extends BaseTimeEntity {
     @OrderBy("createdAt asc")
     private List<Message> messages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "chatRoom")
-    @OrderBy("createdAt asc")
-    private Map<MemberRole, ReadFlag> readFlags;
-
-    public void addReadFlag(MemberRole memberRole, ReadFlag readFlag) {
-        if (this.readFlags == null) {
-            this.readFlags = new HashMap<>();
-        }
-        this.readFlags.put(memberRole, readFlag);
-    }
+//    @OneToMany(mappedBy = "chatRoom")
+//    @OrderBy("createdAt asc")
+//    private Map<MemberRole, ReadFlag> readFlags;
+//
+//    public void addReadFlag(MemberRole memberRole, ReadFlag readFlag) {
+//        if (this.readFlags == null) {
+//            this.readFlags = new HashMap<>();
+//        }
+//        readFlag.setChatRoom(this);
+//        this.readFlags.put(memberRole, readFlag);
+//    }
 }
