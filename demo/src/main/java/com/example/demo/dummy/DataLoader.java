@@ -94,8 +94,7 @@ public class DataLoader implements CommandLineRunner {
                 .wishListCount(0)
                 .build();
 
-        portfolioRepository.save(portfolio1);
-        portfolioRepository.save(portfolio2);
+
 
         // Create Reviews
         List<String> reviewTags1 = Arrays.asList("tag1", "tag2");
@@ -138,10 +137,9 @@ public class DataLoader implements CommandLineRunner {
                 .tags(reviewTags2)
                 .weddingPhotoUrls(reviewPhotos2)
                 .radar(reviewRadar2)
+                .portfolio(portfolio1)
                 .build();
 
-        reviewRepository.save(review1);
-        reviewRepository.save(review2);
 
         Customer customer1 = Customer.builder()
                 .name("Clara")
@@ -164,6 +162,12 @@ public class DataLoader implements CommandLineRunner {
         customerRepository.save(customer1);
         customerRepository.save(customer2);
         weddingPlannerRepository.save(planner1);
+
+
+        portfolio1.setWeddingPlanner(planner1);
+
+        portfolioRepository.save(portfolio1);
+        portfolioRepository.save(portfolio2);
 
 //        Customer customer1 = customerRepository.findByName("Clara");
 //        Customer customer2 = customerRepository.findByName("Jeff");
