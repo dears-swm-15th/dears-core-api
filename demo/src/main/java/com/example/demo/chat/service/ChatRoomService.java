@@ -2,12 +2,14 @@ package com.example.demo.chat.service;
 
 
 import com.example.demo.chat.domain.ChatRoom;
+import com.example.demo.chat.domain.Message;
 import com.example.demo.chat.domain.ReadFlag;
 import com.example.demo.chat.dto.ChatRoomDTO;
 import com.example.demo.chat.dto.ChatRoomOverviewDTO;
 import com.example.demo.chat.dto.ReadFlagDTO;
 import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
+import com.example.demo.chat.repository.MessageRepository;
 import com.example.demo.chat.repository.ReadFlagRepository;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
@@ -33,6 +35,7 @@ public class ChatRoomService {
     private final PortfolioService portfolioService;
 
     private final ReadFlagRepository readFlagRepository;
+    private final MessageRepository messageRepository;
 
     public ChatRoom getChatRoomById(Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId)
@@ -46,8 +49,10 @@ public class ChatRoomService {
         WeddingPlanner weddingPlanner = portfolioResponse.getWeddingPlanner();
 
         if (!isChatRoomExist(customer, weddingPlanner)) {
+            System.out.println("ChatRoom not exist");
             return createChatRoomByPortfolioId(customer, weddingPlanner);
         }
+        System.out.println("ChatRoom exist");
         return getChatRoomByCustomerAndWeddingPlanner(customer, weddingPlanner);
     }
 
@@ -86,11 +91,14 @@ public class ChatRoomService {
                     Portfolio portfolio = portfolioService.getPortfolioByWeddingPlannerId(chatRoom.getWeddingPlanner().getId());
                     PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolio.getId());
 
+                    List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId())
+                            .orElse(List.of());
+
                     return ChatRoomOverviewDTO.Response.builder()
                             .weddingPlannerProfileImageUrl(portfolioResponse.getWeddingPlanner().getProfileImageUrl())
                             .weddingPlannerName(portfolioResponse.getWeddingPlanner().getName())
-                            .lastMessage(chatRoom.getMessages().get(chatRoom.getMessages().size() - 1).getContents())
-                            .lastMessageCreatedAt(chatRoom.getMessages().get(chatRoom.getMessages().size() - 1).getCreatedAt())
+                            .lastMessage(messages.get(messages.size() - 1).getContents())
+                            .lastMessageCreatedAt(messages.get(messages.size() - 1).getCreatedAt())
                             .organizationName(portfolioResponse.getOrganization())
                             .portfolioId(portfolioResponse.getWeddingPlanner().getId())
                             .build();
@@ -106,7 +114,11 @@ public class ChatRoomService {
         ReadFlag weddingPlannerReadFlag = readFlagRepository.findByChatRoomIdAndMemberRole(chatRoom.getId(), MemberRole.WEDDING_PLANNER)
                 .orElseThrow(() -> new RuntimeException("ReadFlag not found"));
 
+        List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId())
+                .orElse(List.of());
+
         ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
+        response.setMessages(messages);
         response.setCustomerLastReadMessageId(customerReadFlag.getLastReadMessageId());
         response.setWeddingPlannerLastReadMessageId(weddingPlannerReadFlag.getLastReadMessageId());
 
