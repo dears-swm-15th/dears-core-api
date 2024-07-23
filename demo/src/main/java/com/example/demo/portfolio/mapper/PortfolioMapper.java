@@ -3,6 +3,7 @@ package com.example.demo.portfolio.mapper;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.portfolio.dto.PortfolioOverviewDTO;
+import com.example.demo.portfolio.dto.PortfolioSearchDTO;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,4 +25,8 @@ public interface PortfolioMapper {
     Portfolio updateFromRequest(PortfolioDTO.Request portfolioRequest, @MappingTarget Portfolio portfolio);
 
     PortfolioOverviewDTO.Response entityToOverviewResponse(Portfolio portfolio);
+
+    PortfolioSearchDTO.Request entityToSearchRequest(Portfolio portfolio);
+
+    PortfolioSearchDTO.Response requestToSearchResponse(PortfolioSearchDTO.Request request);
 }

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -123,6 +124,13 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleNullPointerException(NullPointerException e) {
         log.error("handleNullPointerException", e);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.NULL_POINT_ERROR, e.getMessage());
+        return new ResponseEntity<>(response, HTTP_STATUS_OK);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException e) {
+        log.error("handleUsernameNotFoundException", e);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.FORBIDDEN_ERROR, e.getMessage());
         return new ResponseEntity<>(response, HTTP_STATUS_OK);
     }
 

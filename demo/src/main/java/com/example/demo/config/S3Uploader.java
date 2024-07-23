@@ -39,7 +39,7 @@ public class S3Uploader {
 
     // Upload file to S3 using presigned url
     private GeneratePresignedUrlRequest getGeneratePresignedUrlRequest(String fileName) {
-        return new GeneratePresignedUrlRequest(bucket, "test/" + fileName)
+        return new GeneratePresignedUrlRequest(bucket, cloudfrontPath + "/" + fileName)
                 .withMethod(HttpMethod.PUT)
                 .withExpiration(setExpiration());
     }
@@ -71,8 +71,9 @@ public class S3Uploader {
         if (fileName == null) {
             return;
         }
-        s3Config.amazonS3().deleteObject(new DeleteObjectRequest(bucket, "test/"+fileName));
-        System.out.println(fileName);
+        if (checkFileExists(fileName)){
+            s3Config.amazonS3().deleteObject(new DeleteObjectRequest(bucket, cloudfrontPath+"/"+fileName));
+        }
     }
 
     public void deleteFiles(List<String> fileNames) {
@@ -105,5 +106,9 @@ public class S3Uploader {
         return imageUrls.stream()
                 .map(this::getImageUrl)
                 .collect(Collectors.toList());
+    }
+
+    public boolean checkFileExists(String fileName) {
+        return s3Config.amazonS3().doesObjectExist(bucket, cloudfrontPath + "/" + fileName);
     }
 }

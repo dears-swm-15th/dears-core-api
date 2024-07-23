@@ -2,6 +2,8 @@ package com.example.demo.portfolio.service;
 
 import com.example.demo.config.S3Uploader;
 import com.example.demo.enums.review.RadarKey;
+import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.domain.Portfolio;
@@ -9,6 +11,7 @@ import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.review.domain.Review;
 import com.example.demo.review.dto.ReviewDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,10 @@ public class PortfolioService {
     private final PortfolioMapper portfolioMapper = PortfolioMapper.INSTANCE;
 
     private final S3Uploader s3Uploader;
+
+    private final PortfolioSearchService portfolioSearchService;
+
+    private final CustomUserDetailsService customUserDetailsService;
 
     public List<PortfolioDTO.Response> getAllPortfolios() {
         return portfolioRepository.findAll().stream()
@@ -41,6 +48,9 @@ public class PortfolioService {
 
     @Transactional
     public PortfolioDTO.Response createPortfolio(PortfolioDTO.Request portfolioRequest) {
+
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
+
         //Change image name to be unique
         portfolioRequest.setProfileImageUrl(s3Uploader.getUniqueFilename(portfolioRequest.getProfileImageUrl()));
         portfolioRequest.setWeddingPhotoUrls(portfolioRequest.getWeddingPhotoUrls().stream()
@@ -51,22 +61,27 @@ public class PortfolioService {
         String presignedUrl = s3Uploader.uploadFile(portfolioRequest.getProfileImageUrl());
         List<String> presignedUrlList = s3Uploader.uploadFileList(portfolioRequest.getWeddingPhotoUrls());
         //save portfolio, set presigned url and cloudfront url to response
-        Portfolio portfolio = portfolioMapper.requestToEntity(portfolioRequest);
-        portfolio = portfolioRepository.save(portfolio);
-        PortfolioDTO.Response response = portfolioMapper.entityToResponse(portfolio);
+        Portfolio savedPortfolio = portfolioMapper.requestToEntity(portfolioRequest);
+        savedPortfolio = portfolioRepository.save(savedPortfolio);
+        weddingPlanner.setPortfolio(savedPortfolio);
+
+        PortfolioDTO.Response response = portfolioMapper.entityToResponse(savedPortfolio);
         response.setPresignedProfileImageUrl(presignedUrl);
         response.setPresignedWeddingPhotoUrls(presignedUrlList);
 
-        response.setProfileImageUrl(s3Uploader.getImageUrl(portfolio.getProfileImageUrl()));
-        response.setWeddingPhotoUrls(portfolio.getWeddingPhotoUrls().stream()
+        response.setProfileImageUrl(s3Uploader.getImageUrl(savedPortfolio.getProfileImageUrl()));
+        response.setWeddingPhotoUrls(savedPortfolio.getWeddingPhotoUrls().stream()
                 .map(s3Uploader::getImageUrl)
                 .collect(Collectors.toList()));
-
+        portfolioSearchService.indexDocumentUsingDTO(savedPortfolio);
         return response;
     }
 
     @Transactional
     public PortfolioDTO.Response updatePortfolio(Long id, PortfolioDTO.Request portfolioRequest) {
+
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
+
         Portfolio existingPortfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
         if(portfolioRequest.getProfileImageUrl() != null) {
@@ -87,6 +102,7 @@ public class PortfolioService {
         Portfolio updatedPortfolio = portfolioMapper.updateFromRequest(portfolioRequest, existingPortfolio);
 
         Portfolio savedPortfolio = portfolioRepository.save(updatedPortfolio);
+        weddingPlanner.setPortfolio(savedPortfolio);
         PortfolioDTO.Response response = portfolioMapper.entityToResponse(savedPortfolio);
         response.setPresignedProfileImageUrl(updatedPortfolio.getProfileImageUrl());
         response.setPresignedWeddingPhotoUrls(updatedPortfolio.getWeddingPhotoUrls());
@@ -95,12 +111,15 @@ public class PortfolioService {
         response.setWeddingPhotoUrls(updatedPortfolio.getWeddingPhotoUrls().stream()
                 .map(s3Uploader::getImageUrl)
                 .collect(Collectors.toList()));
-
+        portfolioSearchService.updateDocumentUsingDTO(savedPortfolio);
         return portfolioMapper.entityToResponse(savedPortfolio);
     }
 
     @Transactional
     public void deletePortfolio(Long id) {
+
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
+
         Portfolio portfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
@@ -114,7 +133,10 @@ public class PortfolioService {
             weddingPhotoUrls.forEach(s3Uploader::deleteFile);
         }
 
+        weddingPlanner.setPortfolio(null);
+
         portfolioRepository.softDeleteById(id);
+        portfolioSearchService.deleteDocumentById(id); //검색으로는 나타나지 못하도록 구현
     }
 
     public List<PortfolioDTO.Response> getAllSoftDeletedPortfolios() {
@@ -130,6 +152,7 @@ public class PortfolioService {
 
         portfolio.increaseWishListCount();
         portfolioRepository.save(portfolio);
+        portfolioSearchService.updateDocumentUsingDTO(portfolio);
         return portfolio;
     }
 
@@ -140,6 +163,7 @@ public class PortfolioService {
 
         portfolio.decreaseWishListCount();
         portfolioRepository.save(portfolio);
+        portfolioSearchService.updateDocumentUsingDTO(portfolio);
         return portfolio;
     }
 
@@ -163,6 +187,7 @@ public class PortfolioService {
         portfolio.increaseRadarCount(radar);
 
         portfolioRepository.save(portfolio);
+        portfolioSearchService.updateDocumentUsingDTO(portfolio);
 
         return portfolio;
     }
@@ -192,6 +217,8 @@ public class PortfolioService {
         portfolio.accumulateRadarSum(newRadar);
 
         portfolioRepository.save(portfolio);
+        portfolioSearchService.updateDocumentUsingDTO(portfolio);
+
 
         return portfolio;
 
