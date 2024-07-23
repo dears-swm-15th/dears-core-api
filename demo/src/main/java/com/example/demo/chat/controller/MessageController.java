@@ -34,13 +34,14 @@ public class MessageController {
     @MessageMapping(value = "/enter")
     public void enterByChatRoomList(MessageDTO.Request messageRequest){
         // TODO : 방 입장 시, 읽음 처리 필요(readFlag(lastReadMessageId) 갱신 필요)
+        // TODO : messages 정보 받아와야 함.
         // TODO(not fixed) : 방 입장 시, 상태 ENTER로 변경 필요
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
     }
 
     @MessageMapping(value = "/send")
     public void send(MessageDTO.Request messageRequest){
-        // TODO : readFlag(lastReadMessㄴageId) 갱신 필요
+        // TODO : readFlag(lastReadMessageId) 갱신 필요
 
         messageService.saveMessage(messageRequest);
 
