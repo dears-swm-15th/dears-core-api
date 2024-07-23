@@ -39,7 +39,7 @@ public class WeddingPlanner {
     private String profileImageUrl;
 
     //포트폴리오 1:1
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "weddingplanner_id")
     private Portfolio portfolio;
 

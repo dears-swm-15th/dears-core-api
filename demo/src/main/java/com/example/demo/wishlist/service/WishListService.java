@@ -28,7 +28,7 @@ public class WishListService {
     private final PortfolioMapper portfolioMapper;
 
     public List<PortfolioOverviewDTO.Response> getWishListByMember(int page, int size) {
-        Long memberId = memberService.getCurrentAuthenticatedCustomer().orElseThrow().getId();
+        Long memberId = memberService.getCurrentAuthenticatedCustomer().getId();
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").ascending());
         Page<WishList> wishLists = wishListRepository.findAllByCustomerId(memberId, pageRequest);
         List<PortfolioOverviewDTO.Response> portfolioOverviewDtos = wishLists.stream()
@@ -40,7 +40,7 @@ public class WishListService {
 
     @Transactional
     public void addWishList(Long portfolioId) {
-        Customer customer = memberService.getCurrentAuthenticatedCustomer().orElseThrow();
+        Customer customer = memberService.getCurrentAuthenticatedCustomer();
         if (wishListRepository.existsByCustomerIdAndPortfolioId(customer.getId(), portfolioId)) {
             return;
         }
@@ -54,7 +54,7 @@ public class WishListService {
 
     @Transactional
     public void deleteWishList(Long portfolioId) {
-        Customer customer = memberService.getCurrentAuthenticatedCustomer().orElseThrow();
+        Customer customer = memberService.getCurrentAuthenticatedCustomer();
         if (wishListRepository.existsByCustomerIdAndPortfolioId(customer.getId(), portfolioId)) {
             return;
         }

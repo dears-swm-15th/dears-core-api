@@ -40,15 +40,15 @@ public class Portfolio extends BaseTimeEntity {
     private Integer consultingFee;
     private String description;
 
-    @OneToOne(fetch = FetchType.EAGER, mappedBy = "portfolio")
+    @OneToOne
     private WeddingPlanner weddingPlanner;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "portfolio_services", joinColumns = @JoinColumn(name = "portfolio_id"))
     @Column(name = "service_value")
     private List<String> services;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "portfolio_wedding_photos", joinColumns = @JoinColumn(name = "portfolio_id"))
     @Column(name = "photo_url")
     private List<String> weddingPhotoUrls;
@@ -61,7 +61,7 @@ public class Portfolio extends BaseTimeEntity {
     private Integer estimateCount;
     private Integer minEstimate;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "portfolio_radar", joinColumns = @JoinColumn(name = "portfolio_id"))
     @MapKeyColumn(name = "radar_key")
     @Column(name = "radar_value")
