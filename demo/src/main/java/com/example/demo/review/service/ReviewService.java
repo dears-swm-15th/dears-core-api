@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,8 +47,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewDTO.Response createReview(ReviewDTO.Request reviewRequest) {
-        //Change image name to be unique
+    public ReviewDTO.Response createReviewForWeddingPlanner(ReviewDTO.Request reviewRequest) {
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().orElseThrow();
+
         reviewRequest.setWeddingPhotoUrls(reviewRequest.getWeddingPhotoUrls().stream()
                 .map(s3Uploader::getUniqueFilename)
                 .collect(Collectors.toList()));
@@ -61,6 +61,8 @@ public class ReviewService {
         Review review = reviewMapper.requestToEntity(reviewRequest);
         Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
         review.setPortfolio(portfolio);
+        review.setReviewerId(weddingPlanner.getId());
+        review.setIsProvided(true);
 
         ReviewDTO.Response response = reviewMapper.entityToResponse(review);
 
@@ -76,9 +78,84 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewDTO.Response modifyReview(Long id, ReviewDTO.Request reviewRequest) {
+    public ReviewDTO.Response createReviewForCustomer(ReviewDTO.Request reviewRequest) {
+        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer().orElseThrow();
+
+        //Change image name to be unique
+        reviewRequest.setWeddingPhotoUrls(reviewRequest.getWeddingPhotoUrls().stream()
+                .map(s3Uploader::getUniqueFilename)
+                .collect(Collectors.toList()));
+
+        //Upload image to s3
+        List<String> presignedUrlList = s3Uploader.uploadFileList(reviewRequest.getWeddingPhotoUrls());
+
+        //save preview, set presigned url and cloudfront url to response
+        Review review = reviewMapper.requestToEntity(reviewRequest);
+        Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
+        review.setPortfolio(portfolio);
+        review.setReviewerId(customer.getId());
+        review.setIsProvided(false);
+
+        ReviewDTO.Response response = reviewMapper.entityToResponse(review);
+
+        response.setPresignedWeddingPhotoUrls(presignedUrlList);
+
+        response.setWeddingPhotoUrls(review.getWeddingPhotoUrls().stream()
+                .map(s3Uploader::getImageUrl)
+                .collect(Collectors.toList()));
+
+        reviewRepository.save(review);
+
+        return response;
+    }
+
+    @Transactional
+    public ReviewDTO.Response modifyReviewForWeddingPlanner(Long id, ReviewDTO.Request reviewRequest) {
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().orElseThrow();
+
         Review existingReview = reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
+
+        if (existingReview.getReviewerId() != weddingPlanner.getId()) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
+        List<String> weddingPhotoUrls = existingReview.getWeddingPhotoUrls();
+        if (weddingPhotoUrls != null) {
+            //Delete existing images from s3 and upload new images
+            weddingPhotoUrls.forEach(s3Uploader::deleteFile);
+            existingReview.setWeddingPhotoUrls(reviewRequest.getWeddingPhotoUrls().stream()
+                    .map(s3Uploader::getUniqueFilename)
+                    .collect(Collectors.toList()));
+            s3Uploader.uploadFileList(reviewRequest.getWeddingPhotoUrls());
+        }
+
+        //save review, set presigned url and cloudfront url to response
+        Review updatedReview = reviewMapper.updateFromRequest(reviewRequest, existingReview);
+        Portfolio portfolio = portfolioService.reflectModifiedReview(reviewRequest, existingReview);
+        updatedReview.setPortfolio(portfolio);
+
+        ReviewDTO.Response response = reviewMapper.entityToResponse(updatedReview);
+        response.setPresignedWeddingPhotoUrls(updatedReview.getWeddingPhotoUrls());
+
+        response.setWeddingPhotoUrls(updatedReview.getWeddingPhotoUrls().stream()
+                .map(s3Uploader::getImageUrl)
+                .collect(Collectors.toList()));
+
+        reviewRepository.save(updatedReview);
+
+        return reviewMapper.entityToResponse(updatedReview);
+    }
+
+    @Transactional
+    public ReviewDTO.Response modifyReviewForCustomer(Long id, ReviewDTO.Request reviewRequest) {
+        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer().orElseThrow();
+
+        Review existingReview = reviewRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+
+        if (existingReview.getReviewerId() != customer.getId()) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
 
         List<String> weddingPhotoUrls = existingReview.getWeddingPhotoUrls();
         if (weddingPhotoUrls != null) {
@@ -109,10 +186,34 @@ public class ReviewService {
 
 
     @Transactional
-    public void deleteReview(Long id) {
+    public void deleteReviewForWeddingPlanner(Long id) {
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().orElseThrow();
+
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
+        if (review.getReviewerId() != weddingPlanner.getId()) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
+        List<String> weddingPhotoUrls = review.getWeddingPhotoUrls();
+
+        if (weddingPhotoUrls != null) {
+            s3Uploader.deleteFiles(weddingPhotoUrls);
+        }
+
+        reviewRepository.softDeleteById(id);
+    }
+
+    @Transactional
+    public void deleteReviewForCustomer(Long id) {
+        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer().orElseThrow();
+
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+
+        if (review.getReviewerId() != customer.getId()) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
         List<String> weddingPhotoUrls = review.getWeddingPhotoUrls();
 
         if (weddingPhotoUrls != null) {
@@ -141,7 +242,6 @@ public class ReviewService {
         return reviewRepository.findReviewsForWeddingPlanner(weddingPlanner.getId()).stream()
                         .map(reviewMapper::entityToResponse)
                         .collect(Collectors.toList());
-
     }
 
 }
