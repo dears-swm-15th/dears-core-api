@@ -92,8 +92,7 @@ public class ChatRoomService {
                     Portfolio portfolio = portfolioService.getPortfolioByWeddingPlannerId(chatRoom.getWeddingPlanner().getId());
                     PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolio.getId());
 
-                    List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId())
-                            .orElse(List.of());
+                    List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
                     return ChatRoomOverviewDTO.Response.builder()
                             .weddingPlannerProfileImageUrl(portfolioResponse.getWeddingPlanner().getProfileImageUrl())
@@ -121,8 +120,7 @@ public class ChatRoomService {
         ReadFlag weddingPlannerReadFlag = readFlagRepository.findByChatRoomIdAndMemberRole(chatRoom.getId(), MemberRole.WEDDING_PLANNER)
                 .orElseThrow(() -> new RuntimeException("ReadFlag not found"));
 
-        List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId())
-                .orElse(List.of());
+        List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
         ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
         response.setMessages(messages);

@@ -7,11 +7,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-//@RequestMapping("/api/v1/message")
+@RequestMapping("/ws/v1/message")
 @Tag(name = "message", description = "메세지 API")
 public class MessageController {
     private final SimpMessagingTemplate template; //특정 Broker 로 메세지를 전달
