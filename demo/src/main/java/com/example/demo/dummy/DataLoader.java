@@ -50,14 +50,14 @@ public class DataLoader implements CommandLineRunner {
         radar1.put(RadarKey.COMMUNICATION, 4.5f);
         radar1.put(RadarKey.BUDGET_COMPLIANCE, 3.8f);
         radar1.put(RadarKey.PERSONAL_CUSTOMIZATION, 4.7f);
-        radar1.put(RadarKey.PRICE_NATIONALITY, 4.0f);
+        radar1.put(RadarKey.PRICE_RATIONALITY, 4.0f);
         radar1.put(RadarKey.SCHEDULE_COMPLIANCE, 4.6f);
 
         Map<RadarKey, Float> radar2 = new HashMap<>();
         radar2.put(RadarKey.COMMUNICATION, 4.0f);
         radar2.put(RadarKey.BUDGET_COMPLIANCE, 3.9f);
         radar2.put(RadarKey.PERSONAL_CUSTOMIZATION, 4.5f);
-        radar2.put(RadarKey.PRICE_NATIONALITY, 4.2f);
+        radar2.put(RadarKey.PRICE_RATIONALITY, 4.2f);
         radar2.put(RadarKey.SCHEDULE_COMPLIANCE, 4.8f);
 
         Portfolio portfolio1 = Portfolio.builder()
@@ -107,14 +107,14 @@ public class DataLoader implements CommandLineRunner {
         reviewRadar1.put(RadarKey.COMMUNICATION, 4.2f);
         reviewRadar1.put(RadarKey.BUDGET_COMPLIANCE, 3.9f);
         reviewRadar1.put(RadarKey.PERSONAL_CUSTOMIZATION, 4.5f);
-        reviewRadar1.put(RadarKey.PRICE_NATIONALITY, 4.0f);
+        reviewRadar1.put(RadarKey.PRICE_RATIONALITY, 4.0f);
         reviewRadar1.put(RadarKey.SCHEDULE_COMPLIANCE, 4.3f);
 
         Map<RadarKey, Float> reviewRadar2 = new HashMap<>();
         reviewRadar2.put(RadarKey.COMMUNICATION, 4.0f);
         reviewRadar2.put(RadarKey.BUDGET_COMPLIANCE, 4.1f);
         reviewRadar2.put(RadarKey.PERSONAL_CUSTOMIZATION, 4.4f);
-        reviewRadar2.put(RadarKey.PRICE_NATIONALITY, 4.2f);
+        reviewRadar2.put(RadarKey.PRICE_RATIONALITY, 4.2f);
         reviewRadar2.put(RadarKey.SCHEDULE_COMPLIANCE, 4.5f);
 
         Review review1 = Review.builder()
