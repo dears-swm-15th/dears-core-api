@@ -1,6 +1,7 @@
 package com.example.demo.chat.domain;
 
 import com.example.demo.base.BaseTimeEntity;
+import com.example.demo.enums.chat.MessageType;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import jakarta.persistence.*;
@@ -25,8 +26,8 @@ public class Message extends BaseTimeEntity {
     @Builder.Default
     private boolean isDeleted = Boolean.FALSE;
 
+    private MessageType messageType;
     private String contents;
-    private MemberRole memberRole;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")

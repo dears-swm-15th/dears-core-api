@@ -38,8 +38,8 @@ public class PortfolioService {
                 .collect(Collectors.toList());
     }
 
-    public PortfolioDTO.Response getPortfolioById(Long id) {
-        Portfolio portfolio = portfolioRepository.findById(id)
+    public PortfolioDTO.Response getPortfolioById(Long portfolioId) {
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
         String CloudFrontImageUrl = s3Uploader.getImageUrl(portfolio.getProfileImageUrl());
         portfolio.setProfileImageUrl(CloudFrontImageUrl);

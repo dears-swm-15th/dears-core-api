@@ -34,21 +34,7 @@ public class ChatRoom extends BaseTimeEntity {
     private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "wedding_planner_id")
+    @JoinColumn(name = "weddingplanner_id")
     private WeddingPlanner weddingPlanner;
 
-    @OneToMany(mappedBy = "chatRoom")
-    @OrderBy("createdAt asc")
-    private List<Message> messages = new ArrayList<>();
-
-    @OneToMany(mappedBy = "chatRoom")
-    @OrderBy("createdAt asc")
-    private Map<MemberRole, ReadFlag> readFlags;
-
-    public void addReadFlag(MemberRole memberRole, ReadFlag readFlag) {
-        if (this.readFlags == null) {
-            this.readFlags = new HashMap<>();
-        }
-        this.readFlags.put(memberRole, readFlag);
-    }
 }
