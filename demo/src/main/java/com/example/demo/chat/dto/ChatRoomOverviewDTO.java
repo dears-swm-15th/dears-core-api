@@ -26,9 +26,9 @@ public class ChatRoomOverviewDTO {
     @Builder
     public static class Response {
 
-        private String weddingPlannerProfileImageUrl;
+        private String othersProfileImageUrl;
 
-        private String weddingPlannerName;
+        private String othersName;
 
         private String lastMessage;
 
