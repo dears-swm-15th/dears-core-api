@@ -6,7 +6,6 @@ import com.example.demo.chat.domain.Message;
 import com.example.demo.chat.domain.ReadFlag;
 import com.example.demo.chat.dto.ChatRoomDTO;
 import com.example.demo.chat.dto.ChatRoomOverviewDTO;
-import com.example.demo.chat.dto.ReadFlagDTO;
 import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.chat.repository.MessageRepository;
@@ -22,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -83,7 +81,7 @@ public class ChatRoomService {
         return chatRoomMapper.entityToResponse(chatRoom);
     }
 
-    public List<ChatRoomOverviewDTO.Response> getCurrentUsersAllChatRoom() {
+    public List<ChatRoomOverviewDTO.Response> getCustomersAllChatRoom() {
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
         List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
 
@@ -95,8 +93,8 @@ public class ChatRoomService {
                     List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
                     return ChatRoomOverviewDTO.Response.builder()
-                            .weddingPlannerProfileImageUrl(portfolioResponse.getWeddingPlanner().getProfileImageUrl())
-                            .weddingPlannerName(portfolioResponse.getWeddingPlanner().getName())
+                            .othersProfileImageUrl(portfolioResponse.getWeddingPlanner().getProfileImageUrl())
+                            .othersName(portfolioResponse.getWeddingPlanner().getName())
                             .lastMessage(messages.get(messages.size() - 1).getContents())
                             .lastMessageCreatedAt(messages.get(messages.size() - 1).getCreatedAt())
                             .organizationName(portfolioResponse.getOrganization())
@@ -105,6 +103,28 @@ public class ChatRoomService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public List<ChatRoomOverviewDTO.Response> getWeddingPlannersAllChatRoom() {
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
+        List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerId(weddingPlanner.getId());
+
+        return chatRooms.stream()
+                .map(chatRoom -> {
+                    Customer customer = chatRoom.getCustomer();
+
+                    List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
+
+                    return ChatRoomOverviewDTO.Response.builder()
+                            .othersProfileImageUrl(customer.getProfileImageUrl())
+                            .othersName(customer.getName())
+                            .lastMessage(messages.get(messages.size() - 1).getContents())
+                            .lastMessageCreatedAt(messages.get(messages.size() - 1).getCreatedAt())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+
 
     public Long getChatRoomIdByCustomerAndWeddingPlanner(Customer customer, WeddingPlanner weddingPlanner) {
         ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());

@@ -17,6 +17,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     boolean existsByCustomerIdAndWeddingPlannerId(Long customerId, Long weddingPlannerId);
 
     List<ChatRoom> findByCustomerId(Long customerId);
+    List<ChatRoom> findByWeddingPlannerId(Long weddingPlannerId);
+
     ChatRoom findByCustomerIdAndWeddingPlannerId(Long customerId, Long weddingPlannerId);
 
     @Transactional
