@@ -33,22 +33,23 @@ public class ChatRoomController {
 
     @GetMapping("/customer/chatroom/get")
     @Operation(summary = "[신랑신부] 현재 모든 채팅방 조회")
-    public ResponseEntity<List<ChatRoomOverviewDTO.Response>> getCurrentUsersAllChatRoomForCustomer() {
+    public ResponseEntity<List<ChatRoomOverviewDTO.Response>> getAllChatRoomForCustomer() {
         List<ChatRoomOverviewDTO.Response> currentUsersAllChatRoom = chatRoomService.getCustomersAllChatRoom();
         return ResponseEntity.status(200).body(currentUsersAllChatRoom);
     }
 
     @GetMapping("/weddingplanner/chatroom/get")
     @Operation(summary = "[웨딩플래너] 현재 모든 채팅방 조회")
-    public ResponseEntity<List<ChatRoomOverviewDTO.Response>> getCurrentUsersAllChatRoomForWeddingPlanner() {
+    public ResponseEntity<List<ChatRoomOverviewDTO.Response>> getAllChatRoomForWeddingPlanner() {
         List<ChatRoomOverviewDTO.Response> currentUsersAllChatRoom = chatRoomService.getWeddingPlannersAllChatRoom();
         return ResponseEntity.status(200).body(currentUsersAllChatRoom);
     }
 
+    // TODO : 현재 유저만 나가야 함.
+    // TODO : 메소드 명, API route 변경
     @PostMapping("/delete/{chatRoomId}")
     @Operation(summary = "특정 채팅방 나가기")
     public ResponseEntity<Void> deleteChatRoom(Long chatRoomId) {
-        // TODO 현재 유저만 나가야 함.
         chatRoomService.deleteChatRoom(chatRoomId);
         return ResponseEntity.noContent().build();
     }
