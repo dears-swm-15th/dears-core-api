@@ -30,11 +30,12 @@ public class SecurityConfig{
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll() //개발 단계에서 모든 요청을 허용
-//                        .requestMatchers("/api/v1/member/token").permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/swagger-ui/*", "/favicon.ico","/swagger-resources/**","/v3/api-docs/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/api/v1/portfolio/**").hasRole("USER") //USER 권한을 가진 사용자들이 접근 가능한 METHOD 및 URL 설정
-//                        .anyRequest().authenticated()
+                    .requestMatchers("/api/v1/auth/shared/create").permitAll()
+                    .requestMatchers("/api/v1/*/weddingplanner/**").hasRole("WEDDING_PLANNER")
+                    .requestMatchers("/api/v1/*/customer/**").hasRole("CUSTOMER")
+                    .requestMatchers("/api/v1/*/shared/**").hasAnyRole("CUSTOMER","WEDDING_PLANNER")
+                    .requestMatchers("/swagger-ui/*", "/favicon.ico","/swagger-resources/**","/v3/api-docs/**").permitAll()
+                    .anyRequest().authenticated()
             );
         return http.build();
     }

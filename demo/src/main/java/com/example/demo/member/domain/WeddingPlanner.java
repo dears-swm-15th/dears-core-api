@@ -1,7 +1,6 @@
 package com.example.demo.member.domain;
 
 import com.example.demo.chat.domain.ChatRoom;
-import com.example.demo.chat.domain.Message;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.portfolio.domain.Portfolio;
 import jakarta.persistence.*;

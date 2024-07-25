@@ -18,22 +18,22 @@ public class MemberController {
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    @PostMapping("/auth/create")
-    @Operation(summary = "[공통] 토큰이 없을 때 유저 생성", description = "CUSTOMER 또는 WEDDINGPLANNER로 권한을 요청합니다.")
+    @PostMapping("/auth/shared/create")
+    @Operation(summary = "[공통] 토큰이 없을 때 유저 생성", description = "ROLE_CUSTOMER 또는 ROLE_WEDDINGPLANNER로 권한을 요청합니다.")
     public ResponseEntity<AuthDTO.Response> createMember(@RequestBody AuthDTO.Request customerAuthRequest){
         AuthDTO.Response createdMember = customUserDetailsService.join(customerAuthRequest.getRole());
         return ResponseEntity.status(201).body(createdMember);
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
-    @GetMapping("/customer/mypage/get")
+    @GetMapping("/mypage/customer/me")
     @Operation(summary = "[신랑신부] 마이페이지 조회", description = "토큰을 통해 마이페이지 정보를 조회합니다.")
     public ResponseEntity<MypageDTO.CustomerResponse> getCustomerMyPage(){
         MypageDTO.CustomerResponse myPage = customUserDetailsService.getCustomerMyPage();
         return ResponseEntity.status(200).body(myPage);
     }
 
-    @GetMapping("/weddingplanner/mypage/get")
+    @GetMapping("/mypage/weddingplanner/me")
     @Operation(summary = "[웨딩플래너] 마이페이지 조회", description = "토큰을 통해 마이페이지 정보를 조회합니다.")
     public ResponseEntity<MypageDTO.WeddingPlannerResponse> getWeddingPlannerMyPage(){
         MypageDTO.WeddingPlannerResponse myPage = customUserDetailsService.getWeddingPlannerMyPage();
