@@ -103,7 +103,6 @@ public class ReviewService {
         ReviewDTO.Response response = reviewMapper.entityToResponse(review);
 
         response.setPresignedWeddingPhotoUrls(presignedUrlList);
-        response.setPortfolioId(portfolio.getId());
 
         response.setWeddingPhotoUrls(review.getWeddingPhotoUrls().stream()
                 .map(s3Uploader::getImageUrl)

@@ -104,9 +104,5 @@ public class ReviewDTO {
         @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
         private LocalDateTime updatedAt;
 
-        @Schema(type = "integer", example = "2")
-        private Long portfolioId;
-
-        private PortfolioReviewDTO.Response portfolioReviewResponse;
     }
 }
