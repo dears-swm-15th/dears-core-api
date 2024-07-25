@@ -30,6 +30,7 @@ public class SecurityConfig{
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers("/").permitAll()
                     .requestMatchers("/api/v1/auth/shared/create").permitAll()
                     .requestMatchers("/api/v1/*/weddingplanner/**").hasRole("WEDDING_PLANNER")
                     .requestMatchers("/api/v1/*/customer/**").hasRole("CUSTOMER")
