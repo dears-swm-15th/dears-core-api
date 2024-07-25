@@ -18,6 +18,7 @@ import com.example.demo.member.mapper.WeddingPlannerMapper;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
+import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class ChatRoomService {
 
     private final ReadFlagRepository readFlagRepository;
     private final MessageRepository messageRepository;
+    private final PortfolioRepository portfolioRepository;
 
     public ChatRoom getChatRoomById(Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId)
@@ -45,9 +47,9 @@ public class ChatRoomService {
 
     public ChatRoomDTO.Response enterChatRoomByPortfolioId(Long portfolioId) {
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
-        PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolioId);
-        WeddingPlannerPortfolioDTO.Response weddingPlannerPortfolioResponse = portfolioResponse.getWeddingPlannerPortfolioResponse();
-        WeddingPlanner weddingPlanner = weddingPlannerMapper.weddingPlannerPortfolioResponseToEntity(weddingPlannerPortfolioResponse);
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        WeddingPlanner weddingPlanner = portfolio.getWeddingPlanner();
 
         if (!isChatRoomExist(customer, weddingPlanner)) {
             System.out.println("ChatRoom not exist");
