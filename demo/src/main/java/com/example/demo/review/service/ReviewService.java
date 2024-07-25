@@ -64,6 +64,8 @@ public class ReviewService {
         review.setReviewerId(weddingPlanner.getId());
         review.setIsProvided(true);
 
+        reviewRepository.save(review);
+
         ReviewDTO.Response response = reviewMapper.entityToResponse(review);
 
         response.setPresignedWeddingPhotoUrls(presignedUrlList);
@@ -72,7 +74,6 @@ public class ReviewService {
                 .map(s3Uploader::getImageUrl)
                 .collect(Collectors.toList()));
 
-        reviewRepository.save(review);
 
         return response;
     }
@@ -92,19 +93,21 @@ public class ReviewService {
         //save preview, set presigned url and cloudfront url to response
         Review review = reviewMapper.requestToEntity(reviewRequest);
         Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
+
         review.setPortfolio(portfolio);
         review.setReviewerId(customer.getId());
         review.setIsProvided(false);
 
+        reviewRepository.save(review);
+
         ReviewDTO.Response response = reviewMapper.entityToResponse(review);
 
         response.setPresignedWeddingPhotoUrls(presignedUrlList);
+        response.setPortfolioId(portfolio.getId());
 
         response.setWeddingPhotoUrls(review.getWeddingPhotoUrls().stream()
                 .map(s3Uploader::getImageUrl)
                 .collect(Collectors.toList()));
-
-        reviewRepository.save(review);
 
         return response;
     }
@@ -134,6 +137,8 @@ public class ReviewService {
         Portfolio portfolio = portfolioService.reflectModifiedReview(reviewRequest, existingReview);
         updatedReview.setPortfolio(portfolio);
 
+        reviewRepository.save(updatedReview);
+
         ReviewDTO.Response response = reviewMapper.entityToResponse(updatedReview);
         response.setPresignedWeddingPhotoUrls(updatedReview.getWeddingPhotoUrls());
 
@@ -141,7 +146,6 @@ public class ReviewService {
                 .map(s3Uploader::getImageUrl)
                 .collect(Collectors.toList()));
 
-        reviewRepository.save(updatedReview);
 
         return reviewMapper.entityToResponse(updatedReview);
     }
@@ -172,14 +176,14 @@ public class ReviewService {
         Portfolio portfolio = portfolioService.reflectModifiedReview(reviewRequest, existingReview);
         updatedReview.setPortfolio(portfolio);
 
+        reviewRepository.save(updatedReview);
+
         ReviewDTO.Response response = reviewMapper.entityToResponse(updatedReview);
         response.setPresignedWeddingPhotoUrls(updatedReview.getWeddingPhotoUrls());
 
         response.setWeddingPhotoUrls(updatedReview.getWeddingPhotoUrls().stream()
                 .map(s3Uploader::getImageUrl)
                 .collect(Collectors.toList()));
-
-        reviewRepository.save(updatedReview);
 
         return reviewMapper.entityToResponse(updatedReview);
     }
