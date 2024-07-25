@@ -1,6 +1,7 @@
 package com.example.demo.portfolio.dto;
 
 import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.member.dto.WeddingPlannerPortfolioDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import com.example.demo.enums.review.RadarKey;
@@ -64,7 +65,7 @@ public class PortfolioDTO {
         @Schema(type = "array", example = "[\"src/portfolio/img1.jpg\", \"src/portfolio/img2.jpg\"]")
         private List<String> weddingPhotoUrls;
 
-        @Schema(type = "object", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_NATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6}")
+        @Schema(type = "object", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_RATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6}")
         private Map<RadarKey, Float> avgRadar;
 
         @Schema(type = "integer", example = "62")
@@ -122,8 +123,8 @@ public class PortfolioDTO {
         @Schema(type = "integer", example = "20000")
         private Integer minEstimate;
 
-        @Schema(type = "weddingPlanner", example = "weddingPlannerEntity")
-        private WeddingPlanner weddingPlanner;
+        @Schema(type = "class", example = "")
+        private WeddingPlannerPortfolioDTO.Response weddingPlannerPortfolioResponse;
 
         @Schema(type = "array", example = "[\"퍼스널 컬러 체크\", \"웨딩드레스 시착 1회 무료\"]")
         private List<String> services;
@@ -131,7 +132,7 @@ public class PortfolioDTO {
         @Schema(type = "array", example = "[\"src/portfolio/img1.jpg\", \"src/portfolio/img2.jpg\"]")
         private List<String> weddingPhotoUrls;
 
-        @Schema(type = "object", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_NATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6}")
+        @Schema(type = "object", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_RATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6}")
         private Map<RadarKey, Float> avgRadar;
 
         @Schema(type = "integer", example = "62")
@@ -148,6 +149,12 @@ public class PortfolioDTO {
 
         @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
         private LocalDateTime updatedAt;
+
+        @Schema(type = "float", example = "4.2")
+        private Float avgRating;
+
+        @Schema(type = "integer", example = "300000")
+        private Integer avgEstimate;
 
     }
 }

@@ -13,6 +13,8 @@ import com.example.demo.chat.repository.ReadFlagRepository;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.member.dto.WeddingPlannerPortfolioDTO;
+import com.example.demo.member.mapper.WeddingPlannerMapper;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomMapper chatRoomMapper = ChatRoomMapper.INSTANCE;
+    private final WeddingPlannerMapper weddingPlannerMapper = WeddingPlannerMapper.INSTANCE;
 
     private final CustomUserDetailsService customUserDetailsService;
     private final PortfolioService portfolioService;
@@ -43,8 +46,8 @@ public class ChatRoomService {
     public ChatRoomDTO.Response enterChatRoomByPortfolioId(Long portfolioId) {
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
         PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolioId);
-
-        WeddingPlanner weddingPlanner = portfolioResponse.getWeddingPlanner();
+        WeddingPlannerPortfolioDTO.Response weddingPlannerPortfolioResponse = portfolioResponse.getWeddingPlannerPortfolioResponse();
+        WeddingPlanner weddingPlanner = weddingPlannerMapper.weddingPlannerPortfolioResponseToEntity(weddingPlannerPortfolioResponse);
 
         if (!isChatRoomExist(customer, weddingPlanner)) {
             System.out.println("ChatRoom not exist");
@@ -85,20 +88,27 @@ public class ChatRoomService {
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
         List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
 
+
+
         return chatRooms.stream()
                 .map(chatRoom -> {
                     Portfolio portfolio = portfolioService.getPortfolioByWeddingPlannerId(chatRoom.getWeddingPlanner().getId());
                     PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolio.getId());
-
+                    
                     List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
                     return ChatRoomOverviewDTO.Response.builder()
+<<<<<<< HEAD
                             .othersProfileImageUrl(portfolioResponse.getWeddingPlanner().getProfileImageUrl())
                             .othersName(portfolioResponse.getWeddingPlanner().getName())
+=======
+                            .weddingPlannerProfileImageUrl(portfolioResponse.getProfileImageUrl())
+                            .weddingPlannerName(portfolioResponse.getPlannerName())
+>>>>>>> refactor/portfolio
                             .lastMessage(messages.get(messages.size() - 1).getContents())
                             .lastMessageCreatedAt(messages.get(messages.size() - 1).getCreatedAt())
                             .organizationName(portfolioResponse.getOrganization())
-                            .portfolioId(portfolioResponse.getWeddingPlanner().getId())
+                            .portfolioId(portfolioResponse.getId())
                             .build();
                 })
                 .collect(Collectors.toList());

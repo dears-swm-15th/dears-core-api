@@ -2,6 +2,7 @@ package com.example.demo.portfolio.service;
 
 import com.example.demo.config.S3Uploader;
 import com.example.demo.enums.review.RadarKey;
+import com.example.demo.error.ErrorCode;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
@@ -10,6 +11,7 @@ import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.review.domain.Review;
 import com.example.demo.review.dto.ReviewDTO;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -228,4 +230,27 @@ public class PortfolioService {
         return portfolioRepository.findByWeddingPlannerId(weddingPlannerId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
     }
+
+
+    private float calculateAvgRating(PortfolioDTO.Response portfolioResponse) {
+        float avgRating = 0f;
+        if (portfolioResponse.getRatingCount() != 0) {
+            avgRating = (float) portfolioResponse.getRatingSum() / portfolioResponse.getRatingCount();
+            portfolioResponse.setAvgRating(avgRating);
+        }
+        return avgRating;
+    }
+
+    private Integer calculateAvgEstimate(PortfolioDTO.Response portfolioResponse) {
+        float avgEstimate = 0f;
+        Integer avgEstimateInt = 0;
+        if (portfolioResponse.getEstimateCount() != 0) {
+            avgEstimate = (float) portfolioResponse.getEstimateSum() / portfolioResponse.getEstimateCount();
+            avgEstimateInt = Math.round(avgEstimate / 1000) * 1000;
+            portfolioResponse.setAvgEstimate(avgEstimateInt);
+        }
+        return avgEstimateInt;
+    }
+
+
 }
