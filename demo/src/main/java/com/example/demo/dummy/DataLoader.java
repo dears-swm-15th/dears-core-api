@@ -125,6 +125,7 @@ public class DataLoader implements CommandLineRunner {
                 .tags(reviewTags1)
                 .weddingPhotoUrls(reviewPhotos1)
                 .radar(reviewRadar1)
+                .portfolio(portfolio2)
                 .build();
 
         Review review2 = Review.builder()
@@ -167,31 +168,6 @@ public class DataLoader implements CommandLineRunner {
         portfolioRepository.save(portfolio1);
         portfolioRepository.save(portfolio2);
 
-//        Customer customer1 = customerRepository.findByName("Clara");
-//        Customer customer2 = customerRepository.findByName("Jeff");
-//        WeddingPlanner planner1 = weddingPlannerRepository.findByName("Alice");
-
-//        CustomerMessage customerMessage1 = CustomerMessage.builder()
-//                .customer(customer1)
-//                .contents("Hello, I would like to inquire about your wedding planning services.")
-//                .unreadCount(1)
-//                .build();
-//
-//        CustomerMessage customerMessage2 = CustomerMessage.builder()
-//                .customer(customer2)
-//                .contents("Can you provide more details on the packages offered?")
-//                .unreadCount(2)
-//                .build();
-//
-//        WeddingPlannerMessage weddingPlannerMessage1 = WeddingPlannerMessage.builder()
-//                .weddingplanner(planner1)
-//                .contents("Sure, we offer a range of packages tailored to your needs.")
-//                .unreadCount(0)
-//                .build();
-//
-//        weddingPlannerMessageRepository.save(weddingPlannerMessage1);
-//        customerMessageRepository.save(customerMessage1);
-//        customerMessageRepository.save(customerMessage2);
 
 
         System.out.println("Sample data loaded.");
