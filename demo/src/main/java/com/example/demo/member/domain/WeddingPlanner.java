@@ -22,6 +22,10 @@ public class WeddingPlanner {
     @Column(name = "weddingplanner_id")
     private Long id;
 
+    @Builder.Default
+    @Column
+    private boolean isDeleted = Boolean.FALSE;
+
     @Column
     private MemberRole role;
 
@@ -31,8 +35,6 @@ public class WeddingPlanner {
     @Column
     private String UUID;
 
-    @Column
-    private boolean isDeleted;
 
     @Column
     private String profileImageUrl;

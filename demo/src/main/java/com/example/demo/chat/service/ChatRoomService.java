@@ -13,9 +13,12 @@ import com.example.demo.chat.repository.ReadFlagRepository;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.member.dto.WeddingPlannerPortfolioDTO;
+import com.example.demo.member.mapper.WeddingPlannerMapper;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
+import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,12 +31,14 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomMapper chatRoomMapper = ChatRoomMapper.INSTANCE;
+    private final WeddingPlannerMapper weddingPlannerMapper = WeddingPlannerMapper.INSTANCE;
 
     private final CustomUserDetailsService customUserDetailsService;
     private final PortfolioService portfolioService;
 
     private final ReadFlagRepository readFlagRepository;
     private final MessageRepository messageRepository;
+    private final PortfolioRepository portfolioRepository;
 
     public ChatRoom getChatRoomById(Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId)
@@ -42,9 +47,9 @@ public class ChatRoomService {
 
     public ChatRoomDTO.Response enterChatRoomByPortfolioId(Long portfolioId) {
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
-        PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolioId);
-
-        WeddingPlanner weddingPlanner = portfolioResponse.getWeddingPlanner();
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        WeddingPlanner weddingPlanner = portfolio.getWeddingPlanner();
 
         if (!isChatRoomExist(customer, weddingPlanner)) {
             System.out.println("ChatRoom not exist");
@@ -85,20 +90,22 @@ public class ChatRoomService {
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
         List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
 
+
         return chatRooms.stream()
                 .map(chatRoom -> {
                     Portfolio portfolio = portfolioService.getPortfolioByWeddingPlannerId(chatRoom.getWeddingPlanner().getId());
                     PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolio.getId());
-
+                    
                     List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
                     return ChatRoomOverviewDTO.Response.builder()
-                            .othersProfileImageUrl(portfolioResponse.getWeddingPlanner().getProfileImageUrl())
-                            .othersName(portfolioResponse.getWeddingPlanner().getName())
+                            .chatRoomId(chatRoom.getId())
+                            .othersProfileImageUrl(portfolioResponse.getWeddingPlannerPortfolioResponse().getProfileImageUrl())
+                            .othersName(portfolioResponse.getWeddingPlannerPortfolioResponse().getName())
                             .lastMessage(messages.get(messages.size() - 1).getContents())
                             .lastMessageCreatedAt(messages.get(messages.size() - 1).getCreatedAt())
                             .organizationName(portfolioResponse.getOrganization())
-                            .portfolioId(portfolioResponse.getWeddingPlanner().getId())
+                            .portfolioId(portfolioResponse.getId())
                             .build();
                 })
                 .collect(Collectors.toList());

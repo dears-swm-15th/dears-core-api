@@ -50,14 +50,14 @@ public class DataLoader implements CommandLineRunner {
         radar1.put(RadarKey.COMMUNICATION, 4.5f);
         radar1.put(RadarKey.BUDGET_COMPLIANCE, 3.8f);
         radar1.put(RadarKey.PERSONAL_CUSTOMIZATION, 4.7f);
-        radar1.put(RadarKey.PRICE_NATIONALITY, 4.0f);
+        radar1.put(RadarKey.PRICE_RATIONALITY, 4.0f);
         radar1.put(RadarKey.SCHEDULE_COMPLIANCE, 4.6f);
 
         Map<RadarKey, Float> radar2 = new HashMap<>();
         radar2.put(RadarKey.COMMUNICATION, 4.0f);
         radar2.put(RadarKey.BUDGET_COMPLIANCE, 3.9f);
         radar2.put(RadarKey.PERSONAL_CUSTOMIZATION, 4.5f);
-        radar2.put(RadarKey.PRICE_NATIONALITY, 4.2f);
+        radar2.put(RadarKey.PRICE_RATIONALITY, 4.2f);
         radar2.put(RadarKey.SCHEDULE_COMPLIANCE, 4.8f);
 
         Portfolio portfolio1 = Portfolio.builder()
@@ -107,18 +107,17 @@ public class DataLoader implements CommandLineRunner {
         reviewRadar1.put(RadarKey.COMMUNICATION, 4.2f);
         reviewRadar1.put(RadarKey.BUDGET_COMPLIANCE, 3.9f);
         reviewRadar1.put(RadarKey.PERSONAL_CUSTOMIZATION, 4.5f);
-        reviewRadar1.put(RadarKey.PRICE_NATIONALITY, 4.0f);
+        reviewRadar1.put(RadarKey.PRICE_RATIONALITY, 4.0f);
         reviewRadar1.put(RadarKey.SCHEDULE_COMPLIANCE, 4.3f);
 
         Map<RadarKey, Float> reviewRadar2 = new HashMap<>();
         reviewRadar2.put(RadarKey.COMMUNICATION, 4.0f);
         reviewRadar2.put(RadarKey.BUDGET_COMPLIANCE, 4.1f);
         reviewRadar2.put(RadarKey.PERSONAL_CUSTOMIZATION, 4.4f);
-        reviewRadar2.put(RadarKey.PRICE_NATIONALITY, 4.2f);
+        reviewRadar2.put(RadarKey.PRICE_RATIONALITY, 4.2f);
         reviewRadar2.put(RadarKey.SCHEDULE_COMPLIANCE, 4.5f);
 
         Review review1 = Review.builder()
-                .reviewerId(1L)
                 .content("Great experience with Organization One. Highly recommend!")
                 .isProvided(true)
                 .rating(4.5f)
@@ -126,10 +125,10 @@ public class DataLoader implements CommandLineRunner {
                 .tags(reviewTags1)
                 .weddingPhotoUrls(reviewPhotos1)
                 .radar(reviewRadar1)
+                .portfolio(portfolio2)
                 .build();
 
         Review review2 = Review.builder()
-                .reviewerId(1L)
                 .content("Organization Two provided excellent service. Very satisfied!")
                 .isProvided(false)
                 .rating(4.6f)
@@ -169,31 +168,6 @@ public class DataLoader implements CommandLineRunner {
         portfolioRepository.save(portfolio1);
         portfolioRepository.save(portfolio2);
 
-//        Customer customer1 = customerRepository.findByName("Clara");
-//        Customer customer2 = customerRepository.findByName("Jeff");
-//        WeddingPlanner planner1 = weddingPlannerRepository.findByName("Alice");
-
-//        CustomerMessage customerMessage1 = CustomerMessage.builder()
-//                .customer(customer1)
-//                .contents("Hello, I would like to inquire about your wedding planning services.")
-//                .unreadCount(1)
-//                .build();
-//
-//        CustomerMessage customerMessage2 = CustomerMessage.builder()
-//                .customer(customer2)
-//                .contents("Can you provide more details on the packages offered?")
-//                .unreadCount(2)
-//                .build();
-//
-//        WeddingPlannerMessage weddingPlannerMessage1 = WeddingPlannerMessage.builder()
-//                .weddingplanner(planner1)
-//                .contents("Sure, we offer a range of packages tailored to your needs.")
-//                .unreadCount(0)
-//                .build();
-//
-//        weddingPlannerMessageRepository.save(weddingPlannerMessage1);
-//        customerMessageRepository.save(customerMessage1);
-//        customerMessageRepository.save(customerMessage2);
 
 
         System.out.println("Sample data loaded.");

@@ -28,6 +28,7 @@ public class Review extends BaseTimeEntity {
         private boolean isDeleted = Boolean.FALSE;
 
         private Long reviewerId;
+        private String reviewerName;
         private String content;
         private Boolean isProvided;
 
