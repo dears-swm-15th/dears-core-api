@@ -13,7 +13,7 @@ public class AuthDTO {
     @AllArgsConstructor
     @Builder
     public static class Request {
-        @Schema(type = "string", example = "ROLE_USER")
+        @Schema(type = "string", example = "ROLE_CUSTOMER 또는 ROLE_WEDDING_PLANNER")
         private String role;
     }
 
@@ -24,7 +24,7 @@ public class AuthDTO {
     @AllArgsConstructor
     @Builder
     public static class Response {
-        @Schema(type = "string", example = "ROLE_USER")
+        @Schema(type = "string", example = "CUSTOMER 또는 WEDDING_PLANNER")
         private String role;
         @Schema(type = "string", example = "84f6cd04-9985-4da6-94b5-e79fffd88e61")
         private String UUID;

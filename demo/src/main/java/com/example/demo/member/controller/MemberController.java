@@ -19,7 +19,7 @@ public class MemberController {
     private final CustomUserDetailsService customUserDetailsService;
 
     @PostMapping("/auth/shared/create")
-    @Operation(summary = "[공통] 토큰이 없을 때 유저 생성", description = "CUSTOMER 또는 WEDDINGPLANNER로 권한을 요청합니다.")
+    @Operation(summary = "[공통] 토큰이 없을 때 유저 생성", description = "ROLE_CUSTOMER 또는 ROLE_WEDDINGPLANNER로 권한을 요청합니다.")
     public ResponseEntity<AuthDTO.Response> createMember(@RequestBody AuthDTO.Request customerAuthRequest){
         AuthDTO.Response createdMember = customUserDetailsService.join(customerAuthRequest.getRole());
         return ResponseEntity.status(201).body(createdMember);
