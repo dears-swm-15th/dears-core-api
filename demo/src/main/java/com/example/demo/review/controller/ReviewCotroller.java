@@ -19,6 +19,11 @@ public class ReviewCotroller {
 
     private final ReviewService reviewService;
 
+<<<<<<< Updated upstream
+=======
+    // TODO : [공통] 특정 포트폴리오에 대한 전체 리뷰 조회
+
+>>>>>>> Stashed changes
     @GetMapping("/shared/all")
     @Operation(summary = "[공통] 전체 리뷰 조회")
     public ResponseEntity<List<ReviewDTO.Response>> getAllReviews() {
