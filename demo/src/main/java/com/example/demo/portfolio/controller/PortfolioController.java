@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/portfolio")
 @Tag(name = "portfolio", description = "포트폴리오 API")
 public class PortfolioController {
 
@@ -23,7 +23,7 @@ public class PortfolioController {
 
     private final PortfolioSearchService portfolioSearchService;
 
-    @GetMapping("/portfolio/get/{id}")
+    @GetMapping("/shared/{id}")
     @Operation(summary = "[공통] 특정 포트폴리오 조회")
     public ResponseEntity<PortfolioDTO.Response> getPortfolioById(
             @Parameter(description = "portfolioId")
@@ -32,14 +32,14 @@ public class PortfolioController {
         return ResponseEntity.ok(portfolioResponse);
     }
 
-    @PostMapping("/weddingplanner/portfolio/create")
+    @PostMapping("/weddingplanner/create")
     @Operation(summary = "[웨딩플래너] 포트폴리오 작성")
     public ResponseEntity<PortfolioDTO.Response> createPortfolio(@RequestBody PortfolioDTO.Request portfolioRequest) {
         PortfolioDTO.Response createdPortfolio = portfolioService.createPortfolio(portfolioRequest);
         return ResponseEntity.status(201).body(createdPortfolio);
     }
 
-    @PostMapping("/weddingplanner/portfolio/update/{id}")
+    @PostMapping("/weddingplanner/update/{id}")
     @Operation(summary = "[웨딩플래너] 특정 포트폴리오 업데이트")
     public ResponseEntity<PortfolioDTO.Response> updatePortfolio(
             @Parameter(description = "portfolioId")
@@ -48,7 +48,7 @@ public class PortfolioController {
         return ResponseEntity.ok(updatedPortfolio);
     }
 
-    @PostMapping("/weddingplanner/portfolio/delete/{id}")
+    @PostMapping("/weddingplanner/delete/{id}")
     @Operation(summary = "[웨딩플래너] 특정 포트폴리오 삭제")
     public ResponseEntity<Void> deletePortfolio(
             @Parameter(description = "portfolioId")
@@ -57,21 +57,21 @@ public class PortfolioController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/portfolio/get/soft-deleted")
+    @GetMapping("/shared/soft-deleted")
     @Operation(summary = "[공통] soft-deleted가 된 포트폴리오 조회")
     public ResponseEntity<List<PortfolioDTO.Response>> getAllSoftDeleted() {
         List<PortfolioDTO.Response> softDeletedPortfolios = portfolioService.getAllSoftDeletedPortfolios();
         return ResponseEntity.ok(softDeletedPortfolios);
     }
 
-    @GetMapping("/portfolio/get")
+    @GetMapping("/shared/all")
     @Operation(summary = "[공통] soft-deleted 를 포함한 전체 포트폴리오 조회")
     public ResponseEntity<List<PortfolioDTO.Response>> getAllPortfolios() {
         List<PortfolioDTO.Response> portfolioResponses = portfolioService.getAllPortfolios();
         return ResponseEntity.ok(portfolioResponses);
     }
 
-    @GetMapping("/portfolio/search")
+    @GetMapping("/shared/search")
     @Operation(summary = "[공통] 포트폴리오 검색하여 조회")
     public ResponseEntity<List<PortfolioSearchDTO.Response>> getSearchPortfolio(
             @Parameter(description = "검색 키워드")
