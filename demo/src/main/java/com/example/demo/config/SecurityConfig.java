@@ -30,11 +30,11 @@ public class SecurityConfig{
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers("/", "/index.html", "/swagger-ui/*",  "/swagger-resources/**", "/v3/api-docs/**").permitAll()
                     .requestMatchers("/api/v1/auth/shared/create").permitAll()
                     .requestMatchers("/api/v1/*/weddingplanner/**").hasRole("WEDDING_PLANNER")
                     .requestMatchers("/api/v1/*/customer/**").hasRole("CUSTOMER")
                     .requestMatchers("/api/v1/*/shared/**").hasAnyRole("CUSTOMER","WEDDING_PLANNER")
-                    .requestMatchers("/swagger-ui/*", "/favicon.ico","/swagger-resources/**","/v3/api-docs/**").permitAll()
                     .anyRequest().authenticated()
             );
         return http.build();
