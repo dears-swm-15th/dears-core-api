@@ -48,13 +48,7 @@ public class ReviewDTO {
 
         @Schema(type = "object", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_RATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6}")
         private Map<RadarKey, Float> radar;
-
-//        @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
-//        private LocalDateTime createdAt;
-//
-//        @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
-//        private LocalDateTime updatedAt;
-
+        
         @Schema(type = "integer", example = "2")
         private Long portfolioId;
 
@@ -71,10 +65,10 @@ public class ReviewDTO {
         @Schema(type = "long", example = "1")
         private Long id;
 
-        @Schema(type = "string", example = "name1")
+        @Schema(type = "string", example = "결혼하고 싶어요123")
         private String reviewerName;
 
-        @Schema(type = "string", example = "name1")
+        @Schema(type = "string", example = "최고의 웨딩플래너!")
         private String content;
 
         @Schema(type = "boolean", example = "true")
