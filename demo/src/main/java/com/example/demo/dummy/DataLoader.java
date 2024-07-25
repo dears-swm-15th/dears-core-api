@@ -118,7 +118,6 @@ public class DataLoader implements CommandLineRunner {
         reviewRadar2.put(RadarKey.SCHEDULE_COMPLIANCE, 4.5f);
 
         Review review1 = Review.builder()
-                .reviewerId(1L)
                 .content("Great experience with Organization One. Highly recommend!")
                 .isProvided(true)
                 .rating(4.5f)
@@ -129,7 +128,6 @@ public class DataLoader implements CommandLineRunner {
                 .build();
 
         Review review2 = Review.builder()
-                .reviewerId(1L)
                 .content("Organization Two provided excellent service. Very satisfied!")
                 .isProvided(false)
                 .rating(4.6f)
