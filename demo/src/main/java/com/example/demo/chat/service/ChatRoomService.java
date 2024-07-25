@@ -89,7 +89,6 @@ public class ChatRoomService {
         List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
 
 
-
         return chatRooms.stream()
                 .map(chatRoom -> {
                     Portfolio portfolio = portfolioService.getPortfolioByWeddingPlannerId(chatRoom.getWeddingPlanner().getId());
@@ -98,6 +97,7 @@ public class ChatRoomService {
                     List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
                     return ChatRoomOverviewDTO.Response.builder()
+                            .chatRoomId(chatRoom.getId())
                             .othersProfileImageUrl(portfolioResponse.getWeddingPlannerPortfolioResponse().getProfileImageUrl())
                             .othersName(portfolioResponse.getWeddingPlannerPortfolioResponse().getName())
                             .lastMessage(messages.get(messages.size() - 1).getContents())
