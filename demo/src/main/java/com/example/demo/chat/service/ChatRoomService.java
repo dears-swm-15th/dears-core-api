@@ -98,13 +98,8 @@ public class ChatRoomService {
                     List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
                     return ChatRoomOverviewDTO.Response.builder()
-<<<<<<< HEAD
-                            .othersProfileImageUrl(portfolioResponse.getWeddingPlanner().getProfileImageUrl())
-                            .othersName(portfolioResponse.getWeddingPlanner().getName())
-=======
-                            .weddingPlannerProfileImageUrl(portfolioResponse.getProfileImageUrl())
-                            .weddingPlannerName(portfolioResponse.getPlannerName())
->>>>>>> refactor/portfolio
+                            .othersProfileImageUrl(portfolioResponse.getWeddingPlannerPortfolioResponse().getProfileImageUrl())
+                            .othersName(portfolioResponse.getWeddingPlannerPortfolioResponse().getName())
                             .lastMessage(messages.get(messages.size() - 1).getContents())
                             .lastMessageCreatedAt(messages.get(messages.size() - 1).getCreatedAt())
                             .organizationName(portfolioResponse.getOrganization())
