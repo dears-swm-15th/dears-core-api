@@ -23,12 +23,12 @@ public class PortfolioController {
 
     private final PortfolioSearchService portfolioSearchService;
 
-    @GetMapping("/shared/{id}")
+    @GetMapping("/shared/{portfolioId}")
     @Operation(summary = "[공통] 특정 포트폴리오 조회")
     public ResponseEntity<PortfolioDTO.Response> getPortfolioById(
             @Parameter(description = "portfolioId")
-            @PathVariable Long id) {
-        PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(id);
+            @PathVariable Long portfolioId) {
+        PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolioId);
         return ResponseEntity.ok(portfolioResponse);
     }
 
@@ -39,21 +39,21 @@ public class PortfolioController {
         return ResponseEntity.status(201).body(createdPortfolio);
     }
 
-    @PostMapping("/weddingplanner/update/{id}")
+    @PostMapping("/weddingplanner/update/{portfolioId}")
     @Operation(summary = "[웨딩플래너] 특정 포트폴리오 업데이트")
     public ResponseEntity<PortfolioDTO.Response> updatePortfolio(
             @Parameter(description = "portfolioId")
-            @PathVariable Long id, @RequestBody PortfolioDTO.Request portfolioRequest) {
-        PortfolioDTO.Response updatedPortfolio = portfolioService.updatePortfolio(id, portfolioRequest);
+            @PathVariable Long portfolioId, @RequestBody PortfolioDTO.Request portfolioRequest) {
+        PortfolioDTO.Response updatedPortfolio = portfolioService.updatePortfolio(portfolioId, portfolioRequest);
         return ResponseEntity.ok(updatedPortfolio);
     }
 
-    @PostMapping("/weddingplanner/delete/{id}")
+    @PostMapping("/weddingplanner/delete/{portfolioId}")
     @Operation(summary = "[웨딩플래너] 특정 포트폴리오 삭제")
     public ResponseEntity<Void> deletePortfolio(
             @Parameter(description = "portfolioId")
-            @PathVariable Long id) {
-        portfolioService.deletePortfolio(id);
+            @PathVariable Long portfolioId) {
+        portfolioService.deletePortfolio(portfolioId);
         return ResponseEntity.noContent().build();
     }
 

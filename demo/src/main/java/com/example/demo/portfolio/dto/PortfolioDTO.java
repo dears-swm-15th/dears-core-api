@@ -123,6 +123,12 @@ public class PortfolioDTO {
         @Schema(type = "integer", example = "20000")
         private Integer minEstimate;
 
+        @Schema(type = "Map", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_RATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6})")
+        private Map<RadarKey, Float> radarSum;
+
+        @Schema(type = "integer", example = "12")
+        private Integer radarCount;
+
         @Schema(type = "class", example = "")
         private WeddingPlannerPortfolioDTO.Response weddingPlannerPortfolioResponse;
 
@@ -131,12 +137,6 @@ public class PortfolioDTO {
 
         @Schema(type = "array", example = "[\"src/portfolio/img1.jpg\", \"src/portfolio/img2.jpg\"]")
         private List<String> weddingPhotoUrls;
-
-        @Schema(type = "object", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_RATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6}")
-        private Map<RadarKey, Float> avgRadar;
-
-        @Schema(type = "integer", example = "62")
-        private Integer radarCount;
 
         @Schema(type = "string", example = "https://s3.amazonaws.com/bucket/profileImageUrl", description = "10분동안 유효하며 PUT으로 한 개의 이미지를 전송 가능합니다.")
         private String presignedProfileImageUrl;
@@ -149,6 +149,9 @@ public class PortfolioDTO {
 
         @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
         private LocalDateTime updatedAt;
+
+        @Schema(type = "object", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_RATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6}")
+        private Map<RadarKey, Float> avgRadar;
 
         @Schema(type = "float", example = "4.2")
         private Float avgRating;

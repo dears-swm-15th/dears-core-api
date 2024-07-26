@@ -2,7 +2,6 @@ package com.example.demo.portfolio.service;
 
 import com.example.demo.config.S3Uploader;
 import com.example.demo.enums.review.RadarKey;
-import com.example.demo.error.ErrorCode;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
@@ -11,9 +10,7 @@ import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.review.domain.Review;
 import com.example.demo.review.dto.ReviewDTO;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +42,13 @@ public class PortfolioService {
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
         String CloudFrontImageUrl = s3Uploader.getImageUrl(portfolio.getProfileImageUrl());
         portfolio.setProfileImageUrl(CloudFrontImageUrl);
-        return portfolioMapper.entityToResponse(portfolio);
+        PortfolioDTO.Response portfolioResponse =  portfolioMapper.entityToResponse(portfolio);
+
+        portfolioResponse.setAvgRating(calculateAvgRating(portfolioResponse));
+        portfolioResponse.setAvgEstimate(calculateAvgEstimate(portfolioResponse));
+        portfolioResponse.setAvgRadar(calculateAvgRadar(portfolioResponse));
+
+        return portfolioResponse;
     }
 
     @Transactional
@@ -80,11 +83,11 @@ public class PortfolioService {
     }
 
     @Transactional
-    public PortfolioDTO.Response updatePortfolio(Long id, PortfolioDTO.Request portfolioRequest) {
+    public PortfolioDTO.Response updatePortfolio(Long portfolioId, PortfolioDTO.Request portfolioRequest) {
 
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
-        Portfolio existingPortfolio = portfolioRepository.findById(id)
+        Portfolio existingPortfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
         if(portfolioRequest.getProfileImageUrl() != null) {
             //Delete existing image from s3 and upload new image
@@ -118,11 +121,11 @@ public class PortfolioService {
     }
 
     @Transactional
-    public void deletePortfolio(Long id) {
+    public void deletePortfolio(Long portfolioId) {
 
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
-        Portfolio portfolio = portfolioRepository.findById(id)
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
         String profileImageUrl = portfolio.getProfileImageUrl();
@@ -137,8 +140,8 @@ public class PortfolioService {
 
         weddingPlanner.setPortfolio(null);
 
-        portfolioRepository.softDeleteById(id);
-        portfolioSearchService.deleteDocumentById(id); //검색으로는 나타나지 못하도록 구현
+        portfolioRepository.softDeleteById(portfolioId);
+        portfolioSearchService.deleteDocumentById(portfolioId); //검색으로는 나타나지 못하도록 구현
     }
 
     public List<PortfolioDTO.Response> getAllSoftDeletedPortfolios() {
@@ -148,8 +151,8 @@ public class PortfolioService {
     }
 
     @Transactional
-    public Portfolio increaseWishListCount(Long id) {
-        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(id)
+    public Portfolio increaseWishListCount(Long portfolioId) {
+        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
         portfolio.increaseWishListCount();
@@ -159,8 +162,8 @@ public class PortfolioService {
     }
 
     @Transactional
-    public Portfolio decreaseListCount(Long id) {
-        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(id)
+    public Portfolio decreaseWishListCount(Long portfolioId) {
+        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
         portfolio.decreaseWishListCount();
@@ -231,12 +234,13 @@ public class PortfolioService {
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
     }
 
-
     private float calculateAvgRating(PortfolioDTO.Response portfolioResponse) {
         float avgRating = 0f;
+        if (portfolioResponse.getRatingCount() == null) {
+            portfolioResponse.setRatingCount(0);
+        }
         if (portfolioResponse.getRatingCount() != 0) {
             avgRating = (float) portfolioResponse.getRatingSum() / portfolioResponse.getRatingCount();
-            portfolioResponse.setAvgRating(avgRating);
         }
         return avgRating;
     }
@@ -244,13 +248,35 @@ public class PortfolioService {
     private Integer calculateAvgEstimate(PortfolioDTO.Response portfolioResponse) {
         float avgEstimate = 0f;
         Integer avgEstimateInt = 0;
+        if (portfolioResponse.getEstimateCount() == null) {
+            portfolioResponse.setEstimateCount(0);
+        }
         if (portfolioResponse.getEstimateCount() != 0) {
             avgEstimate = (float) portfolioResponse.getEstimateSum() / portfolioResponse.getEstimateCount();
             avgEstimateInt = Math.round(avgEstimate / 1000) * 1000;
-            portfolioResponse.setAvgEstimate(avgEstimateInt);
         }
         return avgEstimateInt;
     }
 
+    private Map<RadarKey, Float> calculateAvgRadar(PortfolioDTO.Response portfolioResponse) {
+        Map<RadarKey, Float> avgRadar = Map.of(
+                RadarKey.COMMUNICATION, 0f,
+                RadarKey.BUDGET_COMPLIANCE, 0f,
+                RadarKey.PERSONAL_CUSTOMIZATION, 0f,
+                RadarKey.PRICE_RATIONALITY, 0f,
+                RadarKey.SCHEDULE_COMPLIANCE, 0f
+        );
+        if (portfolioResponse.getRadarCount() == null) {
+            portfolioResponse.setRadarCount(0);
+        }
+        if (portfolioResponse.getRadarCount() != 0) {
+            Map<RadarKey, Float> radarSum = portfolioResponse.getRadarSum();
+            Integer radarCount = portfolioResponse.getRadarCount();
+            // update avgRadar using radarSum and radarCount
+            avgRadar = radarSum.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue() / radarCount));
+        }
+        return avgRadar;
+    }
 
 }

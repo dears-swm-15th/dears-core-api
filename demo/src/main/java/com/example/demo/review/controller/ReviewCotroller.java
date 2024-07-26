@@ -28,12 +28,12 @@ public class ReviewCotroller {
         return ResponseEntity.ok(reviewResponses);
     }
 
-    @GetMapping("/shared/{id}")
+    @GetMapping("/shared/{reviewId}")
     @Operation(summary = "[공통] 특정 리뷰 조회")
     public ResponseEntity<ReviewDTO.Response> getReviewById(
             @Parameter(description = "reviewId")
-            @PathVariable Long id) {
-        ReviewDTO.Response reviewResponse = reviewService.getReviewById(id);
+            @PathVariable Long reviewId) {
+        ReviewDTO.Response reviewResponse = reviewService.getReviewById(reviewId);
         return ResponseEntity.ok(reviewResponse);
     }
     @PostMapping("/weddingplanner/create")
@@ -50,39 +50,39 @@ public class ReviewCotroller {
         return ResponseEntity.ok(createdReview);
     }
 
-    @PostMapping("/weddingplanner/update/{id}")
+    @PostMapping("/weddingplanner/update/{reviewId}")
     @Operation(summary = "[웨딩플래너] 특정 리뷰 업데이트")
     public ResponseEntity<ReviewDTO.Response> updateReviewForWeddingPlanner(
             @Parameter(description = "reviewId")
-            @PathVariable Long id, @RequestBody ReviewDTO.Request reviewRequest) {
-        ReviewDTO.Response updatedReview = reviewService.modifyReviewForWeddingPlanner(id, reviewRequest);
+            @PathVariable Long reviewId, @RequestBody ReviewDTO.Request reviewRequest) {
+        ReviewDTO.Response updatedReview = reviewService.modifyReviewForWeddingPlanner(reviewId, reviewRequest);
         return ResponseEntity.ok(updatedReview);
     }
 
-    @PostMapping("/customer/update/{id}")
+    @PostMapping("/customer/update/{reviewId}")
     @Operation(summary = "[신랑신부] 특정 리뷰 업데이트")
     public ResponseEntity<ReviewDTO.Response> updateReviewForCustomer(
             @Parameter(description = "reviewId")
-            @PathVariable Long id, @RequestBody ReviewDTO.Request reviewRequest) {
-        ReviewDTO.Response updatedReview = reviewService.modifyReviewForCustomer(id, reviewRequest);
+            @PathVariable Long reviewId, @RequestBody ReviewDTO.Request reviewRequest) {
+        ReviewDTO.Response updatedReview = reviewService.modifyReviewForCustomer(reviewId, reviewRequest);
         return ResponseEntity.ok(updatedReview);
     }
 
-    @PostMapping("/weddingplanner/delete/{id}")
+    @PostMapping("/weddingplanner/delete/{reviewId}")
     @Operation(summary = "[웨딩플래너] 특정 리뷰 삭제")
     public ResponseEntity<Void> deleteReviewForWeddingPlanner(
             @Parameter(description = "reviewId")
-            @PathVariable Long id) {
-        reviewService.deleteReviewForWeddingPlanner(id);
+            @PathVariable Long reviewId) {
+        reviewService.deleteReviewForWeddingPlanner(reviewId);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/customer/delete/{id}")
+    @PostMapping("/customer/delete/{reviewId}")
     @Operation(summary = "[신랑신부] 특정 리뷰 삭제")
     public ResponseEntity<Void> deleteReview(
             @Parameter(description = "reviewId")
-            @PathVariable Long id) {
-        reviewService.deleteReviewForCustomer(id);
+            @PathVariable Long reviewId) {
+        reviewService.deleteReviewForCustomer(reviewId);
         return ResponseEntity.noContent().build();
     }
 
