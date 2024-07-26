@@ -29,4 +29,6 @@ public interface PortfolioMapper {
     PortfolioSearchDTO.Request entityToSearchRequest(Portfolio portfolio);
 
     PortfolioSearchDTO.Response requestToSearchResponse(PortfolioSearchDTO.Request request);
+
+
 }

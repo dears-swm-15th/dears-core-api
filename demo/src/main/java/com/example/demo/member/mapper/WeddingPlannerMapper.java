@@ -20,4 +20,6 @@ public interface WeddingPlannerMapper {
     public AuthDTO.Response entityToAuthDTOResponse(WeddingPlanner weddingPlanner);
 
     public MypageDTO.WeddingPlannerResponse entityToMypageDTOResponse(WeddingPlanner weddingPlanner);
+
+    public WeddingPlannerPortfolioDTO.Response entityToWeddingPlannerPortfolioDTOResponse(WeddingPlanner weddingPlanner);
 }
