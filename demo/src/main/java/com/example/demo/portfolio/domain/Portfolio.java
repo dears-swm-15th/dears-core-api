@@ -104,7 +104,6 @@ public class Portfolio extends BaseTimeEntity {
         if (estimate != null) {
             this.estimateCount++;
         }
-
     }
 
     public void increaseRadarCount(Map<RadarKey, Float> radar) {
@@ -114,7 +113,6 @@ public class Portfolio extends BaseTimeEntity {
         if (radar != null) {
             this.radarCount++;
         }
-
     }
 
     public void accumulateRatingSum(Float addition) {
