@@ -4,6 +4,7 @@ import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.portfolio.dto.PortfolioSearchDTO;
 import com.example.demo.portfolio.service.PortfolioSearchService;
 import com.example.demo.portfolio.service.PortfolioService;
+import com.example.demo.review.dto.ReviewDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +31,15 @@ public class PortfolioController {
             @PathVariable Long portfolioId) {
         PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolioId);
         return ResponseEntity.ok(portfolioResponse);
+    }
+
+    @GetMapping("/shared/reviews/{portfolioId}")
+    @Operation(summary = "[공통] 특정 포트폴리오의 리뷰 목록 조회")
+    public ResponseEntity<List<ReviewDTO.Response>> getReviewsByPortfolioId(
+            @Parameter(description = "portfolioId")
+            @PathVariable Long portfolioId) {
+        List<ReviewDTO.Response> reviewResponses = portfolioService.getReviewsByPortfolioId(portfolioId);
+        return ResponseEntity.ok(reviewResponses);
     }
 
     @PostMapping("/weddingplanner/create")

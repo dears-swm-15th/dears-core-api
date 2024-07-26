@@ -10,6 +10,7 @@ import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.review.domain.Review;
 import com.example.demo.review.dto.ReviewDTO;
+import com.example.demo.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +26,11 @@ public class PortfolioService {
     private final PortfolioRepository portfolioRepository;
     private final PortfolioMapper portfolioMapper = PortfolioMapper.INSTANCE;
 
+    private final ReviewRepository reviewRepository;
+
     private final S3Uploader s3Uploader;
 
     private final PortfolioSearchService portfolioSearchService;
-
     private final CustomUserDetailsService customUserDetailsService;
 
     public List<PortfolioDTO.Response> getAllPortfolios() {
@@ -49,6 +51,23 @@ public class PortfolioService {
         portfolioResponse.setAvgRadar(calculateAvgRadar(portfolioResponse));
 
         return portfolioResponse;
+    }
+
+    public List<ReviewDTO.Response> getReviewsByPortfolioId(Long portfolioId) {
+        // get reviewsByPortfolioId at reviewRepository
+        List<Review> reviews = reviewRepository.findByPortfolioId(portfolioId);
+        return reviews.stream()
+                .map(review -> ReviewDTO.Response.builder()
+                        .id(review.getId())
+                        .portfolioId(review.getPortfolio().getId())
+                        .rating(review.getRating())
+                        .estimate(review.getEstimate())
+                        .radar(review.getRadar())
+                        .content(review.getContent())
+                        .createdAt(review.getCreatedAt())
+                        .updatedAt(review.getUpdatedAt())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -162,6 +181,7 @@ public class PortfolioService {
     }
 
     @Transactional
+
     public Portfolio decreaseWishListCount(Long portfolioId) {
         Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
