@@ -4,10 +4,12 @@ import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioSearchDTO;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
 import org.opensearch.client.opensearch.core.*;
 import org.opensearch.client.opensearch.core.search.Hit;
 import org.opensearch.client.opensearch.indices.CreateIndexRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,49 +72,41 @@ public class PortfolioSearchService {
         List<PortfolioSearchDTO.Response> resultList = new ArrayList<>();
 
         try {
-            SearchRequest request = SearchRequest.of(searchRequest ->
-                searchRequest.index(indexName)
-                    .query(query ->
-                        query.bool(bool ->
-                            bool.should(should ->
-                                should.wildcard(wildcard ->
-                                    wildcard.field("services")
-                                        .value("*" + keyword + "*")
-                                )
-                            )
-                            .should(should ->
-                                should.wildcard(wildcard ->
-                                    wildcard.field("plannerName")
-                                    .value("*" + keyword + "*")
-                                )
-                            )
-                            .should(should ->
-                                should.wildcard(wildcard ->
-                                    wildcard.field("organization")
-                                    .value("*" + keyword + "*")
-                                )
-                            )
-                            .should(should ->
-                                should.wildcard(wildcard ->
-                                    wildcard.field("introduction")
-                                        .value("*" + keyword + "*")
-                                )
-                            )
-                        )
-                    )
-            );
+            List<String> sourceList = List.of("services", "plannerName", "organization", "introduction");
+            SearchRequest request = buildSearchRequest(indexName, keyword, sourceList);
 
             SearchResponse<PortfolioSearchDTO.Request> response = openSearchClient.search(request, PortfolioSearchDTO.Request.class);
             List<Hit<PortfolioSearchDTO.Request>> hits = response.hits().hits();
             for (Hit<PortfolioSearchDTO.Request> hit : hits) {
                 resultList.add(portfolioMapper.requestToSearchResponse(hit.source()));
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return resultList;
+    }
+
+    public SearchRequest buildSearchRequest(String indexName, String keyword, List<String> sourceList) {
+        return SearchRequest.of(searchRequest ->
+            searchRequest.index(indexName)
+                .query(query ->
+                    query.bool(bool -> {
+                        addShouldClauses(bool, keyword, sourceList);
+                        return bool;
+                    })
+                )
+        );
+    }
+
+
+    private void addShouldClauses(BoolQuery.Builder bool, String keyword, List<String> fields) {
+        for (String field : fields) {
+            bool.should(should ->
+                should.wildcard(wildcard ->
+                    wildcard.field(field).value("*" + keyword + "*")
+                )
+            );
+        }
     }
 
     public void deleteDocumentById(Long id) {
