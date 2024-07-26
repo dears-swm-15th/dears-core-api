@@ -62,6 +62,9 @@ public class ReviewDTO {
         @Schema(type = "long", example = "1")
         private Long id;
 
+        @Schema(type = "long", example = "1")
+        private Long portfolioId;
+
         @Schema(type = "string", example = "결혼하고 싶어요123")
         private String reviewerName;
 
