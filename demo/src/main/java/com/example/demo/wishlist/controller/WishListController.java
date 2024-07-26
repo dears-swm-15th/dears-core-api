@@ -4,7 +4,6 @@ import com.example.demo.portfolio.dto.PortfolioOverviewDTO;
 import com.example.demo.wishlist.service.WishListService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,20 +28,20 @@ public class WishListController {
         return ResponseEntity.ok(portfolioOverviews);
     }
 
-    @PostMapping("/customer/post/{id}")
+    @PostMapping("/customer/post/{portfolioId}")
     @Operation(summary = "[신랑신부] 위시리스트 추가", description = "customer가 자신이 원하는 포트폴리오를 위시리스트에 추가합니다.")
     public ResponseEntity<Void> addWishList(
             @Parameter(description = "portfolioId")
-            @PathVariable("id") Long portfolioId){
+            @PathVariable("portfolioId") Long portfolioId){
         wishListService.addWishList(portfolioId);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/customer/delete/{id}")
+    @PostMapping("/customer/delete/{portfolioId}")
     @Operation(summary = "[신랑신부] 위시리스트 삭제", description = "customer가 자신의 위시리스트에서 포트폴리오를 삭제합니다.")
     public ResponseEntity<Void> deleteWishList(
             @Parameter(description = "portfolioId")
-            @PathVariable("id") Long portfolioId){
+            @PathVariable("portfolioId") Long portfolioId){
         wishListService.deleteWishList(portfolioId);
         return ResponseEntity.ok().build();
     }
