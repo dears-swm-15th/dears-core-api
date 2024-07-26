@@ -272,9 +272,9 @@ public class PortfolioService {
         if (portfolioResponse.getRadarCount() != 0) {
             Map<RadarKey, Float> radarSum = portfolioResponse.getRadarSum();
             Integer radarCount = portfolioResponse.getRadarCount();
-            // update avgRadar using radarSum and radarCount
+            // update avgRadar using radarSum and radarCount with round to 1 decimal place
             avgRadar = radarSum.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue() / radarCount));
+                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> Math.round(entry.getValue() / radarCount * 10) / 10f));
         }
         return avgRadar;
     }
