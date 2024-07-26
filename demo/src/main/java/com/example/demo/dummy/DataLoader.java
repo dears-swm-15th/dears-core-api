@@ -168,6 +168,8 @@ public class DataLoader implements CommandLineRunner {
         portfolioRepository.save(portfolio1);
         portfolioRepository.save(portfolio2);
 
+        reviewRepository.save(review1);
+        reviewRepository.save(review2);
 
 
         System.out.println("Sample data loaded.");
