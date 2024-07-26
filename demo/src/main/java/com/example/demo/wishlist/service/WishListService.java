@@ -58,7 +58,7 @@ public class WishListService {
         if (wishListRepository.existsByCustomerIdAndPortfolioId(customer.getId(), portfolioId)) {
             return;
         }
-        Portfolio portfolio = portfolioService.decreaseListCount(portfolioId);
+        Portfolio portfolio = portfolioService.decreaseWishListCount(portfolioId);
         wishListRepository.deleteByCustomerIdAndPortfolioId(customer.getId(), portfolio.getId());
     }
 }
