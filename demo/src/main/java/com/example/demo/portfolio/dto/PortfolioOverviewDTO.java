@@ -6,18 +6,6 @@ import lombok.*;
 
 public class PortfolioOverviewDTO {
 
-    @Getter
-    @Setter
-    @ToString
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class Request {
-
-        @Schema(type = "Long", example = "1")
-        private Long portfolioId;
-    }
-
     @Setter
     @Getter
     @ToString
