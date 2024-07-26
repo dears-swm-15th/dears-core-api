@@ -19,9 +19,6 @@ public class ReviewDTO {
     @Builder
     public static class Request {
 
-        @Schema(type = "long", example = "1")
-        private Long id;
-
         @Schema(type = "string", example = "name1")
         private String reviewerName;
 
