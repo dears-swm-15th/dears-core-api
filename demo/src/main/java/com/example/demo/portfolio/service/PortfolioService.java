@@ -3,6 +3,7 @@ package com.example.demo.portfolio.service;
 import com.example.demo.config.S3Uploader;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.member.mapper.WeddingPlannerMapper;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
 import com.example.demo.portfolio.repository.PortfolioRepository;
@@ -25,6 +26,8 @@ public class PortfolioService {
     private final PortfolioRepository portfolioRepository;
     private final PortfolioMapper portfolioMapper = PortfolioMapper.INSTANCE;
 
+    private final WeddingPlannerMapper weddingPlannerMapper = WeddingPlannerMapper.INSTANCE;
+
     private final S3Uploader s3Uploader;
 
     private final PortfolioSearchService portfolioSearchService;
@@ -43,7 +46,7 @@ public class PortfolioService {
         String CloudFrontImageUrl = s3Uploader.getImageUrl(portfolio.getProfileImageUrl());
         portfolio.setProfileImageUrl(CloudFrontImageUrl);
         PortfolioDTO.Response portfolioResponse =  portfolioMapper.entityToResponse(portfolio);
-
+        portfolioResponse.setWeddingPlannerPortfolioResponse(weddingPlannerMapper.entityToWeddingPlannerPortfolioDTOResponse(portfolio.getWeddingPlanner()));
         portfolioResponse.setAvgRating(calculateAvgRating(portfolioResponse));
         portfolioResponse.setAvgEstimate(calculateAvgEstimate(portfolioResponse));
         portfolioResponse.setAvgRadar(calculateAvgRadar(portfolioResponse));
