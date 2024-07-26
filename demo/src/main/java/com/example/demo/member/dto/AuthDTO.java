@@ -13,7 +13,7 @@ public class AuthDTO {
     @AllArgsConstructor
     @Builder
     public static class Request {
-        @Schema(type = "string", example = "ROLE_CUSTOMER 또는 ROLE_WEDDING_PLANNER")
+        @Schema(type = "string", example = "CUSTOMER 또는 WEDDING_PLANNER")
         private String role;
     }
 

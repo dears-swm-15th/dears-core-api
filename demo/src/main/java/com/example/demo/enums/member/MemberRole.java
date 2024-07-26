@@ -5,6 +5,6 @@ public enum MemberRole {
     CUSTOMER;
 
     public String getRoleName() {
-        return "ROLE_" + name();
+        return this.name();
     }
 }
