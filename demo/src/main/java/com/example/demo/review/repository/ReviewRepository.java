@@ -14,6 +14,8 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
+    List<Review> findByPortfolioId(Long portfolioId);
+
     @Transactional
     @Modifying
     @Query(value = "UPDATE Review r SET r.isDeleted = true WHERE r.id = :id")
