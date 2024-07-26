@@ -27,6 +27,7 @@ public class WeddingPlanner {
     private boolean isDeleted = Boolean.FALSE;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private MemberRole role;
 
     @Column

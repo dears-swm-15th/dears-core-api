@@ -50,7 +50,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         if (customer.isPresent()) {
             List<GrantedAuthority> roles = new ArrayList<>();
-            roles.add(new SimpleGrantedAuthority(customer.get().getRole().getRoleName()));
+            roles.add(new SimpleGrantedAuthority("ROLE_"+customer.get().getRole().getRoleName()));
             return new CustomerContext(customer.get(), roles);
         }
 
@@ -59,7 +59,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         if (planner.isPresent()) {
             List<GrantedAuthority> roles = new ArrayList<>();
-            roles.add(new SimpleGrantedAuthority(planner.get().getRole().getRoleName()));
+            roles.add(new SimpleGrantedAuthority("ROLE_"+planner.get().getRole().getRoleName()));
             return new WeddingPlannerContext(planner.get(), roles);
         }
         throw new UsernameNotFoundException("User with the given UUID could not be found");
