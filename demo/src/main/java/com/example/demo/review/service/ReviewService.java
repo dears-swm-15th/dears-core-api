@@ -36,8 +36,8 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
-    public ReviewDTO.Response getReviewById(Long id) {
-        Review review = reviewRepository.findById(id)
+    public ReviewDTO.Response getReviewById(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
         List<String> CloudFrontImageUrl = s3Uploader.getImageUrls(review.getWeddingPhotoUrls());
@@ -112,10 +112,10 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewDTO.Response modifyReviewForWeddingPlanner(Long id, ReviewDTO.Request reviewRequest) {
+    public ReviewDTO.Response modifyReviewForWeddingPlanner(Long reviewId, ReviewDTO.Request reviewRequest) {
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
-        Review existingReview = reviewRepository.findById(id)
+        Review existingReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
         if (existingReview.getReviewerId() != weddingPlanner.getId()) {
@@ -150,10 +150,10 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewDTO.Response modifyReviewForCustomer(Long id, ReviewDTO.Request reviewRequest) {
+    public ReviewDTO.Response modifyReviewForCustomer(Long reviewId, ReviewDTO.Request reviewRequest) {
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
 
-        Review existingReview = reviewRepository.findById(id)
+        Review existingReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
         if (existingReview.getReviewerId() != customer.getId()) {
@@ -189,10 +189,10 @@ public class ReviewService {
 
 
     @Transactional
-    public void deleteReviewForWeddingPlanner(Long id) {
+    public void deleteReviewForWeddingPlanner(Long reviewId) {
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
-        Review review = reviewRepository.findById(id)
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
         if (review.getReviewerId() != weddingPlanner.getId()) {
@@ -204,14 +204,14 @@ public class ReviewService {
             s3Uploader.deleteFiles(weddingPhotoUrls);
         }
 
-        reviewRepository.softDeleteById(id);
+        reviewRepository.softDeleteById(reviewId);
     }
 
     @Transactional
-    public void deleteReviewForCustomer(Long id) {
+    public void deleteReviewForCustomer(Long reviewId) {
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
 
-        Review review = reviewRepository.findById(id)
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
         if (review.getReviewerId() != customer.getId()) {
@@ -223,7 +223,7 @@ public class ReviewService {
             s3Uploader.deleteFiles(weddingPhotoUrls);
         }
 
-        reviewRepository.softDeleteById(id);
+        reviewRepository.softDeleteById(reviewId);
     }
 
     public List<ReviewDTO.Response> getAllSoftDeletedReviews() {
