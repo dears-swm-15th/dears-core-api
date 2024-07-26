@@ -83,11 +83,11 @@ public class PortfolioService {
     }
 
     @Transactional
-    public PortfolioDTO.Response updatePortfolio(Long id, PortfolioDTO.Request portfolioRequest) {
+    public PortfolioDTO.Response updatePortfolio(Long portfolioId, PortfolioDTO.Request portfolioRequest) {
 
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
-        Portfolio existingPortfolio = portfolioRepository.findById(id)
+        Portfolio existingPortfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
         if(portfolioRequest.getProfileImageUrl() != null) {
             //Delete existing image from s3 and upload new image
@@ -121,11 +121,11 @@ public class PortfolioService {
     }
 
     @Transactional
-    public void deletePortfolio(Long id) {
+    public void deletePortfolio(Long portfolioId) {
 
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
-        Portfolio portfolio = portfolioRepository.findById(id)
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
         String profileImageUrl = portfolio.getProfileImageUrl();
@@ -140,8 +140,8 @@ public class PortfolioService {
 
         weddingPlanner.setPortfolio(null);
 
-        portfolioRepository.softDeleteById(id);
-        portfolioSearchService.deleteDocumentById(id); //검색으로는 나타나지 못하도록 구현
+        portfolioRepository.softDeleteById(portfolioId);
+        portfolioSearchService.deleteDocumentById(portfolioId); //검색으로는 나타나지 못하도록 구현
     }
 
     public List<PortfolioDTO.Response> getAllSoftDeletedPortfolios() {
@@ -151,8 +151,8 @@ public class PortfolioService {
     }
 
     @Transactional
-    public Portfolio increaseWishListCount(Long id) {
-        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(id)
+    public Portfolio increaseWishListCount(Long portfolioId) {
+        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
         portfolio.increaseWishListCount();
@@ -162,8 +162,9 @@ public class PortfolioService {
     }
 
     @Transactional
-    public Portfolio decreaseWishListCount(Long id) {
-        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(id)
+
+    public Portfolio decreaseWishListCount(Long portfolioId) {
+        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
         portfolio.decreaseWishListCount();

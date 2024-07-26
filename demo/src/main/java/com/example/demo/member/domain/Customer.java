@@ -21,7 +21,7 @@ public class Customer {
     @Column(name = "customer_id")
     private Long id;
 
-    @Column
+    @Column @Enumerated(EnumType.STRING)
     private MemberRole role;
 
     @Column
