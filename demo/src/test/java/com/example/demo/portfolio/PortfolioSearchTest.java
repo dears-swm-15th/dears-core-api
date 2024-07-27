@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class PortfolioSearchTest {
 
 
     @Test
+    @Transactional
     public void 포트폴리오_입력() {
         Portfolio portfolio1 = portfolioRepository.findById(1L).orElseThrow();
         portfolioSearchService.indexDocumentUsingDTO(portfolio1);
@@ -55,6 +57,7 @@ public class PortfolioSearchTest {
     }
 
     @Test
+    @Transactional
     public void 포트폴리오_수정() {
         Portfolio portfolio = portfolioRepository.findById(1L).orElseThrow();
         portfolio.setOrganization("에바웨딩스");
@@ -62,12 +65,14 @@ public class PortfolioSearchTest {
     }
 
     @Test
+    @Transactional
     public void 포트폴리오_삭제() {
         Portfolio portfolio = portfolioRepository.findById(1L).orElseThrow();
         portfolioSearchService.deleteDocumentById(portfolio.getId());
     }
 
     @Test
+    @Transactional
     public void 포트폴리오_리뷰_추가() {
         Portfolio portfolio = portfolioRepository.findById(1L).orElseThrow();
         ReviewDTO.Request reviewReq = ReviewDTO.Request.builder()
