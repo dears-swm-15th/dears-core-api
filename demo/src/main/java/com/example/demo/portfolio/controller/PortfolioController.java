@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/portfolio")
 @Tag(name = "portfolio", description = "포트폴리오 API")
+@Slf4j
 public class PortfolioController {
 
     private final PortfolioService portfolioService;
@@ -30,6 +32,7 @@ public class PortfolioController {
             @Parameter(description = "portfolioId")
             @PathVariable Long portfolioId) {
         PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolioId);
+        log.info("Fetched portfolio with ID: {}", portfolioId);
         return ResponseEntity.ok(portfolioResponse);
     }
 
@@ -39,6 +42,7 @@ public class PortfolioController {
             @Parameter(description = "portfolioId")
             @PathVariable Long portfolioId) {
         List<ReviewDTO.Response> reviewResponses = portfolioService.getReviewsByPortfolioId(portfolioId);
+        log.info("Fetched reviews for portfolio with ID: {}", portfolioId);
         return ResponseEntity.ok(reviewResponses);
     }
 
@@ -46,6 +50,7 @@ public class PortfolioController {
     @Operation(summary = "[웨딩플래너] 포트폴리오 작성")
     public ResponseEntity<PortfolioDTO.Response> createPortfolio(@RequestBody PortfolioDTO.Request portfolioRequest) {
         PortfolioDTO.Response createdPortfolio = portfolioService.createPortfolio(portfolioRequest);
+        log.info("Created new portfolio with data: {}", portfolioRequest);
         return ResponseEntity.status(201).body(createdPortfolio);
     }
 
@@ -55,6 +60,7 @@ public class PortfolioController {
             @Parameter(description = "portfolioId")
             @PathVariable Long portfolioId, @RequestBody PortfolioDTO.Request portfolioRequest) {
         PortfolioDTO.Response updatedPortfolio = portfolioService.updatePortfolio(portfolioId, portfolioRequest);
+        log.info("Updated portfolio with ID: {} with data: {}", portfolioId, portfolioRequest);
         return ResponseEntity.ok(updatedPortfolio);
     }
 
@@ -64,6 +70,7 @@ public class PortfolioController {
             @Parameter(description = "portfolioId")
             @PathVariable Long portfolioId) {
         portfolioService.deletePortfolio(portfolioId);
+        log.info("Deleted portfolio with ID: {}", portfolioId);
         return ResponseEntity.noContent().build();
     }
 
@@ -71,6 +78,7 @@ public class PortfolioController {
     @Operation(summary = "[공통] soft-deleted가 된 포트폴리오 조회")
     public ResponseEntity<List<PortfolioDTO.Response>> getAllSoftDeleted() {
         List<PortfolioDTO.Response> softDeletedPortfolios = portfolioService.getAllSoftDeletedPortfolios();
+        log.info("Fetched all soft-deleted portfolios");
         return ResponseEntity.ok(softDeletedPortfolios);
     }
 
@@ -78,6 +86,7 @@ public class PortfolioController {
     @Operation(summary = "[공통] soft-deleted 를 포함한 전체 포트폴리오 조회")
     public ResponseEntity<List<PortfolioDTO.Response>> getAllPortfolios() {
         List<PortfolioDTO.Response> portfolioResponses = portfolioService.getAllPortfolios();
+        log.info("Fetched all portfolios including soft-deleted ones");
         return ResponseEntity.ok(portfolioResponses);
     }
 
@@ -87,7 +96,7 @@ public class PortfolioController {
             @Parameter(description = "검색 키워드")
             @RequestParam String content) {
         List<PortfolioSearchDTO.Response> searchResult = portfolioSearchService.search(content);
+        log.info("Searched portfolios with content: {}", content);
         return ResponseEntity.ok(searchResult);
     }
-
 }

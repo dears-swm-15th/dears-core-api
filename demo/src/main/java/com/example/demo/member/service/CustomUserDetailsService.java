@@ -12,6 +12,7 @@ import com.example.demo.member.mapper.WeddingPlannerMapper;
 import com.example.demo.member.repository.CustomerRepository;
 import com.example.demo.member.repository.WeddingPlannerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,7 +24,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,40 +33,42 @@ import static com.example.demo.enums.member.MemberRole.WEDDING_PLANNER;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final CustomerRepository customerRepository;
-
     private final WeddingPlannerRepository weddingPlannerRepository;
-
     private final CustomerMapper customerMapper;
-
     private final WeddingPlannerMapper weddingPlannerMapper;
 
     @Override
     public UserDetails loadUserByUsername(String UUID) throws UsernameNotFoundException {
-        // 먼저 customerRepository에서 사용자 찾기
+        log.info("Loading user by UUID: {}", UUID);
         Optional<Customer> customer = customerRepository.findByUUID(UUID);
 
         if (customer.isPresent()) {
             List<GrantedAuthority> roles = new ArrayList<>();
-            roles.add(new SimpleGrantedAuthority("ROLE_"+customer.get().getRole().getRoleName()));
+            roles.add(new SimpleGrantedAuthority("ROLE_" + customer.get().getRole().getRoleName()));
+            log.info("Found customer with UUID: {}", UUID);
             return new CustomerContext(customer.get(), roles);
         }
 
-        // customerRepository에서 찾지 못하면 weddingPlannerRepository에서 사용자 찾기
         Optional<WeddingPlanner> planner = weddingPlannerRepository.findByUUID(UUID);
 
         if (planner.isPresent()) {
             List<GrantedAuthority> roles = new ArrayList<>();
-            roles.add(new SimpleGrantedAuthority("ROLE_"+planner.get().getRole().getRoleName()));
+            roles.add(new SimpleGrantedAuthority("ROLE_" + planner.get().getRole().getRoleName()));
+            log.info("Found wedding planner with UUID: {}", UUID);
             return new WeddingPlannerContext(planner.get(), roles);
         }
+
+        log.error("User with UUID: {} not found", UUID);
         throw new UsernameNotFoundException("User with the given UUID could not be found");
     }
 
     @Transactional
-    public AuthDTO.Response join(String role){
+    public AuthDTO.Response join(String role) {
+        log.info("Joining new member with role: {}", role);
 
         if (role.equals(WEDDING_PLANNER.getRoleName())) {
             WeddingPlanner weddingPlanner = WeddingPlanner.builder()
@@ -74,6 +76,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .UUID(UUID.randomUUID().toString()).build();
 
             weddingPlannerRepository.save(weddingPlanner);
+            log.info("Created new wedding planner with UUID: {}", weddingPlanner.getUUID());
             return weddingPlannerMapper.entityToAuthDTOResponse(weddingPlanner);
         } else if (role.equals(MemberRole.CUSTOMER.getRoleName())) {
             Customer customer = Customer.builder()
@@ -81,47 +84,64 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .UUID(UUID.randomUUID().toString()).build();
 
             customerRepository.save(customer);
+            log.info("Created new customer with UUID: {}", customer.getUUID());
             return customerMapper.entityToAuthDTOResponse(customer);
         } else {
+            log.error("Invalid role type: {}", role);
             throw new IllegalArgumentException("Invalid role type");
         }
     }
 
     public Customer getCurrentAuthenticatedCustomer() throws UsernameNotFoundException {
+        log.info("Getting current authenticated customer");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             String memberName = authentication.getName();
-            return customerRepository.findByUUID(memberName)
+            Customer customer = customerRepository.findByUUID(memberName)
                     .orElseThrow(() -> new UsernameNotFoundException("Authenticated customer not found"));
+            log.info("Authenticated customer found with UUID: {}", memberName);
+            return customer;
         }
+        log.error("Authenticated customer not found");
         throw new UsernameNotFoundException("Authenticated customer not found");
     }
 
     public WeddingPlanner getCurrentAuthenticatedWeddingPlanner() throws UsernameNotFoundException {
+        log.info("Getting current authenticated wedding planner");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             String memberName = authentication.getName();
-            System.out.println(memberName);
-            return weddingPlannerRepository.findByUUID(memberName)
-                    .orElseThrow(() -> new UsernameNotFoundException("Authenticated weddingplanner not found"));
+            WeddingPlanner weddingPlanner = weddingPlannerRepository.findByUUID(memberName)
+                    .orElseThrow(() -> new UsernameNotFoundException("Authenticated wedding planner not found"));
+            log.info("Authenticated wedding planner found with UUID: {}", memberName);
+            return weddingPlanner;
         }
-        throw new UsernameNotFoundException("Authenticated weddingplanner not found");
+        log.error("Authenticated wedding planner not found");
+        throw new UsernameNotFoundException("Authenticated wedding planner not found");
     }
 
     public MypageDTO.CustomerResponse getCustomerMyPage() {
+        log.info("Getting customer my page");
         Customer customer = getCurrentAuthenticatedCustomer();
-        return customerMapper.entityToMypageDTOResponse(customer);
+        MypageDTO.CustomerResponse response = customerMapper.entityToMypageDTOResponse(customer);
+        log.info("Fetched customer my page for UUID: {}", customer.getUUID());
+        return response;
     }
 
     public MypageDTO.WeddingPlannerResponse getWeddingPlannerMyPage() {
+        log.info("Getting wedding planner my page");
         WeddingPlanner weddingPlanner = getCurrentAuthenticatedWeddingPlanner();
-        return weddingPlannerMapper.entityToMypageDTOResponse(weddingPlanner);
-
+        MypageDTO.WeddingPlannerResponse response = weddingPlannerMapper.entityToMypageDTOResponse(weddingPlanner);
+        log.info("Fetched wedding planner my page for UUID: {}", weddingPlanner.getUUID());
+        return response;
     }
 
     public WeddingPlanner getWeddingPlannerById(Long weddingPlannerId) {
-        return weddingPlannerRepository.findById(weddingPlannerId)
+        log.info("Getting wedding planner by ID: {}", weddingPlannerId);
+        WeddingPlanner weddingPlanner = weddingPlannerRepository.findById(weddingPlannerId)
                 .orElseThrow(() -> new RuntimeException("WeddingPlanner not found"));
+        log.info("Found wedding planner with ID: {}", weddingPlannerId);
+        return weddingPlanner;
     }
 }

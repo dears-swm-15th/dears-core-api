@@ -42,3 +42,7 @@ springdoc:
     operations-sorter: alpha
     display-request-duration: true
   use-fqn: true
+
+logging:
+  level:
+    project=debug:
