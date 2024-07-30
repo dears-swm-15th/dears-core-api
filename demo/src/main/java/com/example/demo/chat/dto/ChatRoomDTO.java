@@ -22,7 +22,6 @@ public class ChatRoomDTO {
         private Long portfolioId;
 
         private Long weddingPlannerId;
-
     }
 
     @Getter

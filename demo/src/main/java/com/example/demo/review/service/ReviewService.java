@@ -250,4 +250,9 @@ public class ReviewService {
                 .map(reviewMapper::entityToResponse)
                 .collect(Collectors.toList());
     }
+
+    public Integer getReviewCountById(Long id) {
+        log.info("Fetching review count for portfolio with ID: {}", id);
+        return reviewRepository.countByPortfolioId(id);
+    }
 }
