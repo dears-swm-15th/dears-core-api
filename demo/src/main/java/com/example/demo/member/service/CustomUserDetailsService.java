@@ -121,6 +121,26 @@ public class CustomUserDetailsService implements UserDetailsService {
         throw new UsernameNotFoundException("Authenticated wedding planner not found");
     }
 
+    public MemberRole getCurrentAuthenticatedMemberRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+            return getMemberRole(authentication);
+        }
+        return null;
+    }
+
+    private MemberRole getMemberRole(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .map(this::mapRole)
+                .orElse(null);
+    }
+
+    private MemberRole mapRole(String authority) {
+        return "ROLE_CUSTOMER".equals(authority) ? MemberRole.CUSTOMER : MemberRole.WEDDING_PLANNER;
+    }
+
     public MypageDTO.CustomerResponse getCustomerMyPage() {
         log.info("Getting customer my page");
         Customer customer = getCurrentAuthenticatedCustomer();

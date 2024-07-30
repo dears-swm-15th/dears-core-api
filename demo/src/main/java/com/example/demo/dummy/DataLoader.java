@@ -75,6 +75,7 @@ public class DataLoader implements CommandLineRunner {
                 .weddingPhotoUrls(weddingPhotos1)
                 .radarSum(radar1)
                 .wishListCount(0)
+                .viewCount(0)
                 .build();
 
         Portfolio portfolio2 = Portfolio.builder()
@@ -92,6 +93,7 @@ public class DataLoader implements CommandLineRunner {
                 .weddingPhotoUrls(weddingPhotos2)
                 .radarSum(radar2)
                 .wishListCount(0)
+                .viewCount(0)
                 .build();
 
 

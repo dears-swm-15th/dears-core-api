@@ -70,6 +70,8 @@ public class Portfolio extends BaseTimeEntity {
 
     private Integer wishListCount;
 
+    private Integer viewCount;
+
 
     public void increaseWishListCount() {
         if (this.wishListCount == null) {
