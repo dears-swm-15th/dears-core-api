@@ -297,4 +297,22 @@ public class PortfolioService {
         return radarSum.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> Math.round(entry.getValue() / radarCount * 10) / 10f));
     }
+
+    @Transactional
+    public Portfolio increaseViewCount(Long portfolioId) {
+        Portfolio portfolio = portfolioRepository.findPortfolioByIdWithPessimisticLock(portfolioId)
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+
+        portfolioRepository.increaseViewCount(portfolioId);
+        portfolioRepository.save(portfolio);
+        portfolioSearchService.updateDocumentUsingDTO(portfolio);
+        return portfolio;
+    }
+
+    public List<PortfolioDTO.Response> getTop5Portfolios() {
+        return portfolioRepository.findTop5ByViewCount().stream()
+                .map(portfolioMapper::entityToResponse)
+                .collect(Collectors.toList());
+    }
+
 }

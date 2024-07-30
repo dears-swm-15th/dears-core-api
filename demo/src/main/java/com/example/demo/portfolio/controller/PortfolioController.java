@@ -1,5 +1,6 @@
 package com.example.demo.portfolio.controller;
 
+import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.portfolio.dto.PortfolioSearchDTO;
 import com.example.demo.portfolio.service.PortfolioSearchService;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.example.demo.enums.member.MemberRole.CUSTOMER;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/portfolio")
@@ -26,11 +29,16 @@ public class PortfolioController {
 
     private final PortfolioSearchService portfolioSearchService;
 
+    private final CustomUserDetailsService customUserDetailsService;
+
     @GetMapping("/shared/{portfolioId}")
     @Operation(summary = "[공통] 특정 포트폴리오 조회")
     public ResponseEntity<PortfolioDTO.Response> getPortfolioById(
             @Parameter(description = "portfolioId")
             @PathVariable Long portfolioId) {
+        if (customUserDetailsService.getCurrentAuthenticatedMemberRole().equals(CUSTOMER)){
+            portfolioService.increaseViewCount(portfolioId);
+        }
         PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolioId);
         log.info("Fetched portfolio with ID: {}", portfolioId);
         return ResponseEntity.ok(portfolioResponse);
@@ -99,4 +107,12 @@ public class PortfolioController {
         log.info("Searched portfolios with content: {}", content);
         return ResponseEntity.ok(searchResult);
     }
+
+    @GetMapping("/shared/top5")
+    @Operation(summary = "[공통] 조회수 상위 5개 포트폴리오 조회")
+    public ResponseEntity<List<PortfolioDTO.Response>> getTop5Portfolios() {
+        List<PortfolioDTO.Response> top5Portfolios = portfolioService.getTop5Portfolios();
+        return ResponseEntity.ok(top5Portfolios);
+    }
+
 }
