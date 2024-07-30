@@ -34,7 +34,7 @@ public class ChatRoomDTO {
     public static class Response {
         private Long id;
 
-        private List<Message> messages;
+        private List<MessageDTO.Response> messages;
 
         private Long customerLastReadMessageId;
 

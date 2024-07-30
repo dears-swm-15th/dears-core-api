@@ -5,7 +5,9 @@ import com.example.demo.chat.domain.Message;
 import com.example.demo.chat.domain.ReadFlag;
 import com.example.demo.chat.dto.ChatRoomDTO;
 import com.example.demo.chat.dto.ChatRoomOverviewDTO;
+import com.example.demo.chat.dto.MessageDTO;
 import com.example.demo.chat.mapper.ChatRoomMapper;
+import com.example.demo.chat.mapper.MessageMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.chat.repository.MessageRepository;
 import com.example.demo.chat.repository.ReadFlagRepository;
@@ -30,11 +32,16 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomMapper chatRoomMapper = ChatRoomMapper.INSTANCE;
+
     private final CustomUserDetailsService customUserDetailsService;
+
     private final PortfolioService portfolioService;
-    private final ReadFlagRepository readFlagRepository;
-    private final MessageRepository messageRepository;
     private final PortfolioRepository portfolioRepository;
+
+    private final MessageRepository messageRepository;
+    private final MessageMapper messageMapper = MessageMapper.INSTANCE;
+
+    private final ReadFlagRepository readFlagRepository;
 
     public ChatRoom getChatRoomById(Long chatRoomId) {
         log.info("Fetching chat room by ID: {}", chatRoomId);
@@ -163,8 +170,18 @@ public class ChatRoomService {
 
         List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
+        List<MessageDTO.Response> messageResponses = messages.stream()
+                .map(messageMapper::entityToResponse)
+                // set clubId to each Response
+                .map(messageResponse -> {
+                    messageResponse.setChatRoomId(chatRoomId);
+                    return messageResponse;
+                })
+                .collect(Collectors.toList());
+
         ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
-        response.setMessages(messages);
+
+        response.setMessages(messageResponses);
         response.setCustomerLastReadMessageId(customerReadFlag.getLastReadMessageId());
         response.setWeddingPlannerLastReadMessageId(weddingPlannerReadFlag.getLastReadMessageId());
 
