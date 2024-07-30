@@ -271,9 +271,9 @@ public class PortfolioService {
                 .build();
     }
 
-    private float calculateAvgRating(PortfolioDTO.Response portfolioResponse) {
+    public float calculateAvgRating(PortfolioDTO.Response portfolioResponse) {
         int ratingCount = portfolioResponse.getRatingCount() != null ? portfolioResponse.getRatingCount() : 0;
-        return ratingCount != 0 ? portfolioResponse.getRatingSum() / ratingCount : 0f;
+        return ratingCount != 0 ? Math.round((float) portfolioResponse.getRatingSum() / ratingCount * 10) / 10f : 0;
     }
 
     private Integer calculateAvgEstimate(PortfolioDTO.Response portfolioResponse) {

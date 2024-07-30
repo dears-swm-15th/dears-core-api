@@ -3,9 +3,13 @@ package com.example.demo.wishlist.service;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.domain.Portfolio;
+import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.portfolio.dto.PortfolioOverviewDTO;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
+import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.service.PortfolioService;
+import com.example.demo.review.domain.Review;
+import com.example.demo.review.service.ReviewService;
 import com.example.demo.wishlist.domain.WishList;
 import com.example.demo.wishlist.repository.WishListRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +31,8 @@ public class WishListService {
     private final CustomUserDetailsService memberService;
     private final WishListRepository wishListRepository;
     private final PortfolioMapper portfolioMapper;
+    private final PortfolioRepository portfolioRepository;
+    private final ReviewService reviewService;
 
     public List<PortfolioOverviewDTO.Response> getWishListByMember(int page, int size) {
         Long memberId = memberService.getCurrentAuthenticatedCustomer().getId();
@@ -36,8 +42,28 @@ public class WishListService {
         log.info("Found {} items in wishlist for member ID: {}", wishLists.getTotalElements(), memberId);
         return wishLists.stream()
                 .map(wishList -> portfolioMapper.entityToOverviewResponse(wishList.getPortfolio()))
+                // set avgRating using calculateAvgRating method
+                .map(portfolioOverview -> {
+                    Portfolio portfolio = portfolioRepository.findById(portfolioOverview.getId())
+                            .orElseThrow(() -> new IllegalArgumentException("Portfolio not found"));
+                    PortfolioDTO.Response portfolioResponse = portfolioMapper.entityToResponse(portfolio);
+
+                    portfolioOverview.setAvgRating(calculateAvgRating(portfolioResponse));
+
+                    //get review count from repository count at certain portfolio overview
+                    Integer reviewCount = reviewService.getReviewCountById(portfolioResponse.getId());
+
+                    portfolioOverview.setReviewCount(reviewCount);
+                    return portfolioOverview;
+                })
                 .toList();
     }
+
+    private float calculateAvgRating(PortfolioDTO.Response portfolioResponse) {
+        int ratingCount = portfolioResponse.getRatingCount() != null ? portfolioResponse.getRatingCount() : 0;
+        return ratingCount != 0 ? Math.round((float) portfolioResponse.getRatingSum() / ratingCount * 10) / 10f : 0;
+    }
+
 
     @Transactional
     public void addWishList(Long portfolioId) {

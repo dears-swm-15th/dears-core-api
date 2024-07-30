@@ -9,6 +9,7 @@ import com.example.demo.enums.review.RadarKey;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class PortfolioDTO {
 
@@ -158,6 +159,5 @@ public class PortfolioDTO {
 
         @Schema(type = "integer", example = "300000")
         private Integer avgEstimate;
-
     }
 }

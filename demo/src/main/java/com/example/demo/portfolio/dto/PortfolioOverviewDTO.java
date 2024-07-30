@@ -31,6 +31,12 @@ public class PortfolioOverviewDTO {
 
         @Schema(type = "integer", example = "20000")
         private Integer minEstimate;
+
+        @Schema(type = "integer", example = "4.2")
+        private Float avgRating;
+
+        @Schema(type = "integer", example = "10")
+        private Integer reviewCount;
     }
 
 }

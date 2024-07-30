@@ -30,4 +30,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query(value = "SELECT * from Review r WHERE r.is_provided = false and r.reviewer_id = :customerId", nativeQuery = true)
     List<Review> findReviewsForCustomer(Long customerId);
 
+    Integer countByPortfolioId(Long id);
 }
