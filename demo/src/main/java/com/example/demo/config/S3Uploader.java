@@ -29,16 +29,11 @@ public class S3Uploader {
     private String cloudfrontPath;
 
     private final int PRESIGNED_URL_EXPIRATION = 60 * 1000 * 10; // 10분
-
-
-    private String getPresignedUrl(String fileName) {
-        return generatePresignedUrl(fileName).toString();
-    }
+    
 
 
     // Upload file to S3 using presigned url
     private GeneratePresignedUrlRequest getGeneratePresignedUrlRequest(String fileName) {
-        System.out.println("fileName: " + fileName);
         return new GeneratePresignedUrlRequest(bucket, fileName)
                 .withMethod(HttpMethod.PUT)
                 .withExpiration(setExpiration());
@@ -58,7 +53,7 @@ public class S3Uploader {
         return expiration;
     }
 
-    public String makeFileNameWithOutCloudFront(String type, Long id, String fileName) {
+    public String makeUniqueFileName(String type, Long id, String fileName) {
         return type + "/" + id +"/" + UUID.randomUUID() + "." + getFileExtension(fileName);
     }
 
@@ -79,14 +74,14 @@ public class S3Uploader {
     }
 
 
-    public String uploadFile(String fileName){
-        return getPresignedUrl(fileName);
+    public String getPresignedUrl(String fileName){
+        return generatePresignedUrl(fileName).toString();
     }
 
-    public List<String> uploadFileList(List<String> fileNameList){
+    public List<String> getPresignedUrls(List<String> fileNameList){
         List<String> presignedUrlList = new ArrayList<>();
         for (String fileName : fileNameList) {
-            presignedUrlList.add(getPresignedUrl(fileName));
+            presignedUrlList.add(generatePresignedUrl(fileName).toString());
         }
         return presignedUrlList;
     }

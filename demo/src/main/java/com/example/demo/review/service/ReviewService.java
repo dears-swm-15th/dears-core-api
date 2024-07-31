@@ -60,11 +60,11 @@ public class ReviewService {
         //review/{id}/uuid 형식으로 이미지명 생성
         review.setWeddingPhotoUrls(
                 reviewRequest.getWeddingPhotoUrls().stream()
-                        .map(url -> s3Uploader.makeFileNameWithOutCloudFront("review", review.getId(), url))
+                        .map(url -> s3Uploader.makeUniqueFileName("review", review.getId(), url))
                         .collect(Collectors.toList())
         );
 
-        List<String> presignedUrlList = s3Uploader.uploadFileList(reviewRequest.getWeddingPhotoUrls());
+        List<String> presignedUrlList = s3Uploader.getPresignedUrls(reviewRequest.getWeddingPhotoUrls());
 
         Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
         review.setPortfolio(portfolio);
@@ -91,11 +91,11 @@ public class ReviewService {
         //review/{id}/uuid 형식으로 이미지명 생성
         review.setWeddingPhotoUrls(
                 reviewRequest.getWeddingPhotoUrls().stream()
-                        .map(url -> s3Uploader.makeFileNameWithOutCloudFront("review", review.getId(), url))
+                        .map(url -> s3Uploader.makeUniqueFileName("review", review.getId(), url))
                         .collect(Collectors.toList())
         );
 
-        List<String> presignedUrlList = s3Uploader.uploadFileList(reviewRequest.getWeddingPhotoUrls());
+        List<String> presignedUrlList = s3Uploader.getPresignedUrls(reviewRequest.getWeddingPhotoUrls());
 
         Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
         review.setPortfolio(portfolio);
@@ -140,9 +140,9 @@ public class ReviewService {
             //새로 추가해야 하는 이미지 s3에 업로드
             newWeddingPhotoUrls.forEach(newUrl -> {
                 if (!existingWeddingPhotoUrls.contains(newUrl)) {
-                    String newUniqueFilename = s3Uploader.makeFileNameWithOutCloudFront("review", reviewId, newUrl);
+                    String newUniqueFilename = s3Uploader.makeUniqueFileName("review", reviewId, newUrl);
                     existingWeddingPhotoUrls.add(newUniqueFilename);
-                    weddingPhotosPresignedUrlList.add(s3Uploader.uploadFile(newUrl));
+                    weddingPhotosPresignedUrlList.add(s3Uploader.getPresignedUrl(newUrl));
                 }
             });
         }
@@ -190,9 +190,9 @@ public class ReviewService {
             //새로 추가해야 하는 이미지 s3에 업로드
             newWeddingPhotoUrls.forEach(newUrl -> {
                 if (!existingWeddingPhotoUrls.contains(newUrl)) {
-                    String newUniqueFilename = s3Uploader.makeFileNameWithOutCloudFront("review", reviewId, newUrl);
+                    String newUniqueFilename = s3Uploader.makeUniqueFileName("review", reviewId, newUrl);
                     existingWeddingPhotoUrls.add(newUniqueFilename);
-                    weddingPhotosPresignedUrlList.add(s3Uploader.uploadFile(newUrl));
+                    weddingPhotosPresignedUrlList.add(s3Uploader.getPresignedUrl(newUrl));
                 }
             });
         }

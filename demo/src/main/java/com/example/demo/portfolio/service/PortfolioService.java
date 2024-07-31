@@ -80,16 +80,16 @@ public class PortfolioService {
         portfolio.setWeddingPlanner(weddingPlanner);
 
         //portfolio/{id}/uuid 형식으로 이미지명 생성
-        portfolio.setProfileImageUrl(s3Uploader.makeFileNameWithOutCloudFront("portfolio", portfolio.getId(), portfolioRequest.getProfileImageUrl()));
+        portfolio.setProfileImageUrl(s3Uploader.makeUniqueFileName("portfolio", portfolio.getId(), portfolioRequest.getProfileImageUrl()));
         portfolio.setWeddingPhotoUrls(
                 portfolioRequest.getWeddingPhotoUrls().stream()
-                        .map(url -> s3Uploader.makeFileNameWithOutCloudFront("portfolio", portfolio.getId(), url))
+                        .map(url -> s3Uploader.makeUniqueFileName("portfolio", portfolio.getId(), url))
                         .collect(Collectors.toList())
         );
 
         //presignedUrl 각각 가져오기
-        String profileImagePresignedUrl = s3Uploader.uploadFile(portfolioRequest.getProfileImageUrl());
-        List<String> weddingPhotoPresignedUrlList = s3Uploader.uploadFileList(portfolioRequest.getWeddingPhotoUrls());
+        String profileImagePresignedUrl = s3Uploader.getPresignedUrl(portfolioRequest.getProfileImageUrl());
+        List<String> weddingPhotoPresignedUrlList = s3Uploader.getPresignedUrls(portfolioRequest.getWeddingPhotoUrls());
 
         //save portfolio
         Portfolio savedPortfolio = portfolioRepository.save(portfolio);
@@ -113,8 +113,8 @@ public class PortfolioService {
         if(portfolioRequest.getProfileImageUrl() != null && !portfolioRequest.getProfileImageUrl().equals(existingPortfolio.getProfileImageUrl())) {
             //Delete existing image from s3 and upload new image
             s3Uploader.deleteFile(existingPortfolio.getProfileImageUrl());
-            existingPortfolio.setProfileImageUrl(s3Uploader.makeFileNameWithOutCloudFront("portfolio", portfolioId, portfolioRequest.getProfileImageUrl()));
-            profileImagePresigendUrl = s3Uploader.uploadFile(existingPortfolio.getProfileImageUrl());
+            existingPortfolio.setProfileImageUrl(s3Uploader.makeUniqueFileName("portfolio", portfolioId, portfolioRequest.getProfileImageUrl()));
+            profileImagePresigendUrl = s3Uploader.getPresignedUrl(existingPortfolio.getProfileImageUrl());
         }
 
         List<String> weddingPhotosPresignedUrlList = new ArrayList<>();
@@ -137,9 +137,9 @@ public class PortfolioService {
             //새로 추가해야 하는 이미지 s3에 업로드
             newWeddingPhotoUrls.forEach(newUrl -> {
                 if (!existingWeddingPhotoUrls.contains(newUrl)) {
-                    String newUniqueFilename = s3Uploader.makeFileNameWithOutCloudFront("portfolio", portfolioId, newUrl);
+                    String newUniqueFilename = s3Uploader.makeUniqueFileName("portfolio", portfolioId, newUrl);
                     existingWeddingPhotoUrls.add(newUniqueFilename);
-                    weddingPhotosPresignedUrlList.add(s3Uploader.uploadFile(newUniqueFilename));
+                    weddingPhotosPresignedUrlList.add(s3Uploader.getPresignedUrl(newUniqueFilename));
                 }
             });
         }
