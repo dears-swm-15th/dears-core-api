@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 @Profile("!test")
@@ -30,16 +29,12 @@ public class S3Uploader {
     private String cloudfrontPath;
 
     private final int PRESIGNED_URL_EXPIRATION = 60 * 1000 * 10; // 10분
-
-
-    public String getPresignedUrl(String fileName) {
-        return generatePresignedUrl(fileName).toString();
-    }
+    
 
 
     // Upload file to S3 using presigned url
     private GeneratePresignedUrlRequest getGeneratePresignedUrlRequest(String fileName) {
-        return new GeneratePresignedUrlRequest(bucket, cloudfrontPath + "/" + fileName)
+        return new GeneratePresignedUrlRequest(bucket, fileName)
                 .withMethod(HttpMethod.PUT)
                 .withExpiration(setExpiration());
     }
@@ -58,13 +53,15 @@ public class S3Uploader {
         return expiration;
     }
 
-    public String getUniqueFilename(String fileName) {
-        return UUID.randomUUID().toString();
+    public String makeUniqueFileName(String type, Long id, String fileName) {
+        return type + "/" + id +"/" + UUID.randomUUID() + "." + getFileExtension(fileName);
     }
 
-    //get file from cloudfront not using presigned url
-    private String getCloudfrontFilePath(String fileName) {
-        return cloudfrontPath + fileName;
+    public static String getFileExtension(String fileName) throws RuntimeException{
+        if (fileName == null || fileName.lastIndexOf('.') == -1) {
+            throw new RuntimeException("파일 확장자가 없습니다.");
+        }
+        return fileName.substring(fileName.lastIndexOf('.') + 1);
     }
 
     public void deleteFile(String fileName){
@@ -72,43 +69,30 @@ public class S3Uploader {
             return;
         }
         if (checkFileExists(fileName)){
-            s3Config.amazonS3().deleteObject(new DeleteObjectRequest(bucket, cloudfrontPath+"/"+fileName));
+            s3Config.amazonS3().deleteObject(new DeleteObjectRequest(bucket, fileName));
         }
     }
 
-    public void deleteFiles(List<String> fileNames) {
-        if (fileNames == null || fileNames.isEmpty()) {
-            return;
-        }
 
-        fileNames.forEach(this::deleteFile);
+    public String getPresignedUrl(String fileName){
+        return generatePresignedUrl(fileName).toString();
     }
 
-
-    public String uploadFile(String fileName){
-        return getPresignedUrl(fileName);
-    }
-
-    public List<String> uploadFileList(List<String> fileNameList){
+    public List<String> getPresignedUrls(List<String> fileNameList){
         List<String> presignedUrlList = new ArrayList<>();
         for (String fileName : fileNameList) {
-            String uniqueFileName = getUniqueFilename(fileName);
-            presignedUrlList.add(getPresignedUrl(uniqueFileName));
+            presignedUrlList.add(generatePresignedUrl(fileName).toString());
         }
         return presignedUrlList;
     }
 
-    public String getImageUrl(String uniqueFileName){
-        return getCloudfrontFilePath(uniqueFileName);
-    }
-
-    public List<String> getImageUrls(List<String> imageUrls) {
-        return imageUrls.stream()
-                .map(this::getImageUrl)
-                .collect(Collectors.toList());
-    }
-
-    public boolean checkFileExists(String fileName) {
-        return s3Config.amazonS3().doesObjectExist(bucket, cloudfrontPath + "/" + fileName);
+    private boolean checkFileExists(String fileName) {
+        // cloudfrontUrl 부분을 앞에서부터 제거
+        String cleanedFileName = fileName;
+        if (fileName.startsWith(cloudfrontPath)) {
+            cleanedFileName = fileName.substring(cloudfrontPath.length());
+        }
+        return s3Config.amazonS3().doesObjectExist(bucket, cleanedFileName);
     }
 }
+

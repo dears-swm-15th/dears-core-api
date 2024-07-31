@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,7 +48,6 @@ public class PortfolioService {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
-        updatePortfolioImageUrls(portfolio);
         PortfolioDTO.Response portfolioResponse = portfolioMapper.entityToResponse(portfolio);
 
         portfolioResponse.setWeddingPlannerPortfolioResponse(
@@ -69,37 +70,88 @@ public class PortfolioService {
 
     @Transactional
     public PortfolioDTO.Response createPortfolio(PortfolioDTO.Request portfolioRequest) {
-        log.info("Starting createPortfolio method with data: {}", portfolioRequest);
+
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
-        preparePortfolioImages(portfolioRequest);
+        //일단 id를 가져오기 위한 save
+        Portfolio portfolio = portfolioRepository.save(portfolioMapper.requestToEntity(portfolioRequest));
 
-        Portfolio savedPortfolio = portfolioRepository.save(portfolioMapper.requestToEntity(portfolioRequest));
-        weddingPlanner.setPortfolio(savedPortfolio);
+        //weddingplanner 할당
+        portfolio.setWeddingPlanner(weddingPlanner);
 
-        PortfolioDTO.Response response = buildPortfolioResponse(savedPortfolio);
+        //portfolio/{id}/uuid 형식으로 이미지명 생성
+        portfolio.setProfileImageUrl(s3Uploader.makeUniqueFileName("portfolio", portfolio.getId(), portfolioRequest.getProfileImageUrl()));
+        portfolio.setWeddingPhotoUrls(
+                portfolioRequest.getWeddingPhotoUrls().stream()
+                        .map(url -> s3Uploader.makeUniqueFileName("portfolio", portfolio.getId(), url))
+                        .collect(Collectors.toList())
+        );
+
+        //presignedUrl 각각 가져오기
+        String profileImagePresignedUrl = s3Uploader.getPresignedUrl(portfolioRequest.getProfileImageUrl());
+        List<String> weddingPhotoPresignedUrlList = s3Uploader.getPresignedUrls(portfolioRequest.getWeddingPhotoUrls());
+
+        Portfolio savedPortfolio = portfolioRepository.save(portfolio);
+        PortfolioDTO.Response response = portfolioMapper.entityToResponse(savedPortfolio);
+
+        response.setPresignedProfileImageUrl(profileImagePresignedUrl);
+        response.setPresignedWeddingPhotoUrls(weddingPhotoPresignedUrlList);
+
         portfolioSearchService.indexDocumentUsingDTO(savedPortfolio);
-
-        log.info("Created new portfolio with data: {}", portfolioRequest);
         return response;
     }
 
     @Transactional
     public PortfolioDTO.Response updatePortfolio(Long portfolioId, PortfolioDTO.Request portfolioRequest) {
         log.info("Starting updatePortfolio method for portfolio ID: {} with data: {}", portfolioId, portfolioRequest);
-        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
         Portfolio existingPortfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
-        updatePortfolioImages(portfolioRequest, existingPortfolio);
-        Portfolio updatedPortfolio = portfolioMapper.updateFromRequest(portfolioRequest, existingPortfolio);
-        portfolioRepository.save(updatedPortfolio);
-        weddingPlanner.setPortfolio(updatedPortfolio);
 
-        PortfolioDTO.Response response = buildPortfolioResponse(updatedPortfolio);
-        portfolioSearchService.updateDocumentUsingDTO(updatedPortfolio);
+        String profileImagePresigendUrl = "";
+        if(portfolioRequest.getProfileImageUrl() != null && !portfolioRequest.getProfileImageUrl().equals(existingPortfolio.getProfileImageUrl())) {
+            //Delete existing image from s3 and upload new image
+            s3Uploader.deleteFile(existingPortfolio.getProfileImageUrl());
+            existingPortfolio.setProfileImageUrl(s3Uploader.makeUniqueFileName("portfolio", portfolioId, portfolioRequest.getProfileImageUrl()));
+            profileImagePresigendUrl = s3Uploader.getPresignedUrl(existingPortfolio.getProfileImageUrl());
+        }
 
-        log.info("Updated portfolio with ID: {} with data: {}", portfolioId, portfolioRequest);
+        List<String> weddingPhotosPresignedUrlList = new ArrayList<>();
+        if (portfolioRequest.getWeddingPhotoUrls() != null) {
+
+            List<String> existingWeddingPhotoUrls = existingPortfolio.getWeddingPhotoUrls();
+            List<String> newWeddingPhotoUrls = portfolioRequest.getWeddingPhotoUrls();
+
+            //삭제한 이미지 s3에서 삭제
+            Iterator<String> iterator = existingWeddingPhotoUrls.iterator();
+            while (iterator.hasNext()) {
+                String existingUrl = iterator.next();
+                if (!newWeddingPhotoUrls.contains(existingUrl)) {
+                    s3Uploader.deleteFile(existingUrl);
+                    iterator.remove();
+                }
+            }
+
+            //새로 추가해야 하는 이미지 s3에 업로드
+            newWeddingPhotoUrls.forEach(newUrl -> {
+                if (!existingWeddingPhotoUrls.contains(newUrl)) {
+                    String newUniqueFilename = s3Uploader.makeUniqueFileName("portfolio", portfolioId, newUrl);
+                    existingWeddingPhotoUrls.add(newUniqueFilename);
+                    weddingPhotosPresignedUrlList.add(s3Uploader.getPresignedUrl(newUniqueFilename));
+                }
+            });
+        }
+
+        Portfolio savedPortfolio = portfolioRepository.save(existingPortfolio);
+        PortfolioDTO.Response response = portfolioMapper.entityToResponse(savedPortfolio);
+
+        if (profileImagePresigendUrl != null) {
+            response.setPresignedProfileImageUrl(profileImagePresigendUrl);
+        }
+        if (!weddingPhotosPresignedUrlList.isEmpty()) {
+            response.setPresignedWeddingPhotoUrls(weddingPhotosPresignedUrlList);
+        }
+        portfolioSearchService.updateDocumentUsingDTO(savedPortfolio);
         return response;
     }
 
@@ -152,7 +204,8 @@ public class PortfolioService {
     @Transactional
     public Portfolio reflectNewReview(ReviewDTO.Request reviewRequest) {
         log.info("Starting reflectNewReview method for review with portfolio ID: {}", reviewRequest.getPortfolioId());
-        Portfolio portfolio = getPortfolioWithLock(reviewRequest.getPortfolioId());
+        Portfolio portfolio = portfolioRepository.findById(reviewRequest.getPortfolioId())
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
         updatePortfolioWithNewReview(portfolio, reviewRequest);
         portfolioRepository.save(portfolio);
@@ -181,35 +234,6 @@ public class PortfolioService {
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
     }
 
-    private void updatePortfolioImageUrls(Portfolio portfolio) {
-        String cloudFrontImageUrl = s3Uploader.getImageUrl(portfolio.getProfileImageUrl());
-        portfolio.setProfileImageUrl(cloudFrontImageUrl);
-    }
-
-    private void preparePortfolioImages(PortfolioDTO.Request portfolioRequest) {
-        portfolioRequest.setProfileImageUrl(s3Uploader.getUniqueFilename(portfolioRequest.getProfileImageUrl()));
-        portfolioRequest.setWeddingPhotoUrls(portfolioRequest.getWeddingPhotoUrls().stream()
-                .map(s3Uploader::getUniqueFilename)
-                .collect(Collectors.toList()));
-
-        s3Uploader.uploadFile(portfolioRequest.getProfileImageUrl());
-        s3Uploader.uploadFileList(portfolioRequest.getWeddingPhotoUrls());
-    }
-
-    private void updatePortfolioImages(PortfolioDTO.Request portfolioRequest, Portfolio existingPortfolio) {
-        if (portfolioRequest.getProfileImageUrl() != null) {
-            s3Uploader.deleteFile(existingPortfolio.getProfileImageUrl());
-            existingPortfolio.setProfileImageUrl(s3Uploader.getUniqueFilename(portfolioRequest.getProfileImageUrl()));
-            s3Uploader.uploadFile(portfolioRequest.getProfileImageUrl());
-        }
-        if (portfolioRequest.getWeddingPhotoUrls() != null) {
-            existingPortfolio.getWeddingPhotoUrls().forEach(s3Uploader::deleteFile);
-            existingPortfolio.setWeddingPhotoUrls(portfolioRequest.getWeddingPhotoUrls().stream()
-                    .map(s3Uploader::getUniqueFilename)
-                    .collect(Collectors.toList()));
-            s3Uploader.uploadFileList(portfolioRequest.getWeddingPhotoUrls());
-        }
-    }
 
     private void deletePortfolioImages(Portfolio portfolio) {
         String profileImageUrl = portfolio.getProfileImageUrl();
@@ -247,15 +271,6 @@ public class PortfolioService {
         portfolio.accumulateRatingSum(reviewRequest.getRating());
         portfolio.accumulateEstimate(reviewRequest.getEstimate());
         portfolio.accumulateRadarSum(reviewRequest.getRadar());
-    }
-
-    private PortfolioDTO.Response buildPortfolioResponse(Portfolio portfolio) {
-        PortfolioDTO.Response response = portfolioMapper.entityToResponse(portfolio);
-        response.setPresignedProfileImageUrl(s3Uploader.getImageUrl(portfolio.getProfileImageUrl()));
-        response.setPresignedWeddingPhotoUrls(portfolio.getWeddingPhotoUrls().stream()
-                .map(s3Uploader::getImageUrl)
-                .collect(Collectors.toList()));
-        return response;
     }
 
     private ReviewDTO.Response mapToReviewResponse(Review review) {
@@ -314,5 +329,4 @@ public class PortfolioService {
                 .map(portfolioMapper::entityToResponse)
                 .collect(Collectors.toList());
     }
-
 }
