@@ -82,7 +82,7 @@ public class ReviewController {
             @PathVariable Long reviewId) {
         reviewService.deleteReviewForWeddingPlanner(reviewId);
         log.info("Deleted review for wedding planner with ID: {}", reviewId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/customer/delete/{reviewId}")

@@ -79,7 +79,7 @@ public class PortfolioController {
             @PathVariable Long portfolioId) {
         portfolioService.deletePortfolio(portfolioId);
         log.info("Deleted portfolio with ID: {}", portfolioId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/shared/soft-deleted")

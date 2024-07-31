@@ -16,6 +16,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,9 +46,6 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
-        List<String> cloudFrontImageUrls = s3Uploader.getImageUrls(review.getWeddingPhotoUrls());
-        review.setWeddingPhotoUrls(cloudFrontImageUrls);
-
         return reviewMapper.entityToResponse(review);
     }
 
@@ -55,13 +54,18 @@ public class ReviewService {
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
         log.info("Creating review for wedding planner with data: {}", reviewRequest);
 
-        reviewRequest.setWeddingPhotoUrls(reviewRequest.getWeddingPhotoUrls().stream()
-                .map(s3Uploader::getUniqueFilename)
-                .collect(Collectors.toList()));
+        //일단 id를 가져오기 위한 save
+        Review review = reviewRepository.save(reviewMapper.requestToEntity(reviewRequest));
+
+        //review/{id}/uuid 형식으로 이미지명 생성
+        review.setWeddingPhotoUrls(
+                reviewRequest.getWeddingPhotoUrls().stream()
+                        .map(url -> s3Uploader.makeFileNameWithOutCloudFront("review", review.getId(), url))
+                        .collect(Collectors.toList())
+        );
 
         List<String> presignedUrlList = s3Uploader.uploadFileList(reviewRequest.getWeddingPhotoUrls());
 
-        Review review = reviewMapper.requestToEntity(reviewRequest);
         Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
         review.setPortfolio(portfolio);
         review.setReviewerId(weddingPlanner.getId());
@@ -71,9 +75,6 @@ public class ReviewService {
 
         ReviewDTO.Response response = reviewMapper.entityToResponse(review);
         response.setPresignedWeddingPhotoUrls(presignedUrlList);
-        response.setWeddingPhotoUrls(review.getWeddingPhotoUrls().stream()
-                .map(s3Uploader::getImageUrl)
-                .collect(Collectors.toList()));
 
         log.info("Successfully created review for wedding planner with ID: {}", review.getId());
         return response;
@@ -84,13 +85,18 @@ public class ReviewService {
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
         log.info("Creating review for customer with data: {}", reviewRequest);
 
-        reviewRequest.setWeddingPhotoUrls(reviewRequest.getWeddingPhotoUrls().stream()
-                .map(s3Uploader::getUniqueFilename)
-                .collect(Collectors.toList()));
+        //일단 id를 가져오기 위한 save
+        Review review = reviewRepository.save(reviewMapper.requestToEntity(reviewRequest));
+
+        //review/{id}/uuid 형식으로 이미지명 생성
+        review.setWeddingPhotoUrls(
+                reviewRequest.getWeddingPhotoUrls().stream()
+                        .map(url -> s3Uploader.makeFileNameWithOutCloudFront("review", review.getId(), url))
+                        .collect(Collectors.toList())
+        );
 
         List<String> presignedUrlList = s3Uploader.uploadFileList(reviewRequest.getWeddingPhotoUrls());
 
-        Review review = reviewMapper.requestToEntity(reviewRequest);
         Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
         review.setPortfolio(portfolio);
         review.setReviewerId(customer.getId());
@@ -100,9 +106,6 @@ public class ReviewService {
 
         ReviewDTO.Response response = reviewMapper.entityToResponse(review);
         response.setPresignedWeddingPhotoUrls(presignedUrlList);
-        response.setWeddingPhotoUrls(review.getWeddingPhotoUrls().stream()
-                .map(s3Uploader::getImageUrl)
-                .collect(Collectors.toList()));
 
         log.info("Successfully created review for customer with ID: {}", review.getId());
         return response;
@@ -116,31 +119,40 @@ public class ReviewService {
         Review existingReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
-        if (!existingReview.getReviewerId().equals(weddingPlanner.getId())) {
+        if (!existingReview.getReviewerId().equals(weddingPlanner.getId())){
             log.error("Unauthorized attempt to modify review with ID: {}", reviewId);
             throw new RuntimeException("Not authorized to modify this review");
         }
 
-        List<String> weddingPhotoUrls = existingReview.getWeddingPhotoUrls();
-        if (weddingPhotoUrls != null) {
-            weddingPhotoUrls.forEach(s3Uploader::deleteFile);
-            existingReview.setWeddingPhotoUrls(reviewRequest.getWeddingPhotoUrls().stream()
-                    .map(s3Uploader::getUniqueFilename)
-                    .collect(Collectors.toList()));
-            s3Uploader.uploadFileList(reviewRequest.getWeddingPhotoUrls());
+        List<String> weddingPhotosPresignedUrlList = existingReview.getWeddingPhotoUrls();
+        if (reviewRequest.getWeddingPhotoUrls() != null) {
+            List<String> existingWeddingPhotoUrls = existingReview.getWeddingPhotoUrls();
+            List<String> newWeddingPhotoUrls = reviewRequest.getWeddingPhotoUrls();
+
+            //삭제한 이미지 s3에서 삭제
+            existingWeddingPhotoUrls.forEach(existingUrl -> {
+                if (!newWeddingPhotoUrls.contains(existingUrl)) {
+                    s3Uploader.deleteFile(existingUrl);
+                    existingWeddingPhotoUrls.remove(existingUrl);
+                }
+            });
+
+            //새로 추가해야 하는 이미지 s3에 업로드
+            newWeddingPhotoUrls.forEach(newUrl -> {
+                if (!existingWeddingPhotoUrls.contains(newUrl)) {
+                    String newUniqueFilename = s3Uploader.makeFileNameWithOutCloudFront("review", reviewId, newUrl);
+                    existingWeddingPhotoUrls.add(newUniqueFilename);
+                    weddingPhotosPresignedUrlList.add(s3Uploader.uploadFile(newUrl));
+                }
+            });
         }
 
-        Review updatedReview = reviewMapper.updateFromRequest(reviewRequest, existingReview);
         Portfolio portfolio = portfolioService.reflectModifiedReview(reviewRequest, existingReview);
-        updatedReview.setPortfolio(portfolio);
-
-        reviewRepository.save(updatedReview);
+        existingReview.setPortfolio(portfolio);
+        Review updatedReview = reviewRepository.save(existingReview);
 
         ReviewDTO.Response response = reviewMapper.entityToResponse(updatedReview);
-        response.setPresignedWeddingPhotoUrls(updatedReview.getWeddingPhotoUrls());
-        response.setWeddingPhotoUrls(updatedReview.getWeddingPhotoUrls().stream()
-                .map(s3Uploader::getImageUrl)
-                .collect(Collectors.toList()));
+        response.setPresignedWeddingPhotoUrls(weddingPhotosPresignedUrlList);
 
         log.info("Successfully modified review for wedding planner with ID: {}", reviewId);
         return response;
@@ -159,26 +171,38 @@ public class ReviewService {
             throw new RuntimeException("Not authorized to modify this review");
         }
 
-        List<String> weddingPhotoUrls = existingReview.getWeddingPhotoUrls();
-        if (weddingPhotoUrls != null) {
-            weddingPhotoUrls.forEach(s3Uploader::deleteFile);
-            existingReview.setWeddingPhotoUrls(reviewRequest.getWeddingPhotoUrls().stream()
-                    .map(s3Uploader::getUniqueFilename)
-                    .collect(Collectors.toList()));
-            s3Uploader.uploadFileList(reviewRequest.getWeddingPhotoUrls());
+        List<String> weddingPhotosPresignedUrlList = new ArrayList<>();
+        if (reviewRequest.getWeddingPhotoUrls() != null) {
+            List<String> existingWeddingPhotoUrls = existingReview.getWeddingPhotoUrls();
+            List<String> newWeddingPhotoUrls = reviewRequest.getWeddingPhotoUrls();
+
+            //삭제한 이미지 s3에서 삭제
+            Iterator<String> iterator = existingWeddingPhotoUrls.iterator();
+            while (iterator.hasNext()) {
+                String existingUrl = iterator.next();
+                if (!newWeddingPhotoUrls.contains(existingUrl)) {
+                    s3Uploader.deleteFile(existingUrl);
+                    iterator.remove();
+                }
+            }
+
+
+            //새로 추가해야 하는 이미지 s3에 업로드
+            newWeddingPhotoUrls.forEach(newUrl -> {
+                if (!existingWeddingPhotoUrls.contains(newUrl)) {
+                    String newUniqueFilename = s3Uploader.makeFileNameWithOutCloudFront("review", reviewId, newUrl);
+                    existingWeddingPhotoUrls.add(newUniqueFilename);
+                    weddingPhotosPresignedUrlList.add(s3Uploader.uploadFile(newUrl));
+                }
+            });
         }
 
-        Review updatedReview = reviewMapper.updateFromRequest(reviewRequest, existingReview);
         Portfolio portfolio = portfolioService.reflectModifiedReview(reviewRequest, existingReview);
-        updatedReview.setPortfolio(portfolio);
-
-        reviewRepository.save(updatedReview);
+        existingReview.setPortfolio(portfolio);
+        Review updatedReview = reviewRepository.save(existingReview);
 
         ReviewDTO.Response response = reviewMapper.entityToResponse(updatedReview);
-        response.setPresignedWeddingPhotoUrls(updatedReview.getWeddingPhotoUrls());
-        response.setWeddingPhotoUrls(updatedReview.getWeddingPhotoUrls().stream()
-                .map(s3Uploader::getImageUrl)
-                .collect(Collectors.toList()));
+        response.setPresignedWeddingPhotoUrls(weddingPhotosPresignedUrlList);
 
         log.info("Successfully modified review for customer with ID: {}", reviewId);
         return response;
@@ -199,7 +223,7 @@ public class ReviewService {
 
         List<String> weddingPhotoUrls = review.getWeddingPhotoUrls();
         if (weddingPhotoUrls != null) {
-            s3Uploader.deleteFiles(weddingPhotoUrls);
+            weddingPhotoUrls.forEach(s3Uploader::deleteFile);
         }
 
         reviewRepository.softDeleteById(reviewId);
@@ -221,7 +245,7 @@ public class ReviewService {
 
         List<String> weddingPhotoUrls = review.getWeddingPhotoUrls();
         if (weddingPhotoUrls != null) {
-            s3Uploader.deleteFiles(weddingPhotoUrls);
+            weddingPhotoUrls.forEach(s3Uploader::deleteFile);
         }
 
         reviewRepository.softDeleteById(reviewId);
