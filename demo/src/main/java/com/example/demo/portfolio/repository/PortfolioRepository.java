@@ -36,8 +36,5 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     @Query("UPDATE Portfolio p SET p.viewCount = p.viewCount + 1 WHERE p.id = :id")
     void increaseViewCount(@Param("id") Long id);
 
-
-    //조회수 top5
-    @Query(value = "SELECT * FROM Portfolio p ORDER BY p.view_count DESC LIMIT 5", nativeQuery = true)
-    List<Portfolio> findTop5ByViewCount();
+    List<Portfolio> findTop3ByOrderByViewCountDesc();
 }
