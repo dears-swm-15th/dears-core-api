@@ -32,6 +32,10 @@ spring:
     password: ${ELASTICSEARCH_PASSWORD}
     repositories:
       enabled: true
+  data:
+    redis:
+      port: 6379
+      host: localhost
 
 springdoc:
   api-docs:
