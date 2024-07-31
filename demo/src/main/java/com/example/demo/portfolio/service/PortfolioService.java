@@ -91,7 +91,6 @@ public class PortfolioService {
         String profileImagePresignedUrl = s3Uploader.getPresignedUrl(portfolioRequest.getProfileImageUrl());
         List<String> weddingPhotoPresignedUrlList = s3Uploader.getPresignedUrls(portfolioRequest.getWeddingPhotoUrls());
 
-        //save portfolio
         Portfolio savedPortfolio = portfolioRepository.save(portfolio);
         PortfolioDTO.Response response = portfolioMapper.entityToResponse(savedPortfolio);
 
@@ -123,7 +122,6 @@ public class PortfolioService {
             List<String> existingWeddingPhotoUrls = existingPortfolio.getWeddingPhotoUrls();
             List<String> newWeddingPhotoUrls = portfolioRequest.getWeddingPhotoUrls();
 
-            System.out.println("existingWeddingPhotoUrls: "+existingWeddingPhotoUrls);
             //삭제한 이미지 s3에서 삭제
             Iterator<String> iterator = existingWeddingPhotoUrls.iterator();
             while (iterator.hasNext()) {
@@ -153,7 +151,6 @@ public class PortfolioService {
         if (!weddingPhotosPresignedUrlList.isEmpty()) {
             response.setPresignedWeddingPhotoUrls(weddingPhotosPresignedUrlList);
         }
-        System.out.println("weddingPhotosPresignedUrlList 개수"+weddingPhotosPresignedUrlList.size());
         portfolioSearchService.updateDocumentUsingDTO(savedPortfolio);
         return response;
     }
