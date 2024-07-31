@@ -325,8 +325,10 @@ public class PortfolioService {
     }
 
     public List<PortfolioDTO.Response> getTop5Portfolios() {
-        return portfolioRepository.findTop5ByViewCount().stream()
+
+        return portfolioRepository.findTop3ByOrderByViewCountDesc().stream()
                 .map(portfolioMapper::entityToResponse)
                 .collect(Collectors.toList());
     }
 }
+
