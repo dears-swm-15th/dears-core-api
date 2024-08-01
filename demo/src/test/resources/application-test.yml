@@ -3,7 +3,7 @@ spring:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testdb;MODE=MySQL;
     username: sa
-    password:
+    password: password
   h2:
     console:
       enabled: true
@@ -11,3 +11,15 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        show_sql: false
+        format_sql: false
+  sql:
+    init:
+      mode: always
+
+logging:
+  level:
+    project: debug
