@@ -22,4 +22,6 @@ public interface WeddingPlannerMapper {
     public MypageDTO.WeddingPlannerResponse entityToMypageDTOResponse(WeddingPlanner weddingPlanner);
 
     public WeddingPlannerPortfolioDTO.Response entityToWeddingPlannerPortfolioDTOResponse(WeddingPlanner weddingPlanner);
+
+    MypageDTO.MyPageUpdateResponse entityToMypageUpdateResponse(WeddingPlanner weddingPlanner);
 }
