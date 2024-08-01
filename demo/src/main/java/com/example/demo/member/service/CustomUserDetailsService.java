@@ -1,5 +1,6 @@
 package com.example.demo.member.service;
 
+import com.example.demo.config.S3Uploader;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.CustomerContext;
@@ -40,6 +41,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final WeddingPlannerRepository weddingPlannerRepository;
     private final CustomerMapper customerMapper;
     private final WeddingPlannerMapper weddingPlannerMapper;
+    private final S3Uploader s3Uploader;
 
     @Override
     public UserDetails loadUserByUsername(String UUID) throws UsernameNotFoundException {
@@ -163,5 +165,42 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new RuntimeException("WeddingPlanner not found"));
         log.info("Found wedding planner with ID: {}", weddingPlannerId);
         return weddingPlanner;
+    }
+
+    public MypageDTO.MyPageUpdateResponse updateCustomerMyPage(MypageDTO.CustomerRequest customerRequest) {
+        Customer customer = getCurrentAuthenticatedCustomer();
+
+        if (customerRequest.getName() != null && !customerRequest.getName().isEmpty()) {
+            customer.setName(customerRequest.getName());
+        }
+        String profileImagePresignedUrl = "";
+        if (customerRequest.getProfileImageUrl() != null && !customerRequest.getProfileImageUrl().isEmpty()) {
+
+            customer.setProfileImageUrl(s3Uploader.makeUniqueFileName("mypage", customer.getId(), customerRequest.getProfileImageUrl()));
+            profileImagePresignedUrl = s3Uploader.getPresignedUrl(customer.getProfileImageUrl());
+        }
+
+        MypageDTO.MyPageUpdateResponse response = customerMapper.entityToMypageUpdateResponse(customer);
+        if (profileImagePresignedUrl != ""){ response.setProfileImagePresignedUrl(profileImagePresignedUrl); }
+        log.info("Updated customer my page for UUID: {}", customer.getUUID());
+        return response;
+    }
+
+    public MypageDTO.MyPageUpdateResponse updateWeddingPlannerMyPage(MypageDTO.WeddingPlannerRequest weddingPlannerRequest) {
+        WeddingPlanner weddingPlanner = getCurrentAuthenticatedWeddingPlanner();
+
+        if (weddingPlannerRequest.getName() != null && !weddingPlannerRequest.getName().isEmpty()) {
+            weddingPlanner.setName(weddingPlannerRequest.getName());
+        }
+        String profileImagePresignedUrl = "";
+        if (weddingPlannerRequest.getProfileImageUrl() != null && !weddingPlannerRequest.getProfileImageUrl().isEmpty()) {
+            weddingPlanner.setProfileImageUrl(s3Uploader.makeUniqueFileName("mypage", weddingPlanner.getId(), weddingPlannerRequest.getProfileImageUrl()));
+            profileImagePresignedUrl = s3Uploader.getPresignedUrl(weddingPlanner.getProfileImageUrl());
+        }
+
+        MypageDTO.MyPageUpdateResponse response = weddingPlannerMapper.entityToMypageUpdateResponse(weddingPlanner);
+        if (profileImagePresignedUrl != ""){ response.setProfileImagePresignedUrl(profileImagePresignedUrl); }
+        log.info("Updated wedding planner my page for UUID: {}", weddingPlanner.getUUID());
+        return response;
     }
 }
