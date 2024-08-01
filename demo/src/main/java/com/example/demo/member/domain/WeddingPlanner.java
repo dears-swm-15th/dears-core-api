@@ -40,10 +40,8 @@ public class WeddingPlanner {
     @Column
     private String profileImageUrl;
 
-    //포트폴리오 1:1
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "weddingplanner_id")
-    private Portfolio portfolio;
+    @OneToOne(mappedBy = "weddingPlanner", fetch = FetchType.LAZY)
+    private Portfolio portfolio; //포트폴리오 먼저 저장하고 웨딩플래너 저장
 
     //매칭 1:N
     @OneToMany

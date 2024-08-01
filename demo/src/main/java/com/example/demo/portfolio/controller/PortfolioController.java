@@ -115,4 +115,10 @@ public class PortfolioController {
         return ResponseEntity.ok(top5Portfolios);
     }
 
+    @GetMapping("/weddingplanner/me")
+    @Operation(summary = "[웨딩플래너] 내 포트폴리오 조회")
+    public ResponseEntity<PortfolioDTO.Response> getMyPortfolio() {
+        PortfolioDTO.Response myPortfolio = portfolioService.getMyPortfolio();
+        return ResponseEntity.ok(myPortfolio);
+    }
 }
