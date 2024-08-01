@@ -2,6 +2,7 @@ package com.example.demo.portfolio.controller;
 
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.dto.PortfolioDTO;
+import com.example.demo.portfolio.dto.PortfolioOverviewDTO;
 import com.example.demo.portfolio.dto.PortfolioSearchDTO;
 import com.example.demo.portfolio.service.PortfolioSearchService;
 import com.example.demo.portfolio.service.PortfolioService;
@@ -110,8 +111,8 @@ public class PortfolioController {
 
     @GetMapping("/shared/top5")
     @Operation(summary = "[공통] 조회수 상위 5개 포트폴리오 조회")
-    public ResponseEntity<List<PortfolioDTO.Response>> getTop5Portfolios() {
-        List<PortfolioDTO.Response> top5Portfolios = portfolioService.getTop5Portfolios();
+    public ResponseEntity<List<PortfolioOverviewDTO.Response>> getTop5Portfolios() {
+        List<PortfolioOverviewDTO.Response> top5Portfolios = portfolioService.getTop5Portfolios();
         return ResponseEntity.ok(top5Portfolios);
     }
 
