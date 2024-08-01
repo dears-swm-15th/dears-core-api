@@ -95,7 +95,7 @@ public class ReviewService {
                         .collect(Collectors.toList())
         );
 
-        List<String> presignedUrlList = s3Uploader.getPresignedUrls(reviewRequest.getWeddingPhotoUrls());
+        List<String> presignedUrlList = s3Uploader.getPresignedUrls(review.getWeddingPhotoUrls());
 
         Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
         review.setPortfolio(portfolio);

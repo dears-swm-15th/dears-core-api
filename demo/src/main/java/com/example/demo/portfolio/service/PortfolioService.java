@@ -73,6 +73,9 @@ public class PortfolioService {
 
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
 
+        if (weddingPlanner.getPortfolio() != null) {
+            throw new RuntimeException("Portfolio already exists");
+        }
         //일단 id를 가져오기 위한 save
         Portfolio portfolio = portfolioRepository.save(portfolioMapper.requestToEntity(portfolioRequest));
 
@@ -88,8 +91,8 @@ public class PortfolioService {
         );
 
         //presignedUrl 각각 가져오기
-        String profileImagePresignedUrl = s3Uploader.getPresignedUrl(portfolioRequest.getProfileImageUrl());
-        List<String> weddingPhotoPresignedUrlList = s3Uploader.getPresignedUrls(portfolioRequest.getWeddingPhotoUrls());
+        String profileImagePresignedUrl = s3Uploader.getPresignedUrl(portfolio.getProfileImageUrl());
+        List<String> weddingPhotoPresignedUrlList = s3Uploader.getPresignedUrls(portfolio.getWeddingPhotoUrls());
 
         Portfolio savedPortfolio = portfolioRepository.save(portfolio);
         PortfolioDTO.Response response = portfolioMapper.entityToResponse(savedPortfolio);
@@ -140,6 +143,8 @@ public class PortfolioService {
                     weddingPhotosPresignedUrlList.add(s3Uploader.getPresignedUrl(newUniqueFilename));
                 }
             });
+
+            existingPortfolio.setWeddingPhotoUrls(existingWeddingPhotoUrls);
         }
 
         Portfolio savedPortfolio = portfolioRepository.save(existingPortfolio);
