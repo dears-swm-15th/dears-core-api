@@ -10,6 +10,8 @@ import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.review.domain.Review;
 import com.example.demo.review.repository.ReviewRepository;
+import com.example.demo.wishlist.domain.WishList;
+import com.example.demo.wishlist.repository.WishListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -37,13 +39,17 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     private WeddingPlannerRepository weddingPlannerRepository;
 
+    @Autowired
+    private WishListRepository wishListRepository;
+
     @Override
     public void run(String... args) throws Exception {
         // Create Portfolios
-        List<String> services1 = Arrays.asList("Service1", "Service2");
-        List<String> services2 = Arrays.asList("ServiceA", "ServiceB");
+        List<String> services1 = Arrays.asList("서비스1", "서비스2");
+        List<String> services2 = Arrays.asList("서비스A", "서비스B");
 
-        List<String> weddingPhotos1 = Arrays.asList("wedding1_1.jpg", "wedding1_2.jpg");
+        List<String> weddingPhotos1 = Arrays.asList("portfolio/3/7df63e8a-7666-4c92-8c55-fdd26005e97e.jpeg",
+                "portfolio/3/6c30499a-f568-416c-8bf9-4e62a20c7cee.jpeg");
         List<String> weddingPhotos2 = Arrays.asList("wedding2_1.jpg", "wedding2_2.jpg");
 
         Map<RadarKey, Float> radar1 = new HashMap<>();
@@ -66,7 +72,7 @@ public class DataLoader implements CommandLineRunner {
                 .region(Region.CHUNGDAM)
                 .introduction("Introduction to Organization One.")
                 .contactInfo("contact@organizationone.com")
-                .profileImageUrl("image1.jpg")
+                .profileImageUrl("portfolio/3/7310ef17-c1ea-40e1-a786-aa3ddf82b721.jpg")
                 .consultingFee(100)
                 .description("Description of services offered by Organization One.")
                 .estimateSum(300)
@@ -102,7 +108,10 @@ public class DataLoader implements CommandLineRunner {
         List<String> reviewTags1 = Arrays.asList("tag1", "tag2");
         List<String> reviewTags2 = Arrays.asList("tagA", "tagB");
 
-        List<String> reviewPhotos1 = Arrays.asList("review1_1.jpg", "review1_2.jpg");
+        List<String> reviewPhotos1 = Arrays.asList(
+                "review/3/d55ac892-e175-4c57-bdd1-250fea3b4364.jpg",
+                "review/3/1ae54357-e7e4-4948-beca-3bac9b72b8f7.jpg",
+                "review/3/571ba189-6b86-4cd1-89a7-92eb947b8c4e.jpg");
         List<String> reviewPhotos2 = Arrays.asList("review2_1.jpg", "review2_2.jpg");
 
         Map<RadarKey, Float> reviewRadar1 = new HashMap<>();
@@ -121,7 +130,8 @@ public class DataLoader implements CommandLineRunner {
 
         Review review1 = Review.builder()
                 .content("Great experience with Organization One. Highly recommend!")
-                .isProvided(true)
+                .isProvided(false)
+                .reviewerId(1L)
                 .rating(4.5f)
                 .estimate(350)
                 .tags(reviewTags1)
@@ -132,7 +142,8 @@ public class DataLoader implements CommandLineRunner {
 
         Review review2 = Review.builder()
                 .content("Organization Two provided excellent service. Very satisfied!")
-                .isProvided(false)
+                .isProvided(true)
+                .reviewerId(1L)
                 .rating(4.6f)
                 .estimate(450)
                 .tags(reviewTags2)
@@ -146,6 +157,7 @@ public class DataLoader implements CommandLineRunner {
                 .name("Clara")
                 .UUID("51fc7d6b-7f86-43cf-b5c7-de4c46046d71")
                 .role(CUSTOMER)
+                .reviewList(Arrays.asList(review1))
                 .build();
 
         Customer customer2 = Customer.builder()
@@ -154,25 +166,45 @@ public class DataLoader implements CommandLineRunner {
                 .role(CUSTOMER)
                 .build();
 
+        portfolioRepository.save(portfolio1);
+        portfolioRepository.save(portfolio2);
+
         WeddingPlanner planner1 = WeddingPlanner.builder()
                 .name("Alice")
                 .UUID("b1b3825f-304f-4bce-b3b7-91b70fe79cb7")
+                .portfolio(portfolio1)
+                .role(WEDDING_PLANNER)
+                .build();
+
+        WeddingPlanner planner2 = WeddingPlanner.builder()
+                .name("Bob")
+                .UUID("c14h814f-33gf-4b4e-z5z7-31b70fe74cb8")
+                .portfolio(portfolio2)
                 .role(WEDDING_PLANNER)
                 .build();
 
         customerRepository.save(customer1);
         customerRepository.save(customer2);
+
         weddingPlannerRepository.save(planner1);
-
-
-        portfolio1.setWeddingPlanner(planner1);
-
-        portfolioRepository.save(portfolio1);
-        portfolioRepository.save(portfolio2);
+        weddingPlannerRepository.save(planner2);
 
         reviewRepository.save(review1);
         reviewRepository.save(review2);
 
+
+        WishList wishList1 = WishList.builder()
+                .customer(customer1)
+                .portfolio(portfolio1)
+                .build();
+
+        WishList wishList2 = WishList.builder()
+                .customer(customer2)
+                .portfolio(portfolio2)
+                .build();
+
+        wishListRepository.save(wishList1);
+        wishListRepository.save(wishList2);
 
         System.out.println("Sample data loaded.");
     }
