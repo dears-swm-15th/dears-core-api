@@ -157,6 +157,7 @@ public class DataLoader implements CommandLineRunner {
                 .name("Clara")
                 .UUID("51fc7d6b-7f86-43cf-b5c7-de4c46046d71")
                 .role(CUSTOMER)
+                .profileImageUrl("mypage/1/69c76dcc-72ee-40df-bd22-4f81bf1e1afe.jpg")
                 .reviewList(Arrays.asList(review1))
                 .build();
 

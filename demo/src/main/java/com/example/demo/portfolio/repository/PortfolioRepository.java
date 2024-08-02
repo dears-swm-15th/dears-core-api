@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,5 +35,5 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     @Query("UPDATE Portfolio p SET p.viewCount = p.viewCount + 1 WHERE p.id = :id")
     void increaseViewCount(@Param("id") Long id);
 
-    List<Portfolio> findTop3ByOrderByViewCountDesc();
+    List<Portfolio> findTop5ByOrderByViewCountDesc();
 }
