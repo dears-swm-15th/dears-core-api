@@ -1,5 +1,7 @@
 package com.example.demo.dummy;
 
+import com.example.demo.chat.domain.ChatRoom;
+import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
 import com.example.demo.member.domain.Customer;
@@ -42,6 +44,9 @@ public class DataLoader implements CommandLineRunner {
 
     @Autowired
     private WishListRepository wishListRepository;
+
+    @Autowired
+    private ChatRoomRepository chatRoomRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -207,6 +212,12 @@ public class DataLoader implements CommandLineRunner {
 
         wishListRepository.save(wishList1);
         wishListRepository.save(wishList2);
+
+        ChatRoom chatRoom1 = ChatRoom.builder()
+                .customer(customer1)
+                .weddingPlanner(planner1)
+                .build();
+        chatRoomRepository.save(chatRoom1);
 
         System.out.println("Sample data loaded.");
     }
