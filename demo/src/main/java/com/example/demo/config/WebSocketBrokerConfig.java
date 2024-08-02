@@ -34,11 +34,6 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
         registry.setErrorHandler(stompErrorHandler);
 
     }
-//    TODO : header jwt interceptor
-//    @Override
-//    public void configureClientInboundChannel(ChannelRegistration registration) {
-//        registration.interceptors(new FilterChannelInterceptor());
-//    }
 
     /**
      * 메시지 요청/응답에 관련된 인터셉터를 추가
