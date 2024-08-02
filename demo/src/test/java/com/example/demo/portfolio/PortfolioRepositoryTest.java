@@ -1,5 +1,8 @@
 package com.example.demo.portfolio;
 
+import com.example.demo.config.OpenSearchConfig;
+import com.example.demo.config.S3Config;
+import com.example.demo.config.S3Uploader;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import jakarta.transaction.Transactional;
@@ -7,9 +10,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.opensearch.client.opensearch.OpenSearchClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,6 +30,17 @@ public class PortfolioRepositoryTest {
     @Autowired
     private PortfolioRepository portfolioRepository;
 
+    @MockBean
+    private S3Uploader s3Uploader;
+
+    @MockBean
+    private S3Config s3Config;
+
+    @MockBean
+    private OpenSearchConfig openSearchConfig;
+
+    @MockBean
+    private OpenSearchClient openSearchClient;
 
     @Before
     public void setUp() {

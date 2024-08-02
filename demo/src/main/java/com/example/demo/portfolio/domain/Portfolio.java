@@ -41,6 +41,7 @@ public class Portfolio extends BaseTimeEntity {
     private String description;
 
     @OneToOne
+    @JoinColumn(name = "weddingplanner_id")
     private WeddingPlanner weddingPlanner;
 
     @ElementCollection(fetch = FetchType.LAZY)
