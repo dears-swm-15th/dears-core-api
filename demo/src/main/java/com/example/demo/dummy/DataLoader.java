@@ -15,6 +15,7 @@ import com.example.demo.wishlist.repository.WishListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -52,6 +53,18 @@ public class DataLoader implements CommandLineRunner {
                 "portfolio/3/6c30499a-f568-416c-8bf9-4e62a20c7cee.jpeg");
         List<String> weddingPhotos2 = Arrays.asList("wedding2_1.jpg", "wedding2_2.jpg");
 
+        WeddingPlanner planner1 = WeddingPlanner.builder()
+                .name("Alice")
+                .UUID("b1b3825f-304f-4bce-b3b7-91b70fe79cb7")
+                .role(WEDDING_PLANNER)
+                .build();
+
+        WeddingPlanner planner2 = WeddingPlanner.builder()
+                .name("Bob")
+                .UUID("c14h814f-33gf-4b4e-z5z7-31b70fe74cb8")
+                .role(WEDDING_PLANNER)
+                .build();
+
         Map<RadarKey, Float> radar1 = new HashMap<>();
         radar1.put(RadarKey.COMMUNICATION, 4.5f);
         radar1.put(RadarKey.BUDGET_COMPLIANCE, 3.8f);
@@ -79,6 +92,7 @@ public class DataLoader implements CommandLineRunner {
                 .minEstimate(100)
                 .services(services1)
                 .weddingPhotoUrls(weddingPhotos1)
+                .weddingPlanner(planner1)
                 .radarSum(radar1)
                 .wishListCount(0)
                 .viewCount(0)
@@ -97,6 +111,7 @@ public class DataLoader implements CommandLineRunner {
                 .minEstimate(200)
                 .services(services2)
                 .weddingPhotoUrls(weddingPhotos2)
+                .weddingPlanner(planner2)
                 .radarSum(radar2)
                 .wishListCount(0)
                 .viewCount(0)
@@ -167,28 +182,14 @@ public class DataLoader implements CommandLineRunner {
                 .role(CUSTOMER)
                 .build();
 
-        portfolioRepository.save(portfolio1);
-        portfolioRepository.save(portfolio2);
-
-        WeddingPlanner planner1 = WeddingPlanner.builder()
-                .name("Alice")
-                .UUID("b1b3825f-304f-4bce-b3b7-91b70fe79cb7")
-                .portfolio(portfolio1)
-                .role(WEDDING_PLANNER)
-                .build();
-
-        WeddingPlanner planner2 = WeddingPlanner.builder()
-                .name("Bob")
-                .UUID("c14h814f-33gf-4b4e-z5z7-31b70fe74cb8")
-                .portfolio(portfolio2)
-                .role(WEDDING_PLANNER)
-                .build();
-
         customerRepository.save(customer1);
         customerRepository.save(customer2);
 
         weddingPlannerRepository.save(planner1);
         weddingPlannerRepository.save(planner2);
+
+        portfolioRepository.save(portfolio1);
+        portfolioRepository.save(portfolio2);
 
         reviewRepository.save(review1);
         reviewRepository.save(review2);
