@@ -4,7 +4,6 @@ import com.example.demo.member.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,6 +34,7 @@ public class SecurityConfig{
                     .requestMatchers("/api/v1/*/shared/**").hasAnyRole("CUSTOMER","WEDDING_PLANNER")
                     .requestMatchers("/api/v1/*/weddingplanner/**").hasRole("WEDDING_PLANNER")
                     .requestMatchers("/api/v1/*/customer/**").hasRole("CUSTOMER")
+                    .requestMatchers("/stomp/**").permitAll()
                     .anyRequest().authenticated()
             );
         return http.build();

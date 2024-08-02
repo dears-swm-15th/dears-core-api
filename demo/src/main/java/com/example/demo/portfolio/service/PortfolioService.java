@@ -5,6 +5,7 @@ import com.example.demo.enums.review.RadarKey;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.mapper.WeddingPlannerMapper;
 import com.example.demo.member.service.CustomUserDetailsService;
+import com.example.demo.portfolio.dto.PortfolioOverviewDTO;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.domain.Portfolio;
@@ -329,11 +330,21 @@ public class PortfolioService {
         return portfolio;
     }
 
-    public List<PortfolioDTO.Response> getTop5Portfolios() {
+    public List<PortfolioOverviewDTO.Response> getTop5Portfolios() {
 
-        return portfolioRepository.findTop3ByOrderByViewCountDesc().stream()
-                .map(portfolioMapper::entityToResponse)
+        return portfolioRepository.findTop5ByOrderByViewCountDesc().stream()
+                .map(portfolioMapper::entityToOverviewResponse)
                 .collect(Collectors.toList());
+    }
+
+    public PortfolioDTO.Response getMyPortfolio() {
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
+        Portfolio portfolio = weddingPlanner.getPortfolio();
+        if (portfolio == null) {
+            throw new RuntimeException("Portfolio not found");
+        }
+        PortfolioDTO.Response portfolioResponse = portfolioMapper.entityToResponse(portfolio);
+        return portfolioResponse;
     }
 }
 
