@@ -35,9 +35,7 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
 
     }
 
-    /**
-     * 메시지 요청/응답에 관련된 인터셉터를 추가
-     */
+    // 메시지 요청/응답 관련 인터셉터 설정
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(stompPreHandler);

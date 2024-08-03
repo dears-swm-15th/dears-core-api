@@ -12,7 +12,6 @@ public class MessageDTO {
     @AllArgsConstructor
     @Builder
     public static class Request {
-        private Long id;
 
         private MessageType messageType;
 
@@ -44,7 +43,6 @@ public class MessageDTO {
     @AllArgsConstructor
     @Builder
     public static class PortfolioRequest {
-        private Long id;
 
         private MessageType messageType;
 

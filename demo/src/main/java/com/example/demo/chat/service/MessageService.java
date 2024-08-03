@@ -3,7 +3,6 @@ package com.example.demo.chat.service;
 
 import com.example.demo.chat.domain.ChatRoom;
 import com.example.demo.chat.domain.Message;
-import com.example.demo.chat.dto.ChatRoomDTO;
 import com.example.demo.chat.dto.MessageDTO;
 import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
@@ -18,9 +17,11 @@ public class MessageService {
     private final MessageMapper messageMapper = MessageMapper.INSTANCE;
 
     private final ChatRoomService chatRoomService;
+
     private final ChatRoomMapper chatRoomMapper = ChatRoomMapper.INSTANCE;
 
     public MessageDTO.Response saveMessage(MessageDTO.Request messageRequest) {
+
         ChatRoom chatRoom = chatRoomService.getChatRoomById(messageRequest.getChatRoomId());
         Message message = messageMapper.requestToEntity(messageRequest);
         message.setChatRoom(chatRoom);
