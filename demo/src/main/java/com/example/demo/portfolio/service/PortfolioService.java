@@ -336,5 +336,15 @@ public class PortfolioService {
                 .map(portfolioMapper::entityToOverviewResponse)
                 .collect(Collectors.toList());
     }
+
+    public PortfolioDTO.Response getMyPortfolio() {
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
+        Portfolio portfolio = weddingPlanner.getPortfolio();
+        if (portfolio == null) {
+            throw new RuntimeException("Portfolio not found");
+        }
+        PortfolioDTO.Response portfolioResponse = portfolioMapper.entityToResponse(portfolio);
+        return portfolioResponse;
+    }
 }
 
