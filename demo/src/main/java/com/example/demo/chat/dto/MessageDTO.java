@@ -13,8 +13,6 @@ public class MessageDTO {
     @AllArgsConstructor
     @Builder
     public static class Request {
-        private Long senderId;
-
         private MemberRole senderRole;
 
         private MessageType messageType;
@@ -31,7 +29,7 @@ public class MessageDTO {
     @AllArgsConstructor
     @Builder
     public static class Response {
-        private Long senderId;
+        private Long id;
 
         private MemberRole senderRole;
 

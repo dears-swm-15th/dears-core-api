@@ -2,7 +2,6 @@ package com.example.demo.chat.service;
 
 import com.example.demo.chat.domain.ChatRoom;
 import com.example.demo.chat.domain.Message;
-import com.example.demo.chat.domain.ReadFlag;
 import com.example.demo.chat.dto.ChatRoomDTO;
 import com.example.demo.chat.dto.ChatRoomOverviewDTO;
 import com.example.demo.chat.dto.MessageDTO;
@@ -10,7 +9,6 @@ import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.chat.repository.MessageRepository;
-import com.example.demo.chat.repository.ReadFlagRepository;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
@@ -24,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,8 +39,6 @@ public class ChatRoomService {
 
     private final MessageRepository messageRepository;
     private final MessageMapper messageMapper = MessageMapper.INSTANCE;
-
-    private final ReadFlagRepository readFlagRepository;
 
     public ChatRoom getChatRoomById(Long chatRoomId) {
         log.info("Fetching chat room by ID: {}", chatRoomId);
@@ -79,21 +76,12 @@ public class ChatRoomService {
         chatRoom.setCustomer(customer);
         chatRoom.setWeddingPlanner(weddingPlanner);
 
-        ReadFlag customerReadFlag = ReadFlag.builder()
-                .memberRole(MemberRole.CUSTOMER)
-                .lastReadMessageId(0L)
-                .chatRoom(chatRoom)
-                .build();
-
-        ReadFlag weddingPlannerReadFlag = ReadFlag.builder()
-                .memberRole(MemberRole.WEDDING_PLANNER)
-                .lastReadMessageId(0L)
-                .chatRoom(chatRoom)
-                .build();
+        chatRoom.setReadFlags(Map.of(
+                MemberRole.CUSTOMER, 0L,
+                MemberRole.WEDDING_PLANNER, 0L
+        ));
 
         chatRoomRepository.save(chatRoom);
-        readFlagRepository.save(customerReadFlag);
-        readFlagRepository.save(weddingPlannerReadFlag);
         log.info("Created chat room with ID: {}", chatRoom.getId());
         return chatRoomMapper.entityToResponse(chatRoom);
     }
@@ -157,16 +145,16 @@ public class ChatRoomService {
                     return new RuntimeException("ChatRoom not found");
                 });
 
-        ReadFlag customerReadFlag = readFlagRepository.findByChatRoomIdAndMemberRole(chatRoom.getId(), MemberRole.CUSTOMER)
-                .orElseThrow(() -> {
-                    log.error("ReadFlag not found for chat room ID: {} and role: CUSTOMER", chatRoomId);
-                    return new RuntimeException("ReadFlag not found");
-                });
-        ReadFlag weddingPlannerReadFlag = readFlagRepository.findByChatRoomIdAndMemberRole(chatRoom.getId(), MemberRole.WEDDING_PLANNER)
-                .orElseThrow(() -> {
-                    log.error("ReadFlag not found for chat room ID: {} and role: WEDDING_PLANNER", chatRoomId);
-                    return new RuntimeException("ReadFlag not found");
-                });
+//        ReadFlag customerReadFlag = readFlagRepository.findByChatRoomIdAndMemberRole(chatRoom.getId(), MemberRole.CUSTOMER)
+//                .orElseThrow(() -> {
+//                    log.error("ReadFlag not found for chat room ID: {} and role: CUSTOMER", chatRoomId);
+//                    return new RuntimeException("ReadFlag not found");
+//                });
+//        ReadFlag weddingPlannerReadFlag = readFlagRepository.findByChatRoomIdAndMemberRole(chatRoom.getId(), MemberRole.WEDDING_PLANNER)
+//                .orElseThrow(() -> {
+//                    log.error("ReadFlag not found for chat room ID: {} and role: WEDDING_PLANNER", chatRoomId);
+//                    return new RuntimeException("ReadFlag not found");
+//                });
 
         List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
@@ -182,8 +170,8 @@ public class ChatRoomService {
         ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
 
         response.setMessages(messageResponses);
-        response.setCustomerLastReadMessageId(customerReadFlag.getLastReadMessageId());
-        response.setWeddingPlannerLastReadMessageId(weddingPlannerReadFlag.getLastReadMessageId());
+//        response.setCustomerLastReadMessageId(customerReadFlag.getLastReadMessageId());
+//        response.setWeddingPlannerLastReadMessageId(weddingPlannerReadFlag.getLastReadMessageId());
 
         return response;
     }

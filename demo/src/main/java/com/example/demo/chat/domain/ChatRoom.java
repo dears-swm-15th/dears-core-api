@@ -37,4 +37,11 @@ public class ChatRoom extends BaseTimeEntity {
     @JoinColumn(name = "weddingplanner_id")
     private WeddingPlanner weddingPlanner;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "read_flags", joinColumns = @JoinColumn(name = "chat_room_id"))
+    @MapKeyColumn(name = "member_role")
+    @Column(name = "last_read_message_id")
+    private Map<MemberRole, Long> readFlags = new HashMap<>();
+
+
 }

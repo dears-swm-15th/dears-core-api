@@ -1,12 +1,8 @@
 package com.example.demo.chat.dto;
 
-import com.example.demo.chat.domain.Message;
-import com.example.demo.chat.domain.ReadFlag;
-import com.example.demo.enums.member.MemberRole;
 import lombok.*;
 
 import java.util.List;
-import java.util.Map;
 
 public class ChatRoomDTO {
 

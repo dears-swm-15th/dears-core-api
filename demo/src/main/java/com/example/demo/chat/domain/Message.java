@@ -29,8 +29,8 @@ public class Message extends BaseTimeEntity {
     private MessageType messageType;
     private String contents;
 
+    @Enumerated(EnumType.STRING)
     private MemberRole senderRole;
-    private Long senderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
