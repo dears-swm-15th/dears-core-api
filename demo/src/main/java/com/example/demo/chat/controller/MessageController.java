@@ -1,12 +1,13 @@
 package com.example.demo.chat.controller;
 
 import com.example.demo.chat.dto.MessageDTO;
-import com.example.demo.chat.service.ChatRoomService;
 import com.example.demo.chat.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,7 @@ public class MessageController {
 
     @MessageMapping(value = "/connect")
     @Operation(summary = "채팅방 연결")
-    public void connect(MessageDTO.Request messageRequest) {
+    public void connect(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
         // TODO : 프로그램 실행 시, 모든 채팅방 연결.
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
         log.info("Connected to chat room with ID: {}", messageRequest.getChatRoomId());
@@ -45,10 +46,11 @@ public class MessageController {
 
     @MessageMapping(value = "/customer/send")
     @Operation(summary = "[신랑신부] 메세지 전송")
-    public void sendByCustomer(MessageDTO.Request messageRequest) {
+    public void sendByCustomer(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
 
-        messageService.sendMessageByCustomer(messageRequest);
+        System.out.println("ACCESSOR(SEND): "+accessor.getSessionAttributes());
+        messageService.sendMessageByCustomer(messageRequest, accessor.getSessionAttributes().get("Authorization").toString());
 
         log.info("Sent message to chat room with ID: {}", messageRequest.getChatRoomId());
     }
