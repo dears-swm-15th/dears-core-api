@@ -145,16 +145,7 @@ public class ChatRoomService {
                     return new RuntimeException("ChatRoom not found");
                 });
 
-//        ReadFlag customerReadFlag = readFlagRepository.findByChatRoomIdAndMemberRole(chatRoom.getId(), MemberRole.CUSTOMER)
-//                .orElseThrow(() -> {
-//                    log.error("ReadFlag not found for chat room ID: {} and role: CUSTOMER", chatRoomId);
-//                    return new RuntimeException("ReadFlag not found");
-//                });
-//        ReadFlag weddingPlannerReadFlag = readFlagRepository.findByChatRoomIdAndMemberRole(chatRoom.getId(), MemberRole.WEDDING_PLANNER)
-//                .orElseThrow(() -> {
-//                    log.error("ReadFlag not found for chat room ID: {} and role: WEDDING_PLANNER", chatRoomId);
-//                    return new RuntimeException("ReadFlag not found");
-//                });
+        Map<MemberRole, Long> readFlags = chatRoom.getReadFlags();
 
         List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
@@ -170,8 +161,8 @@ public class ChatRoomService {
         ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
 
         response.setMessages(messageResponses);
-//        response.setCustomerLastReadMessageId(customerReadFlag.getLastReadMessageId());
-//        response.setWeddingPlannerLastReadMessageId(weddingPlannerReadFlag.getLastReadMessageId());
+        response.setCustomerLastReadMessageId(readFlags.get(MemberRole.CUSTOMER));
+        response.setWeddingPlannerLastReadMessageId(readFlags.get(MemberRole.WEDDING_PLANNER));
 
         return response;
     }
