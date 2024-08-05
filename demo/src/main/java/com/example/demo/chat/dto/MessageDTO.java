@@ -1,6 +1,7 @@
 package com.example.demo.chat.dto;
 
 import com.example.demo.enums.chat.MessageType;
+import com.example.demo.enums.member.MemberRole;
 import lombok.*;
 
 public class MessageDTO {
@@ -12,7 +13,7 @@ public class MessageDTO {
     @AllArgsConstructor
     @Builder
     public static class Request {
-        private Long senderId;
+        private MemberRole senderRole;
 
         private MessageType messageType;
 
@@ -28,7 +29,9 @@ public class MessageDTO {
     @AllArgsConstructor
     @Builder
     public static class Response {
-        private Long senderId;
+        private Long id;
+
+        private MemberRole senderRole;
 
         private MessageType messageType;
 
