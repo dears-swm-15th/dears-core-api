@@ -28,6 +28,8 @@ public class Message extends BaseTimeEntity {
 
     private MessageType messageType;
     private String contents;
+
+    private MemberRole senderRole;
     private Long senderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
