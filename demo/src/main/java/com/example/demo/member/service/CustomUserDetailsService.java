@@ -98,6 +98,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info("Getting current authenticated customer");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        System.out.println("AUTHENTICATION PLEASE:" + authentication);
+
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             String memberName = authentication.getName();
             Customer customer = customerRepository.findByUUID(memberName)
@@ -189,7 +191,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public MypageDTO.MyPageUpdateResponse updateWeddingPlannerMyPage(MypageDTO.WeddingPlannerRequest weddingPlannerRequest) {
         WeddingPlanner weddingPlanner = getCurrentAuthenticatedWeddingPlanner();
 
-        if (weddingPlannerRequest.getName() != null && !weddingPlannerRequest.getName().isEmpty()) {
+        if (!weddingPlannerRequest.getName().isEmpty()) {
             weddingPlanner.setName(weddingPlannerRequest.getName());
         }
         String profileImagePresignedUrl = "";

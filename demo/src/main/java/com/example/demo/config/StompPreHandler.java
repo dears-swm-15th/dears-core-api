@@ -6,16 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.CollectionUtils;
+import org.springframework.messaging.support.MessageBuilder;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Configuration
@@ -39,38 +36,34 @@ public class StompPreHandler implements ChannelInterceptor {
 
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        // 메시지의 구독 명령이 CONNECT인 경우에만 실행
+        System.out.println("COMMAND: "+accessor.getCommand());
+        System.out.println("ACCESSOR: "+accessor.toString());
+        System.out.println("HEADER: "+accessor.getNativeHeader(AUTHORIZATION_HEADER));
+        System.out.println("SESSION: "+accessor.getSessionAttributes());
+
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
 
             List<String> headers = headerAccessor.getNativeHeader(AUTHORIZATION_HEADER);
-            log.info("HEADERS: " + headers);
-            // 헤더로 UsernamePasswordAuthenticationToken token 생성
 
-            String authHeader = headers.get(0);
-            log.info("AUTH HEADER: " + authHeader);
-            if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
-                String jwt = authHeader.substring(BEARER_PREFIX.length());
-                String username = jwt;
+            if (headers != null && !headers.isEmpty()) {
 
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                Map<String, Object> attributes = headerAccessor.getSessionAttributes();
+                attributes.put(AUTHORIZATION_HEADER, headers.get(0).toString());
+                headerAccessor.setSessionAttributes(attributes);
 
-                    log.info("USER DETAILS: " + userDetails);
-                    UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null,
-                                    userDetails.getAuthorities());
 
-                    accessor.setUser(authenticationToken);
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                }
+                return message;
+            } else {
+                return message;
             }
+        } else if (StompCommand.SEND.equals(accessor.getCommand())) {
 
-            if (CollectionUtils.isEmpty(headers) ) {
-                throw new MessageDeliveryException("UNAUTHORIZED");
-            }
+            message = MessageBuilder.createMessage(message.getPayload(), accessor.toMessageHeaders());
+            System.out.println("MESSAGE: "+message.getHeaders());
+            return message;
+
         }
-
         return message;
     }
 }

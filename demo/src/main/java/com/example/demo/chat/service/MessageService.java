@@ -7,7 +7,6 @@ import com.example.demo.chat.dto.MessageDTO;
 import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
 import com.example.demo.chat.repository.MessageRepository;
-import com.example.demo.member.domain.Customer;
 import com.example.demo.member.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,9 +23,9 @@ public class MessageService {
 
     private final ChatRoomMapper chatRoomMapper = ChatRoomMapper.INSTANCE;
 
-    public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest) {
-        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
-        messageRequest.setSenderRole(customer.getRole());
+    public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest, String customerUuid) {
+
+        //TODO customerUuid로 sender 설정
 
         MessageDTO.Response savedMesageResponse = saveMessage(messageRequest);
         updateReadFlag(savedMesageResponse);
