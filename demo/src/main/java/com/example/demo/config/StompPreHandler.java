@@ -44,11 +44,11 @@ public class StompPreHandler implements ChannelInterceptor {
             StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
 
             List<String> headers = headerAccessor.getNativeHeader(AUTHORIZATION_HEADER);
-            System.out.println("HEADERS:"+headers);
+            log.info("HEADERS: " + headers);
             // 헤더로 UsernamePasswordAuthenticationToken token 생성
 
             String authHeader = headers.get(0);
-            System.out.println("AUTH HEADER:"+authHeader);
+            log.info("AUTH HEADER: " + authHeader);
             if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
                 String jwt = authHeader.substring(BEARER_PREFIX.length());
                 String username = jwt;
@@ -56,7 +56,7 @@ public class StompPreHandler implements ChannelInterceptor {
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-                    System.out.println("USER DETAILS:"+userDetails);
+                    log.info("USER DETAILS: " + userDetails);
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null,
                                     userDetails.getAuthorities());
