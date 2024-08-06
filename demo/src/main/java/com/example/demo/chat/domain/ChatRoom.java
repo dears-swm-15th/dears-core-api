@@ -5,13 +5,13 @@ import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
 import jakarta.persistence.*;
+import jakarta.servlet.http.PushBuilder;
 import lombok.*;
 import org.hibernate.annotations.Where;
+import org.springframework.security.core.parameters.P;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Getter
 @Setter
@@ -37,11 +37,36 @@ public class ChatRoom extends BaseTimeEntity {
     @JoinColumn(name = "weddingplanner_id")
     private WeddingPlanner weddingPlanner;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "read_flags", joinColumns = @JoinColumn(name = "chat_room_id"))
-    @MapKeyColumn(name = "member_role")
-    @Column(name = "last_read_message_id")
-    private Map<MemberRole, Long> readFlags = new HashMap<>();
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "chat_room_user", joinColumns = @JoinColumn(name = "chat_room_id"))
+    private Set<String> userIds;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "chat_room_id")
+    private List<Message> messages = new ArrayList<>();
+
+    private String lastMessageContent;
+    private LocalDateTime lastMessageCreatedAt;
+
+    // append user Id at userIds
+    public void addUser(String userId) {
+        if (userIds == null) {
+            userIds = new HashSet<>();
+        }
+        userIds.add(userId);
+    }
+
+    public void removeUser(String userId) {
+        if (userIds == null) {
+            return;
+        }
+        userIds.remove(userId);
+    }
+
+    public void addMessage(Message message) {
+        messages.add(message);
+        this.lastMessageContent = message.getContents();
+        this.lastMessageCreatedAt = message.getCreatedAt();
+    }
 
 }

@@ -2,7 +2,9 @@ package com.example.demo.chat.dto;
 
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ChatRoomDTO {
 
@@ -25,12 +27,8 @@ public class ChatRoomDTO {
     @AllArgsConstructor
     @Builder
     public static class Response {
-        private Long id;
-
         private List<MessageDTO.Response> messages;
 
-        private Long customerLastReadMessageId;
-
-        private Long weddingPlannerLastReadMessageId;
+        private HashSet<String> userIds;
     }
 }

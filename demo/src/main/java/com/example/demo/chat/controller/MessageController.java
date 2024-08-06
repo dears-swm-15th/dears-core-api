@@ -34,13 +34,16 @@ public class MessageController {
         log.info("Disconnected from chat room with ID: {}", messageRequest.getChatRoomId());
     }
 
-    @MessageMapping(value = "/enter")
+    @MessageMapping(value = "/shared/enter")
     @Operation(summary = "채팅방 입장")
-    public void enterByChatRoomList(MessageDTO.Request messageRequest) {
-        // TODO : 방 입장 시, 읽음 처리 필요(readFlag(lastReadMessageId) 갱신 필요)
-        // TODO : messages 정보 받아와야 함.
-        // TODO(not fixed) : 방 입장 시, 상태 ENTER로 변경 필요
+    public void enterByChatRoomList(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
+
+        log.info("ACCESSOR(SEND): {}", accessor.getSessionAttributes());
+        String customerUuid = accessor.getSessionAttributes().get("Authorization").toString();
+
+        messageService.enterChatRoom(messageRequest, customerUuid);
+
         log.info("Entered chat room with ID: {}", messageRequest.getChatRoomId());
     }
 
@@ -49,8 +52,7 @@ public class MessageController {
     public void sendByCustomer(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
 
-        System.out.println("ACCESSOR(SEND): "+accessor.getSessionAttributes());
-        messageService.sendMessageByCustomer(messageRequest, accessor.getSessionAttributes().get("Authorization").toString());
+        messageService.sendMessageByCustomer(messageRequest);
 
         log.info("Sent message to chat room with ID: {}", messageRequest.getChatRoomId());
     }
@@ -68,7 +70,7 @@ public class MessageController {
 
     @MessageMapping(value = "/leave")
     @Operation(summary = "채팅방 퇴장")
-    public void leave(MessageDTO.Request messageRequest) {
+    public void leave(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
         // TODO : 방 퇴장 시, 상태 LEAVE로 변경 필요
 
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);

@@ -32,7 +32,7 @@ public class ChatRoomController {
     @PostMapping("/weddingplanner/{chatRoomId}")
     @Operation(summary = "[웨딩플래너] 채팅방 아이디로 채팅방 입장")
     public ResponseEntity<ChatRoomDTO.Response> getChatRoomByIdForWeddingPlanner(@PathVariable Long chatRoomId) {
-        ChatRoomDTO.Response chatRoomByChatRoomId = chatRoomService.getChatRoomByChatRoomId(chatRoomId);
+        ChatRoomDTO.Response chatRoomByChatRoomId = chatRoomService.getMessagesByChatRoomId(chatRoomId);
         log.info("Entered chat room for wedding planner with chat room ID: {}", chatRoomId);
         return ResponseEntity.status(200).body(chatRoomByChatRoomId);
     }

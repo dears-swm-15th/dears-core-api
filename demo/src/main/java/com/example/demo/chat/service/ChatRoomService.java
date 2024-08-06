@@ -9,7 +9,6 @@ import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.chat.repository.MessageRepository;
-import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.service.CustomUserDetailsService;
@@ -21,8 +20,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,7 +66,7 @@ public class ChatRoomService {
 
         Long chatRoomId = getChatRoomIdByCustomerAndWeddingPlanner(customer, weddingPlanner);
         log.info("Chat room exists, entering existing chat room with ID: {}", chatRoomId);
-        return getChatRoomByChatRoomId(chatRoomId);
+        return getMessagesByChatRoomId(chatRoomId);
     }
 
     public ChatRoomDTO.Response createChatRoomByPortfolioId(Customer customer, WeddingPlanner weddingPlanner) {
@@ -76,14 +76,14 @@ public class ChatRoomService {
         chatRoom.setCustomer(customer);
         chatRoom.setWeddingPlanner(weddingPlanner);
 
-        chatRoom.setReadFlags(Map.of(
-                MemberRole.CUSTOMER, 0L,
-                MemberRole.WEDDING_PLANNER, 0L
-        ));
 
         chatRoomRepository.save(chatRoom);
         log.info("Created chat room with ID: {}", chatRoom.getId());
-        return chatRoomMapper.entityToResponse(chatRoom);
+
+        return ChatRoomDTO.Response.builder()
+                .messages(List.of())
+                .userIds(new HashSet<>())
+                .build();
     }
 
     public List<ChatRoomOverviewDTO.Response> getCustomersAllChatRoom() {
@@ -95,14 +95,13 @@ public class ChatRoomService {
                 .map(chatRoom -> {
                     Portfolio portfolio = portfolioService.getPortfolioByWeddingPlannerId(chatRoom.getWeddingPlanner().getId());
                     PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolio.getId());
-                    List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
                     return ChatRoomOverviewDTO.Response.builder()
                             .chatRoomId(chatRoom.getId())
                             .othersProfileImageUrl(portfolioResponse.getWeddingPlannerPortfolioResponse().getProfileImageUrl())
                             .othersName(portfolioResponse.getWeddingPlannerPortfolioResponse().getName())
-                            .lastMessage(messages.get(messages.size() - 1).getContents())
-                            .lastMessageCreatedAt(messages.get(messages.size() - 1).getCreatedAt())
+                            .lastMessage(chatRoom.getLastMessageContent())
+                            .lastMessageCreatedAt(chatRoom.getLastMessageCreatedAt())
                             .organizationName(portfolioResponse.getOrganization())
                             .portfolioId(portfolioResponse.getId())
                             .build();
@@ -118,14 +117,13 @@ public class ChatRoomService {
         return chatRooms.stream()
                 .map(chatRoom -> {
                     Customer customer = chatRoom.getCustomer();
-                    List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
                     return ChatRoomOverviewDTO.Response.builder()
                             .chatRoomId(chatRoom.getId())
                             .othersProfileImageUrl(customer.getProfileImageUrl())
                             .othersName(customer.getName())
-                            .lastMessage(messages.get(messages.size() - 1).getContents())
-                            .lastMessageCreatedAt(messages.get(messages.size() - 1).getCreatedAt())
+                            .lastMessage(chatRoom.getLastMessageContent())
+                            .lastMessageCreatedAt(chatRoom.getLastMessageCreatedAt())
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -137,7 +135,7 @@ public class ChatRoomService {
         return chatRoom.getId();
     }
 
-    public ChatRoomDTO.Response getChatRoomByChatRoomId(Long chatRoomId) {
+    public ChatRoomDTO.Response getMessagesByChatRoomId(Long chatRoomId) {
         log.info("Fetching chat room by chat room ID: {}", chatRoomId);
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> {
@@ -145,24 +143,17 @@ public class ChatRoomService {
                     return new RuntimeException("ChatRoom not found");
                 });
 
-        Map<MemberRole, Long> readFlags = chatRoom.getReadFlags();
 
-        List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
+        List<Message> messages = chatRoom.getMessages();
 
         List<MessageDTO.Response> messageResponses = messages.stream()
-                .map(messageMapper::entityToResponse)
-                // set clubId to each Response
-                .map(messageResponse -> {
-                    messageResponse.setChatRoomId(chatRoomId);
-                    return messageResponse;
-                })
+                .map(messageMapper::entityToResponse)// set clubId to each Response
                 .collect(Collectors.toList());
+
 
         ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
 
         response.setMessages(messageResponses);
-        response.setCustomerLastReadMessageId(readFlags.get(MemberRole.CUSTOMER));
-        response.setWeddingPlannerLastReadMessageId(readFlags.get(MemberRole.WEDDING_PLANNER));
 
         return response;
     }
