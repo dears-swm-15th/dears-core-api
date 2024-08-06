@@ -3,6 +3,7 @@ package com.example.demo.chat.controller;
 import com.example.demo.chat.dto.MessageDTO;
 import com.example.demo.chat.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -54,19 +55,18 @@ public class MessageController {
 
         messageService.sendMessageByCustomer(messageRequest);
 
-        log.info("Sent message to chat room with ID: {}", messageRequest.getChatRoomId());
+        log.debug("Customer sent message to chat room with ID: {}", messageRequest.getChatRoomId());
     }
 
-//    @MessageMapping(value = "/weddinplanner/send")
-//    @Operation(summary = "[웨딩플래너] 메세지 전송")
-//    public void sendByWeddinplanner(MessageDTO.Request messageRequest) {
-//        // TODO : readFlag(lastReadMessageId) 갱신 필요
-//
-//        messageService.saveMessage(messageRequest);
-//
-//        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
-//        log.info("Sent message to chat room with ID: {}", messageRequest.getChatRoomId());
-//    }
+    @MessageMapping(value = "/weddinplanner/send")
+    @Operation(summary = "[웨딩플래너] 메세지 전송")
+    public void sendByWeddingPlanner(MessageDTO.Request messageRequest) {
+
+        messageService.sendMessageByWeddingPlanner(messageRequest);
+
+        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
+        log.info("WeddingPlanner sent message to chat room with ID: {}", messageRequest.getChatRoomId());
+    }
 
     @MessageMapping(value = "/leave")
     @Operation(summary = "채팅방 퇴장")
