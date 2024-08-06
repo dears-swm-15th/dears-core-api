@@ -205,4 +205,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info("Updated wedding planner my page for UUID: {}", weddingPlanner.getUUID());
         return response;
     }
+
+    public Customer getCustomerByUuid(String uuid) {
+        log.info("Getting customer by UUID: {}", uuid);
+        Customer customer = customerRepository.findByUUID(uuid)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        log.info("Found customer with UUID: {}", uuid);
+        return customer;
+    }
 }
