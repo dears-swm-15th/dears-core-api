@@ -326,7 +326,6 @@ public class PortfolioService {
 
         portfolioRepository.increaseViewCount(portfolioId);
         portfolioRepository.save(portfolio);
-        portfolioSearchService.updateDocumentUsingDTO(portfolio);
         return portfolio;
     }
 
