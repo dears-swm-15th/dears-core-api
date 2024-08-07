@@ -56,4 +56,21 @@ public class ChatRoom extends BaseTimeEntity {
         this.lastMessageCreatedAt = message.getCreatedAt();
     }
 
+    // TODO : Redis로 변경 후 삭제
+    // append user Id at userIds
+    public void addUser(String userId) {
+        if (userIds == null) {
+            userIds = new HashSet<>();
+        }
+        userIds.add(userId);
+    }
+
+    public void removeUser(String userId) {
+        if (userIds == null) {
+            return;
+        }
+        userIds.remove(userId);
+    }
+
+
 }

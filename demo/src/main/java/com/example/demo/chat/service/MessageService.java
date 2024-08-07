@@ -50,17 +50,13 @@ public class MessageService {
         ChatRoom chatRoom = chatRoomService.getChatRoomById(messageRequest.getChatRoomId());
         Message message = messageMapper.requestToEntity(messageRequest);
 
-        // TODO : Redis로 변경
-        Set<String> userIds = chatRoom.getUserIds();
-        userIds.add(Uuid);
-        chatRoom.setUserIds(userIds);
-
         message.setOppositeReadFlag(true);
-
         messageRepository.save(message);
 
-        chatRoom.addMessage(message);
+        // TODO : Redis로 변경
+        chatRoom.addUser(Uuid);
 
+        chatRoom.addMessage(message);
         chatRoomRepository.save(chatRoom);
 
         return messageMapper.entityToResponse(message);
