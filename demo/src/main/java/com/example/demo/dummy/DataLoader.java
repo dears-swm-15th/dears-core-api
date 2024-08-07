@@ -8,6 +8,7 @@ import com.example.demo.member.repository.CustomerRepository;
 import com.example.demo.member.repository.WeddingPlannerRepository;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.repository.PortfolioRepository;
+import com.example.demo.portfolio.service.PortfolioSearchService;
 import com.example.demo.review.domain.Review;
 import com.example.demo.review.repository.ReviewRepository;
 import com.example.demo.wishlist.domain.WishList;
@@ -42,6 +43,9 @@ public class DataLoader implements CommandLineRunner {
 
     @Autowired
     private WishListRepository wishListRepository;
+
+    @Autowired
+    private PortfolioSearchService portfolioSearchService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -190,6 +194,9 @@ public class DataLoader implements CommandLineRunner {
 
         portfolioRepository.save(portfolio1);
         portfolioRepository.save(portfolio2);
+
+        portfolioSearchService.indexDocumentUsingDTO(portfolio1);
+        portfolioSearchService.indexDocumentUsingDTO(portfolio2);
 
         reviewRepository.save(review1);
         reviewRepository.save(review2);
