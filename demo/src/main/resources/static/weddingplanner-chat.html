@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Application</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .message-sent {
+            background-color: #d1e7dd;
+            text-align: right;
+        }
+        .message-received {
+            background-color: #f8d7da;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable Javascript and reload this page!</h2></noscript>
+
+<div id="main-content" class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Chat Application</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="authToken">Authorization:</label>
+                    <input type="text" id="authToken" class="form-control" placeholder="Enter Authorization Token">
+                </div>
+                <div class="form-group">
+                    <label for="chatRoomId">Chat Room ID:</label>
+                    <input type="text" id="chatRoomId" class="form-control" placeholder="Enter Chat Room ID">
+                </div>
+            </form>
+            <button id="connect" class="btn btn-default" onclick="connect()">Connect</button>
+            <button id="disconnect" class="btn btn-default" onclick="disconnect()">Disconnect</button>
+            <button id="enter" class="btn btn-default" onclick="enter()">Enter</button>
+            <button id="leave" class="btn btn-default" onclick="leave()">Leave</button>
+        </div>
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="message">Message:</label>
+                    <input type="text" id="message" class="form-control" placeholder="Enter your message">
+                </div>
+            </form>
+            <button id="send" class="btn btn-default" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="conversation" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Messages</th>
+                </tr>
+                </thead>
+                <tbody id="messages">
+                </tbody>
+            </table>
+            <div id="unread-message-count" style="margin-top: 20px;">
+                <strong>Unread Messages Count: </strong><span id="unreadCount">0</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var stompClient = null;
+
+    function connect() {
+        var socket = new SockJS('/stomp/chat');
+        stompClient = Stomp.over(socket);
+
+        var authToken = document.getElementById("authToken").value;
+        var headers = {
+            'Authorization': authToken
+        };
+
+        stompClient.connect(headers, function (frame) {
+            console.log('Connected: ' + frame);
+            var chatRoomId = document.getElementById("chatRoomId").value;
+            stompClient.subscribe('/sub/' + chatRoomId, function (message) {
+                var messageBody = JSON.parse(message.body);
+                showMessage(messageBody.contents, messageBody.senderRole);
+            });
+
+            stompClient.subscribe('/sub/' + authToken, function (message) {
+                var messageBody = JSON.parse(message.body);
+                // Update unread message count if present
+                if (messageBody.unreadMessageCount !== undefined) {
+                    document.getElementById('unreadCount').innerText = messageBody.unreadMessageCount;
+                }
+            });
+
+            // Send connection request
+            stompClient.send("/pub/shared/connect", headers, JSON.stringify({
+                'messageType': 'SEND',
+                'chatRoomId': chatRoomId,
+                'senderRole': 'WEEDINGPLANNER',
+                'contents': 'Connected to chat room'
+            }));
+        });
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            var chatRoomId = document.getElementById("chatRoomId").value;
+            stompClient.send("/pub/disconnect", {}, JSON.stringify({
+                'messageType': 'DISCONNECT',
+                'chatRoomId': chatRoomId,
+                'senderRole': 'WEDDING_PLANNER',
+                'contents': 'Disconnected from chat room'
+            }));
+            stompClient.disconnect();
+            console.log("Disconnected");
+        }
+    }
+
+    function leave() {
+        var chatRoomId = document.getElementById("chatRoomId").value;
+        stompClient.send("/pub/shared/leave", {}, JSON.stringify({
+            'messageType': 'LEAVE',
+            'chatRoomId': chatRoomId,
+            'senderRole': 'WEDDING_PLANNER',
+            'contents': 'Left the chat room'
+        }));
+    }
+
+    function enter() {
+        var chatRoomId = document.getElementById("chatRoomId").value;
+        stompClient.send("/pub/shared/enter", {}, JSON.stringify({
+            'messageType': 'ENTER',
+            'chatRoomId': chatRoomId,
+            'senderRole': 'WEDDING_PLANNER',
+            'contents': 'Entered the chat room'
+        }));
+    }
+
+    function sendMessage() {
+        var chatRoomId = document.getElementById("chatRoomId").value;
+        var message = document.getElementById("message").value;
+        stompClient.send("/pub/weddinplanner/send", {}, JSON.stringify({
+            'messageType': 'SEND',
+            'chatRoomId': chatRoomId,
+            'senderRole': 'WEDDING_PLANNER',
+            'contents': message
+        }));
+    }
+
+    function showMessage(message, senderRole) {
+        var messagesElement = document.getElementById("messages");
+        var newRow = messagesElement.insertRow();
+        var newCell = newRow.insertCell(0);
+
+        var messageDiv = document.createElement('div');
+        messageDiv.className = 'message';
+
+        if (senderRole === 'WEDDING_PLANNER') {
+            messageDiv.classList.add('message-sent');
+        } else {
+            messageDiv.classList.add('message-received');
+        }
+
+        var newText = document.createTextNode(message);
+        messageDiv.appendChild(newText);
+        newCell.appendChild(messageDiv);
+    }
+</script>
+
+</body>
+</html>

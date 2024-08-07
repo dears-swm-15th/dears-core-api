@@ -20,6 +20,24 @@ public class MessageController {
     private final MessageService messageService;
     private final ChatRoomService chatRoomService;
 
+<<<<<<< HEAD
+=======
+    @MessageMapping(value = "/shared/connect")
+    @Operation(summary = "채팅방 연결")
+    public void connect(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+        // TODO : 프로그램 실행 시, 모든 채팅방 연결.
+
+        String authUuid = accessor.getSessionAttributes().get("Authorization").toString();
+        int unreadMessageResponse = messageService.getAllUnreadMessages(authUuid);
+
+        System.out.println("UNREAD MESSAGE RESPONSE: " + unreadMessageResponse);
+        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
+        template.convertAndSend("/sub/" + authUuid, new MessageDTO.UnreadMessageResponse(unreadMessageResponse)); //convertAndSendToUser로 변경 가능
+        System.out.println("ACCESSOR(CONNECT): " + accessor.getSessionAttributes());
+        log.info("Connected to chat room with ID: {}", messageRequest.getChatRoomId());
+    }
+
+>>>>>>> 52e053f7a6726a023279d85085383452b930a408
     @MessageMapping(value = "/customer/enter/connect")
     @Operation(summary = "[신랑신부] 포트폴리오 아이디로 채팅방 입장(생성 및 입장)")
     public void connectByCustomer(MessageDTO.PortfolioRequest messagePortfolioRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
@@ -77,14 +95,15 @@ public class MessageController {
         log.info("WeddingPlanner sent message to chat room with ID: {}", messageRequest.getChatRoomId());
     }
 
-//    @MessageMapping(value = "/leave")
-//    @Operation(summary = "채팅방 퇴장")
-//    public void leave(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
-//        // TODO : 방 퇴장 시, 상태 LEAVE로 변경 필요
-//
-//        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
-//        log.info("Left chat room with ID: {}", messageRequest.getChatRoomId());
-//    }
+    @MessageMapping(value = "/leave")
+    @Operation(summary = "채팅방 퇴장")
+    public void leave(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+        // TODO : 방 퇴장 시, 상태 LEAVE로 변경 필요
+
+        //지금까지 내가 읽은 것들 표시
+        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
+        log.info("Left chat room with ID: {}", messageRequest.getChatRoomId());
+    }
 
     @MessageMapping(value = "/disconnect")
     @Operation(summary = "채팅방 연결 해제")

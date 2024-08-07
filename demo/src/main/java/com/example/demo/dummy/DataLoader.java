@@ -1,7 +1,9 @@
 package com.example.demo.dummy;
 
 import com.example.demo.chat.domain.ChatRoom;
+import com.example.demo.chat.domain.Message;
 import com.example.demo.chat.repository.ChatRoomRepository;
+import com.example.demo.enums.chat.MessageType;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
 import com.example.demo.member.domain.Customer;
@@ -213,10 +215,30 @@ public class DataLoader implements CommandLineRunner {
         wishListRepository.save(wishList1);
         wishListRepository.save(wishList2);
 
+        Message message1 = Message.builder()
+                .contents("웨딩플래너 님 안녕하세요!")
+                .messageType(MessageType.SEND)
+                .isDeleted(false)
+                .oppositeReadFlag(true)
+                .senderRole(CUSTOMER)
+                .build();
+
+        Message message2 = Message.builder()
+                .contents("안녕하세요! 어떻게 도와드릴까요?")
+                .messageType(MessageType.SEND)
+                .isDeleted(false)
+                .oppositeReadFlag(false)
+                .senderRole(WEDDING_PLANNER)
+                .build();
+
         ChatRoom chatRoom1 = ChatRoom.builder()
                 .customer(customer1)
                 .weddingPlanner(planner1)
+                .messages(Arrays.asList(message1, message2))
+                .isDeleted(false)
+                .lastMessageContent("웨딩플래너 님 안녕하세요!")
                 .build();
+
         chatRoomRepository.save(chatRoom1);
 
         System.out.println("Sample data loaded.");

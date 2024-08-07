@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +27,6 @@ public class MessageService {
     private final MessageMapper messageMapper = MessageMapper.INSTANCE;
 
     private final ChatRoomService chatRoomService;
-
-    private final CustomUserDetailsService customUserDetailsService;
 
     private final ChatRoomMapper chatRoomMapper = ChatRoomMapper.INSTANCE;
     private final ChatRoomRepository chatRoomRepository;
@@ -51,12 +50,6 @@ public class MessageService {
         ChatRoom chatRoom = chatRoomService.getChatRoomById(messageRequest.getChatRoomId());
         Message message = messageMapper.requestToEntity(messageRequest);
 
-        // Set readCount based on participants
-        if (chatRoom.getUserIds().size() > 1) {
-            message.setReadCount(1); // Assuming the sender has read the message
-        } else {
-            message.setReadCount(0);
-        }
 
         messageRepository.save(message);
 
@@ -70,14 +63,13 @@ public class MessageService {
     public ChatRoomDTO.Response enterChatRoom(MessageDTO.Request messageRequest, String Uuid) {
         ChatRoom chatRoom = chatRoomService.getChatRoomById(messageRequest.getChatRoomId());
 
-        chatRoom.addUser(Uuid);
-
-        // set every readCount to 0
-        chatRoom.getMessages().forEach(message -> message.setReadCount(0));
-
         chatRoomRepository.save(chatRoom);
 
         return chatRoomMapper.entityToResponse(chatRoom);
+    }
+
+    public int getAllUnreadMessages(String uuid) {
+        return chatRoomService.getCustomersUnreadMessages(uuid);
     }
 
 }
