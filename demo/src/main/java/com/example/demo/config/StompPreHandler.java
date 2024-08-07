@@ -49,10 +49,11 @@ public class StompPreHandler implements ChannelInterceptor {
 
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        // access stomp body
+        log.info("ACCESSOR: {}", accessor);
 
         // 메시지의 구독 명령이 CONNECT인 경우에만 실행
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+            log.info("STOMP CONNECTED");
             StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
 
             List<String> headers = headerAccessor.getNativeHeader(AUTHORIZATION_HEADER);

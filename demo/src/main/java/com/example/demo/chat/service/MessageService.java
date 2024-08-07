@@ -33,16 +33,22 @@ public class MessageService {
     private final ChatRoomMapper chatRoomMapper = ChatRoomMapper.INSTANCE;
     private final ChatRoomRepository chatRoomRepository;
 
-    public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest) {
 
+    @Transactional
+    public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest) {
         messageRequest.setSenderRole(MemberRole.CUSTOMER);
 
         return saveMessage(messageRequest);
     }
 
     @Transactional
-    public MessageDTO.Response saveMessage(MessageDTO.Request messageRequest) {
+    public MessageDTO.Response sendMessageByWeddingPlanner(MessageDTO.Request messageRequest) {
+        messageRequest.setSenderRole(MemberRole.WEDDING_PLANNER);
 
+        return saveMessage(messageRequest);
+    }
+
+    public MessageDTO.Response saveMessage(MessageDTO.Request messageRequest) {
         ChatRoom chatRoom = chatRoomService.getChatRoomById(messageRequest.getChatRoomId());
         Message message = messageMapper.requestToEntity(messageRequest);
 
@@ -56,9 +62,6 @@ public class MessageService {
         messageRepository.save(message);
 
         chatRoom.addMessage(message);
-
-        log.info("Message: {}", message);
-        log.info("Message id: {}", message.getId());
 
         chatRoomRepository.save(chatRoom);
 
