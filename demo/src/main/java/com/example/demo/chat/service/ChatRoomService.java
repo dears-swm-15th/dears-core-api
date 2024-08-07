@@ -86,6 +86,18 @@ public class ChatRoomService {
                 .build();
     }
 
+    public int getCustomersUnreadMessages(String customerUuid) {
+        log.info("Fetching all chat rooms's unreadMessages for customer");
+        Customer customer = customUserDetailsService.getCustomerByUuid(customerUuid);
+        List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
+
+        return chatRooms.stream()
+                .mapToInt(chatRoom ->
+                        chatRoomRepository.countUnreadMessages(chatRoom.getId(), "WEDDING_PLANNER")
+                )
+                .sum();
+    }
+
     public List<ChatRoomOverviewDTO.Response> getCustomersAllChatRoom() {
         log.info("Fetching all chat rooms for customer");
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();

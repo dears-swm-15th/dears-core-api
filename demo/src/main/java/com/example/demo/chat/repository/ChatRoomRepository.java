@@ -18,6 +18,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     boolean existsByCustomerIdAndWeddingPlannerId(Long customerId, Long weddingPlannerId);
 
     List<ChatRoom> findByCustomerId(Long customerId);
+
     List<ChatRoom> findByWeddingPlannerId(Long weddingPlannerId);
 
     ChatRoom findByCustomerIdAndWeddingPlannerId(Long customerId, Long weddingPlannerId);
@@ -29,5 +30,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     @Query(value = "SELECT * from ChatRoom chat_room WHERE chat_room.is_deleted = true", nativeQuery = true)
     List<Portfolio> findSoftDeletedChatRooms();
+
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.id = :chatRoomId AND m.senderRole = :senderRole AND m.oppositeReadFlag = false")
+    int countUnreadMessages(@Param("chatRoomId") Long chatRoomId, @Param("senderRole") String senderRole);
 
 }

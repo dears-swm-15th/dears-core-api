@@ -38,31 +38,12 @@ public class ChatRoom extends BaseTimeEntity {
     @JoinColumn(name = "weddingplanner_id")
     private WeddingPlanner weddingPlanner;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "chat_room_user", joinColumns = @JoinColumn(name = "chat_room_id"))
-    private Set<String> userIds;
-
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "chat_room_id")
     private List<Message> messages = new ArrayList<>();
 
     private String lastMessageContent;
     private LocalDateTime lastMessageCreatedAt;
-
-    // append user Id at userIds
-    public void addUser(String userId) {
-        if (userIds == null) {
-            userIds = new HashSet<>();
-        }
-        userIds.add(userId);
-    }
-
-    public void removeUser(String userId) {
-        if (userIds == null) {
-            return;
-        }
-        userIds.remove(userId);
-    }
 
     public void addMessage(Message message) {
         messages.add(message);

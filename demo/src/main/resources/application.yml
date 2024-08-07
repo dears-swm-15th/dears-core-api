@@ -12,7 +12,7 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
@@ -50,4 +50,5 @@ springdoc:
 logging:
   level:
     org:
-        springframework: info
+      springframework: info
+

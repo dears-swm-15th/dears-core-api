@@ -30,7 +30,7 @@ public class SecurityConfig{
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers("/api/v1/auth/shared/create").permitAll()
-                    .requestMatchers("/", "/index.html", "/swagger-ui/*",  "/swagger-resources/**", "/v3/api-docs/**").permitAll()
+                    .requestMatchers("/", "/index.html","/weddingplanner-chat.html","/customer-chat.html", "/swagger-ui/*",  "/swagger-resources/**", "/v3/api-docs/**", "/favicon.ico").permitAll()
                     .requestMatchers("/api/v1/*/shared/**").hasAnyRole("CUSTOMER","WEDDING_PLANNER")
                     .requestMatchers("/api/v1/*/weddingplanner/**").hasRole("WEDDING_PLANNER")
                     .requestMatchers("/api/v1/*/customer/**").hasRole("CUSTOMER")
