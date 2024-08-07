@@ -20,6 +20,10 @@
         <div class="col-md-6">
             <form class="form-inline">
                 <div class="form-group">
+                    <label for="authToken">Authorization:</label>
+                    <input type="text" id="authToken" class="form-control" placeholder="Enter Authorization Token">
+                </div>
+                <div class="form-group">
                     <label for="chatRoomId">Chat Room ID:</label>
                     <input type="text" id="chatRoomId" class="form-control" placeholder="Enter Chat Room ID">
                 </div>
@@ -60,8 +64,9 @@
         var socket = new SockJS('/stomp/chat');
         stompClient = Stomp.over(socket);
 
+        var authToken = document.getElementById("authToken").value;
         var headers = {
-            'Authorization': '51fc7d6b-7f86-43cf-b5c7-de4c46046d71'
+            'Authorization': authToken
         };
 
         stompClient.connect(headers, function (frame) {
