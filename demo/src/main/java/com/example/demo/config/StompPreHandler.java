@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Configuration
@@ -36,6 +37,9 @@ public class StompPreHandler implements ChannelInterceptor {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String BEARER_PREFIX = "Bearer ";
     private final ChatRoomRepository chatRoomRepository;
+
+    private static final ConcurrentHashMap<String, String> connectedUsers = new ConcurrentHashMap<>();
+
 
     /**
      * 메시지가 채널로 전송되기 전에 실행
@@ -61,7 +65,18 @@ public class StompPreHandler implements ChannelInterceptor {
             if (headers != null && !headers.isEmpty()) {
 
                 Map<String, Object> attributes = headerAccessor.getSessionAttributes();
-                attributes.put(AUTHORIZATION_HEADER, headers.get(0).toString());
+                String uuid = headers.get(0).toString();
+
+                attributes.put(AUTHORIZATION_HEADER, uuid);
+
+                String sessionId = accessor.getSessionId();
+                if (uuid != null) {
+                    connectedUsers.put(sessionId, uuid);
+                }
+
+                log.info("SESSION ID: {}", sessionId);
+                log.info("UUID: {}", uuid);
+
                 headerAccessor.setSessionAttributes(attributes);
 
                 return message;
@@ -81,6 +96,15 @@ public class StompPreHandler implements ChannelInterceptor {
             }
         }
 
+        else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
+            String sessionId = accessor.getSessionId();
+            connectedUsers.remove(sessionId);
+        }
+
         return message;
+    }
+
+    public static boolean isUserConnected(String uuid) {
+        return connectedUsers.containsValue(uuid);
     }
 }
