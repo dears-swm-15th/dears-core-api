@@ -104,7 +104,7 @@ public class PortfolioController {
     public ResponseEntity<List<PortfolioSearchDTO.Response>> getSearchPortfolio(
             @Parameter(description = "검색 키워드")
             @RequestParam String content) {
-        List<PortfolioSearchDTO.Response> searchResult = portfolioSearchService.search(content);
+        List<PortfolioSearchDTO.Response> searchResult = portfolioSearchService.search(content.toLowerCase());
         log.info("Searched portfolios with content: {}", content);
         return ResponseEntity.ok(searchResult);
     }
