@@ -94,7 +94,10 @@
             stompClient.subscribe('/sub/' + chatRoomId, function (message) {
                 var messageBody = JSON.parse(message.body);
                 showMessage(messageBody.contents, messageBody.senderRole);
+            });
 
+            stompClient.subscribe('/sub/' + authToken, function (message) {
+                var messageBody = JSON.parse(message.body);
                 // Update unread message count if present
                 if (messageBody.unreadMessageCount !== undefined) {
                     document.getElementById('unreadCount').innerText = messageBody.unreadMessageCount;

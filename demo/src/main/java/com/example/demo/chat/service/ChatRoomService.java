@@ -9,6 +9,7 @@ import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.chat.repository.MessageRepository;
+import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.service.CustomUserDetailsService;
@@ -93,7 +94,7 @@ public class ChatRoomService {
 
         return chatRooms.stream()
                 .mapToInt(chatRoom ->
-                        chatRoomRepository.countUnreadMessages(chatRoom.getId(), "WEDDING_PLANNER")
+                        chatRoomRepository.countUnreadMessages(chatRoom.getId(), MemberRole.WEDDING_PLANNER)
                 )
                 .sum();
     }

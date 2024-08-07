@@ -34,4 +34,8 @@ public class Message extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole senderRole;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_room_id")
+    private ChatRoom chatRoom;
+
 }

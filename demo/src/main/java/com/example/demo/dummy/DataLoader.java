@@ -219,14 +219,22 @@ public class DataLoader implements CommandLineRunner {
                 .contents("웨딩플래너 님 안녕하세요!")
                 .messageType(MessageType.SEND)
                 .isDeleted(false)
-                .oppositeReadFlag(false)
+                .oppositeReadFlag(true)
                 .senderRole(CUSTOMER)
+                .build();
+
+        Message message2 = Message.builder()
+                .contents("안녕하세요! 어떻게 도와드릴까요?")
+                .messageType(MessageType.SEND)
+                .isDeleted(false)
+                .oppositeReadFlag(false)
+                .senderRole(WEDDING_PLANNER)
                 .build();
 
         ChatRoom chatRoom1 = ChatRoom.builder()
                 .customer(customer1)
                 .weddingPlanner(planner1)
-                .messages(Arrays.asList(message1))
+                .messages(Arrays.asList(message1, message2))
                 .isDeleted(false)
                 .lastMessageContent("웨딩플래너 님 안녕하세요!")
                 .build();

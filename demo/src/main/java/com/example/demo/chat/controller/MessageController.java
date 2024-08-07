@@ -22,14 +22,17 @@ public class MessageController {
 
     @MessageMapping(value = "/shared/connect")
     @Operation(summary = "채팅방 연결")
-    public MessageDTO.UnreadMessageResponse connect(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+    public void connect(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
         // TODO : 프로그램 실행 시, 모든 채팅방 연결.
 
-        int unreadMessageResponse = messageService.getAllUnreadMessages(accessor.getSessionAttributes().get("Authorization").toString());
+        String authUuid = accessor.getSessionAttributes().get("Authorization").toString();
+        int unreadMessageResponse = messageService.getAllUnreadMessages(authUuid);
 
+        System.out.println("UNREAD MESSAGE RESPONSE: " + unreadMessageResponse);
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
+        template.convertAndSend("/sub/" + authUuid, new MessageDTO.UnreadMessageResponse(unreadMessageResponse)); //convertAndSendToUser로 변경 가능
+        System.out.println("ACCESSOR(CONNECT): " + accessor.getSessionAttributes());
         log.info("Connected to chat room with ID: {}", messageRequest.getChatRoomId());
-        return new MessageDTO.UnreadMessageResponse(unreadMessageResponse);
     }
 
     @MessageMapping(value = "/customer/enter/connect")
