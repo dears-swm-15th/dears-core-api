@@ -29,13 +29,13 @@ public class ChatRoomController {
         return ResponseEntity.status(201).body(createdChatRoom);
     }
 
-//    @PostMapping("/weddingplanner/{chatRoomId}")
-//    @Operation(summary = "[웨딩플래너] 채팅방 아이디로 채팅방 입장")
-//    public ResponseEntity<ChatRoomDTO.Response> getChatRoomByIdForWeddingPlanner(@PathVariable Long chatRoomId) {
-//        ChatRoomDTO.Response chatRoomByChatRoomId = chatRoomService.getMessagesByChatRoomId(chatRoomId);
-//        log.info("Entered chat room for wedding planner with chat room ID: {}", chatRoomId);
-//        return ResponseEntity.status(200).body(chatRoomByChatRoomId);
-//    }
+    @PostMapping("/weddingplanner/{chatRoomId}")
+    @Operation(summary = "[웨딩플래너] 채팅방 아이디로 채팅방 입장")
+    public ResponseEntity<ChatRoomDTO.Response> getChatRoomByIdForWeddingPlanner(@PathVariable Long chatRoomId) {
+        ChatRoomDTO.Response chatRoomByChatRoomId = chatRoomService.getMessagesByChatRoomId(chatRoomId);
+        log.info("Entered chat room for wedding planner with chat room ID: {}", chatRoomId);
+        return ResponseEntity.status(200).body(chatRoomByChatRoomId);
+    }
 
     @GetMapping("/customer/all")
     @Operation(summary = "[신랑신부] 현재 모든 채팅방 조회")

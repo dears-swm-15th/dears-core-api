@@ -42,6 +42,11 @@ public class ChatRoom extends BaseTimeEntity {
     @JoinColumn(name = "chat_room_id")
     private List<Message> messages = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "chat_room_user", joinColumns = @JoinColumn(name = "chat_room_id"))
+    private Set<String> userIds;
+
+
     private String lastMessageContent;
     private LocalDateTime lastMessageCreatedAt;
 

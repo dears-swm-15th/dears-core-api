@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -33,23 +34,28 @@ public class MessageService {
 
 
     @Transactional
-    public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest) {
+    public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest, String Uuid) {
         messageRequest.setSenderRole(MemberRole.CUSTOMER);
 
-        return saveMessage(messageRequest);
+        return saveMessage(messageRequest, Uuid);
     }
 
     @Transactional
-    public MessageDTO.Response sendMessageByWeddingPlanner(MessageDTO.Request messageRequest) {
+    public MessageDTO.Response sendMessageByWeddingPlanner(MessageDTO.Request messageRequest, String Uuid) {
         messageRequest.setSenderRole(MemberRole.WEDDING_PLANNER);
-
-        return saveMessage(messageRequest);
+        return saveMessage(messageRequest, Uuid);
     }
 
-    public MessageDTO.Response saveMessage(MessageDTO.Request messageRequest) {
+    public MessageDTO.Response saveMessage(MessageDTO.Request messageRequest, String Uuid) {
         ChatRoom chatRoom = chatRoomService.getChatRoomById(messageRequest.getChatRoomId());
         Message message = messageMapper.requestToEntity(messageRequest);
 
+        // TODO : Redis로 변경
+        Set<String> userIds = chatRoom.getUserIds();
+        userIds.add(Uuid);
+        chatRoom.setUserIds(userIds);
+
+        message.setOppositeReadFlag(true);
 
         messageRepository.save(message);
 

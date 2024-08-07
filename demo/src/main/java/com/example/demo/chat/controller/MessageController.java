@@ -20,8 +20,6 @@ public class MessageController {
     private final MessageService messageService;
     private final ChatRoomService chatRoomService;
 
-<<<<<<< HEAD
-=======
     @MessageMapping(value = "/shared/connect")
     @Operation(summary = "채팅방 연결")
     public void connect(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
@@ -37,7 +35,6 @@ public class MessageController {
         log.info("Connected to chat room with ID: {}", messageRequest.getChatRoomId());
     }
 
->>>>>>> 52e053f7a6726a023279d85085383452b930a408
     @MessageMapping(value = "/customer/enter/connect")
     @Operation(summary = "[신랑신부] 포트폴리오 아이디로 채팅방 입장(생성 및 입장)")
     public void connectByCustomer(MessageDTO.PortfolioRequest messagePortfolioRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
@@ -80,16 +77,18 @@ public class MessageController {
     public void sendByCustomer(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
 
-        messageService.sendMessageByCustomer(messageRequest);
+        String customerUuid = accessor.getSessionAttributes().get("Authorization").toString();
+        messageService.sendMessageByCustomer(messageRequest, customerUuid);
 
         log.debug("Customer sent message to chat room with ID: {}", messageRequest.getChatRoomId());
     }
 
     @MessageMapping(value = "/weddinplanner/send")
     @Operation(summary = "[웨딩플래너] 메세지 전송")
-    public void sendByWeddingPlanner(MessageDTO.Request messageRequest) {
+    public void sendByWeddingPlanner(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+        String weddingPlannerUuid = accessor.getSessionAttributes().get("Authorization").toString();
 
-        messageService.sendMessageByWeddingPlanner(messageRequest);
+        messageService.sendMessageByWeddingPlanner(messageRequest, weddingPlannerUuid);
 
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
         log.info("WeddingPlanner sent message to chat room with ID: {}", messageRequest.getChatRoomId());

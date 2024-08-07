@@ -31,6 +31,7 @@ public class Message extends BaseTimeEntity {
 
     private boolean oppositeReadFlag;
 
+
     @Enumerated(EnumType.STRING)
     private MemberRole senderRole;
 

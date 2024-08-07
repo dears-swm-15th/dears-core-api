@@ -108,7 +108,7 @@
             stompClient.send("/pub/shared/connect", headers, JSON.stringify({
                 'messageType': 'SEND',
                 'chatRoomId': chatRoomId,
-                'senderRole': 'WEEDINGPLANNER',
+                'senderRole': 'WEDDING_PLANNER',
                 'contents': 'Connected to chat room'
             }));
         });
