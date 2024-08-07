@@ -20,14 +20,6 @@ public class MessageController {
     private final MessageService messageService;
     private final ChatRoomService chatRoomService;
 
-    @MessageMapping(value = "/shared/connect")
-    @Operation(summary = "채팅방 연결")
-    public void connect(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
-        // TODO : 프로그램 실행 시, 모든 채팅방 연결.
-        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
-        log.info("Connected to chat room with ID: {}", messageRequest.getChatRoomId());
-    }
-
     @MessageMapping(value = "/customer/enter/connect")
     @Operation(summary = "[신랑신부] 포트폴리오 아이디로 채팅방 입장(생성 및 입장)")
     public void connectByCustomer(MessageDTO.PortfolioRequest messagePortfolioRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
