@@ -69,6 +69,7 @@ public class ReviewService {
         Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
         review.setPortfolio(portfolio);
         review.setReviewerId(weddingPlanner.getId());
+        review.setReviewerName("사용자"+weddingPlanner.getName().substring(0, 3));
         review.setIsProvided(true);
 
         reviewRepository.save(review);

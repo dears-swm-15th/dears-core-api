@@ -1,15 +1,14 @@
 package com.example.demo.portfolio.dto;
 
-import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.dto.WeddingPlannerPortfolioDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import com.example.demo.enums.review.RadarKey;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class PortfolioDTO {
 
@@ -159,5 +158,38 @@ public class PortfolioDTO {
 
         @Schema(type = "integer", example = "300000")
         private Integer avgEstimate;
+
+
+        public List<String> getPresignedWeddingPhotoUrls() {
+            if (this.presignedWeddingPhotoUrls == null) {
+                this.presignedWeddingPhotoUrls = new ArrayList<>();
+            }
+            return this.presignedWeddingPhotoUrls;
+        }
+
+        public List<String> getWeddingPhotoUrls() {
+            if (this.weddingPhotoUrls == null) {
+                this.weddingPhotoUrls = new ArrayList<>();
+            }
+            return this.weddingPhotoUrls;
+        }
+
+        public String getPresignedProfileImageUrl() {
+            if (this.presignedProfileImageUrl == null) {
+                this.presignedProfileImageUrl = "";
+            }
+            return this.presignedProfileImageUrl;
+        }
+
+        public String getProfileImageUrl() {
+            if (this.profileImageUrl == null) {
+                this.profileImageUrl = "";
+            }
+            return this.profileImageUrl;
+        }
+
+
     }
+
+
 }

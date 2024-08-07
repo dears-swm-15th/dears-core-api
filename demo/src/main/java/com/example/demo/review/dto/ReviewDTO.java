@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -97,5 +98,19 @@ public class ReviewDTO {
         @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
         private LocalDateTime updatedAt;
 
+
+        public List<String> getPresignedWeddingPhotoUrls() {
+            if (this.presignedWeddingPhotoUrls == null) {
+                this.presignedWeddingPhotoUrls = new ArrayList<>();
+            }
+            return this.presignedWeddingPhotoUrls;
+        }
+
+        public List<String> getWeddingPhotoUrls() {
+            if (this.weddingPhotoUrls == null) {
+                this.weddingPhotoUrls = new ArrayList<>();
+            }
+            return this.weddingPhotoUrls;
+        }
     }
 }

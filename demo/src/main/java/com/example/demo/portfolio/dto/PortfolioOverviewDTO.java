@@ -37,6 +37,12 @@ public class PortfolioOverviewDTO {
 
         @Schema(type = "integer", example = "10")
         private Integer reviewCount;
-    }
 
+        public String getProfileImageUrl() {
+            if (profileImageUrl == null) {
+                this.profileImageUrl = "";
+            }
+            return profileImageUrl;
+        }
+    }
 }

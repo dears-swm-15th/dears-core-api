@@ -4,11 +4,14 @@ import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
 import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.review.domain.Review;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,12 +50,12 @@ public class Portfolio extends BaseTimeEntity {
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "portfolio_services", joinColumns = @JoinColumn(name = "portfolio_id"))
     @Column(name = "service_value")
-    private List<String> services;
+    private List<String> services = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "portfolio_wedding_photos", joinColumns = @JoinColumn(name = "portfolio_id"))
     @Column(name = "photo_url")
-    private List<String> weddingPhotoUrls;
+    private List<String> weddingPhotoUrls = new ArrayList<>();
 
     // Dynamic changed fields
     private Float ratingSum;
@@ -72,6 +75,9 @@ public class Portfolio extends BaseTimeEntity {
     private Integer wishListCount;
 
     private Integer viewCount;
+
+    @OneToMany(mappedBy = "portfolio", fetch = FetchType.LAZY)
+    private List<Review> reviews;
 
 
     public void increaseWishListCount() {
