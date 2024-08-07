@@ -65,9 +65,9 @@ public class MessageController {
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
 
         log.debug("ACCESSOR(SEND): {}", accessor.getSessionAttributes());
-        String customerUuid = accessor.getSessionAttributes().get("Authorization").toString();
+        String weddingPlannerUuid = accessor.getSessionAttributes().get("Authorization").toString();
 
-        messageService.enterChatRoom(messageRequest, customerUuid);
+        messageService.enterChatRoom(messageRequest, weddingPlannerUuid);
 
         log.info("Entered chat room with ID: {}", messageRequest.getChatRoomId());
     }
@@ -75,11 +75,10 @@ public class MessageController {
     @MessageMapping(value = "/customer/send")
     @Operation(summary = "[신랑신부] 메세지 전송")
     public void sendByCustomer(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+        String customerUuid = accessor.getSessionAttributes().get("Authorization").toString();
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
 
-        String customerUuid = accessor.getSessionAttributes().get("Authorization").toString();
         messageService.sendMessageByCustomer(messageRequest, customerUuid);
-
         log.debug("Customer sent message to chat room with ID: {}", messageRequest.getChatRoomId());
     }
 
@@ -87,10 +86,9 @@ public class MessageController {
     @Operation(summary = "[웨딩플래너] 메세지 전송")
     public void sendByWeddingPlanner(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
         String weddingPlannerUuid = accessor.getSessionAttributes().get("Authorization").toString();
+        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
 
         messageService.sendMessageByWeddingPlanner(messageRequest, weddingPlannerUuid);
-
-        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
         log.info("WeddingPlanner sent message to chat room with ID: {}", messageRequest.getChatRoomId());
     }
 
