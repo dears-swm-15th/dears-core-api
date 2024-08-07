@@ -53,8 +53,7 @@ public class Review extends BaseTimeEntity {
         @Column(name = "radar_value")
         private Map<RadarKey, Float> radar;
 
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "portfolio_id")
+        @ManyToOne
         private Portfolio portfolio;
 
 }
