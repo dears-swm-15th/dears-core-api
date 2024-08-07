@@ -49,4 +49,5 @@ springdoc:
 
 logging:
   level:
-    project=debug:
+    org:
+        springframework: info

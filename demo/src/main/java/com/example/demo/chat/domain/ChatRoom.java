@@ -6,6 +6,7 @@ import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
 import jakarta.persistence.*;
 import jakarta.servlet.http.PushBuilder;
+import jakarta.transaction.Transactional;
 import lombok.*;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.parameters.P;

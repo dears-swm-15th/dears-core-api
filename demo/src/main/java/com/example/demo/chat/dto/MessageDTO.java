@@ -50,8 +50,6 @@ public class MessageDTO {
 
         private MessageType messageType;
 
-        private String contents;
-
         private Long portfolioId;
     }
 }

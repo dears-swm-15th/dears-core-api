@@ -98,7 +98,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info("Getting current authenticated customer");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        System.out.println("AUTHENTICATION PLEASE:" + authentication);
+        log.info("AUTHENTICATION PLEASE: {}", authentication);
 
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             String memberName = authentication.getName();
