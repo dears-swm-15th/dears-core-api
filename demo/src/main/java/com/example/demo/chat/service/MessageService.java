@@ -10,15 +10,11 @@ import com.example.demo.chat.mapper.MessageMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.chat.repository.MessageRepository;
 import com.example.demo.enums.member.MemberRole;
-import com.example.demo.member.service.CustomUserDetailsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +27,6 @@ public class MessageService {
 
     private final ChatRoomMapper chatRoomMapper = ChatRoomMapper.INSTANCE;
     private final ChatRoomRepository chatRoomRepository;
-
 
     @Transactional
     public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest, String Uuid) {

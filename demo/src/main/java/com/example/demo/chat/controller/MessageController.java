@@ -20,57 +20,55 @@ public class MessageController {
     private final MessageService messageService;
     private final ChatRoomService chatRoomService;
 
-    @MessageMapping(value = "/shared/connect")
-    @Operation(summary = "채팅방 연결")
-    public void connect(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
-        // TODO : 프로그램 실행 시, 모든 채팅방 연결.
-
-        String authUuid = accessor.getSessionAttributes().get("Authorization").toString();
-        int unreadMessageResponse = messageService.getAllUnreadMessages(authUuid);
-
-        System.out.println("UNREAD MESSAGE RESPONSE: " + unreadMessageResponse);
-        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
-        template.convertAndSend("/sub/" + authUuid, new MessageDTO.UnreadMessageResponse(unreadMessageResponse)); //convertAndSendToUser로 변경 가능
-        System.out.println("ACCESSOR(CONNECT): " + accessor.getSessionAttributes());
-        log.info("Connected to chat room with ID: {}", messageRequest.getChatRoomId());
-    }
-
-    @MessageMapping(value = "/customer/enter/connect")
-    @Operation(summary = "[신랑신부] 포트폴리오 아이디로 채팅방 입장(생성 및 입장)")
-    public void connectByCustomer(MessageDTO.PortfolioRequest messagePortfolioRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
-        Long portfolioId = messagePortfolioRequest.getPortfolioId();
-        chatRoomService.enterChatRoomByPortfolioId(portfolioId);
-        log.info("Entered chat room for customer with portfolio ID: {}", portfolioId);
-
-        // TODO : wp sub 대신 send to
-    }
+//    @MessageMapping(value = "/shared/connect")
+//    @Operation(summary = "채팅방 연결")
+//    public void connect(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+//        // TODO : 프로그램 실행 시, 모든 채팅방 연결.
+//
+//        String authUuid = accessor.getSessionAttributes().get("Authorization").toString();
+//        int unreadMessageResponse = messageService.getAllUnreadMessages(authUuid);
+//
+//        System.out.println("UNREAD MESSAGE RESPONSE: " + unreadMessageResponse);
+//        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
+//        template.convertAndSend("/sub/" + authUuid, new MessageDTO.UnreadMessageResponse(unreadMessageResponse)); //convertAndSendToUser로 변경 가능
+//        System.out.println("ACCESSOR(CONNECT): " + accessor.getSessionAttributes());
+//        log.info("Connected to chat room with ID: {}", messageRequest.getChatRoomId());
+//    }
+//
+//    @MessageMapping(value = "/customer/enter/connect")
+//    @Operation(summary = "[신랑신부] 포트폴리오 아이디로 채팅방 입장(생성 및 입장)")
+//    public void connectByCustomer(MessageDTO.PortfolioRequest messagePortfolioRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+//        Long portfolioId = messagePortfolioRequest.getPortfolioId();
+//        chatRoomService.enterChatRoomByPortfolioId(portfolioId);
+//        log.info("Entered chat room for customer with portfolio ID: {}", portfolioId);
+//    }
 
 
-    @MessageMapping(value = "/customer/enter")
-    @Operation(summary = "[신랑신부] 채팅방 입장")
-    public void enterByCustomer(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
-        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
-
-        log.trace("ACCESSOR(SEND): {}", accessor.getSessionAttributes());
-        String customerUuid = accessor.getSessionAttributes().get("Authorization").toString();
-
-        messageService.enterChatRoom(messageRequest, customerUuid);
-
-        log.info("Entered chat room with ID: {}", messageRequest.getChatRoomId());
-    }
-
-    @MessageMapping(value = "/weddinplanner/enter")
-    @Operation(summary = "[웨딩플래너] 채팅방 입장")
-    public void enterByWeddingPlanner(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
-        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
-
-        log.debug("ACCESSOR(SEND): {}", accessor.getSessionAttributes());
-        String weddingPlannerUuid = accessor.getSessionAttributes().get("Authorization").toString();
-
-        messageService.enterChatRoom(messageRequest, weddingPlannerUuid);
-
-        log.info("Entered chat room with ID: {}", messageRequest.getChatRoomId());
-    }
+//    @MessageMapping(value = "/customer/enter")
+//    @Operation(summary = "[신랑신부] 채팅방 입장")
+//    public void enterByCustomer(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+//        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
+//
+//        log.trace("ACCESSOR(SEND): {}", accessor.getSessionAttributes());
+//        String customerUuid = accessor.getSessionAttributes().get("Authorization").toString();
+//
+//        messageService.enterChatRoom(messageRequest, customerUuid);
+//
+//        log.info("Entered chat room with ID: {}", messageRequest.getChatRoomId());
+//    }
+//
+//    @MessageMapping(value = "/weddinplanner/enter")
+//    @Operation(summary = "[웨딩플래너] 채팅방 입장")
+//    public void enterByWeddingPlanner(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+//        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
+//
+//        log.debug("ACCESSOR(SEND): {}", accessor.getSessionAttributes());
+//        String weddingPlannerUuid = accessor.getSessionAttributes().get("Authorization").toString();
+//
+//        messageService.enterChatRoom(messageRequest, weddingPlannerUuid);
+//
+//        log.info("Entered chat room with ID: {}", messageRequest.getChatRoomId());
+//    }
 
     @MessageMapping(value = "/customer/send")
     @Operation(summary = "[신랑신부] 메세지 전송")
