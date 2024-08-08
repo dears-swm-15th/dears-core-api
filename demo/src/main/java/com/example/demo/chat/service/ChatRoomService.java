@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -58,6 +59,7 @@ public class ChatRoomService {
                     log.error("Portfolio not found with ID: {}", portfolioId);
                     return new RuntimeException("Portfolio not found");
                 });
+
         WeddingPlanner weddingPlanner = portfolio.getWeddingPlanner();
 
         if (!isChatRoomExist(customer, weddingPlanner)) {
@@ -67,7 +69,10 @@ public class ChatRoomService {
 
         Long chatRoomId = getChatRoomIdByCustomerAndWeddingPlanner(customer, weddingPlanner);
         log.info("Chat room exists, entering existing chat room with ID: {}", chatRoomId);
-        return getMessagesByChatRoomId(chatRoomId);
+        ChatRoom chatRoom = getChatRoomById(chatRoomId);
+
+        updateOppositeReadFlag(chatRoom);
+        return getMessagesByChatRoom(chatRoom);
     }
 
     public ChatRoomDTO.Response createChatRoomByPortfolioId(Customer customer, WeddingPlanner weddingPlanner) {
@@ -76,8 +81,7 @@ public class ChatRoomService {
 
         chatRoom.setCustomer(customer);
         chatRoom.setWeddingPlanner(weddingPlanner);
-
-
+        
         chatRoomRepository.save(chatRoom);
         log.info("Created chat room with ID: {}", chatRoom.getId());
 
@@ -148,28 +152,35 @@ public class ChatRoomService {
         return chatRoom.getId();
     }
 
-    public ChatRoomDTO.Response getMessagesByChatRoomId(Long chatRoomId) {
-        log.info("Fetching chat room by chat room ID: {}", chatRoomId);
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> {
-                    log.error("Chat room not found with ID: {}", chatRoomId);
-                    return new RuntimeException("ChatRoom not found");
-                });
+    public ChatRoomDTO.Response getMessagesByChatRoom(ChatRoom chatRoom) {
+        String Uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
+        chatRoom.addUser(Uuid);
 
+        chatRoomRepository.save(chatRoom);
 
         List<Message> messages = chatRoom.getMessages();
-
         List<MessageDTO.Response> messageResponses = messages.stream()
                 .map(messageMapper::entityToResponse)// set clubId to each Response
                 .collect(Collectors.toList());
 
-
         ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
-
         response.setMessages(messageResponses);
 
         return response;
     }
+
+    private void updateOppositeReadFlag(ChatRoom chatRoom) {
+        log.info("Updating opposite read flag for chat room with ID: {}", chatRoom.getId());
+        List<Message> messages = chatRoom.getMessages();
+
+        MemberRole memberRole = customUserDetailsService.getCurrentAuthenticatedMemberRole();
+        for (Message message : messages) {
+            if (message.getSenderRole() != memberRole) {
+                message.setOppositeReadFlag(true);
+            }
+        }
+    }
+
 
     public void deleteChatRoom(Long chatRoomId) {
         log.info("Deleting chat room with ID: {}", chatRoomId);

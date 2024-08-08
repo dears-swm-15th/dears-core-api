@@ -2,12 +2,18 @@ package com.example.demo.chat.controller;
 
 import com.example.demo.chat.dto.ChatRoomDTO;
 import com.example.demo.chat.dto.ChatRoomOverviewDTO;
+import com.example.demo.chat.dto.MessageDTO;
 import com.example.demo.chat.service.ChatRoomService;
+import com.example.demo.config.StompPreHandler;
+import com.example.demo.enums.chat.MessageType;
+import com.example.demo.enums.member.MemberRole;
+import com.example.demo.member.service.CustomUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,11 +26,29 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
+    private final SimpMessagingTemplate template;
+    private final CustomUserDetailsService customUserDetailsService;
+
 
     @PostMapping("/customer/{portfolioId}")
     @Operation(summary = "[신랑신부] 포트폴리오 아이디로 채팅방 입장(생성 및 입장)")
     public ResponseEntity<ChatRoomDTO.Response> enterChatRoomByPortfolioIdForCustomer(@PathVariable Long portfolioId) {
         ChatRoomDTO.Response createdChatRoom = chatRoomService.enterChatRoomByPortfolioId(portfolioId);
+
+        String uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
+        boolean isConnected = StompPreHandler.isUserConnected(uuid);
+
+        if (isConnected) {
+            MessageDTO.Request messageRequest = MessageDTO.Request.builder()
+                    .chatRoomId(createdChatRoom.getChatRoomId())
+                    .messageType(MessageType.ENTER)
+                    .senderRole(MemberRole.CUSTOMER)
+                    .contents("New Chat Room Created")
+                    .build();
+
+            template.convertAndSendToUser(uuid, "/sub/" + createdChatRoom.getChatRoomId(), createdChatRoom);
+        }
+
         log.info("Entered chat room for customer with portfolio ID: {}", portfolioId);
         return ResponseEntity.status(201).body(createdChatRoom);
     }
