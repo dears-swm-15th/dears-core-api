@@ -7,6 +7,8 @@ import com.example.demo.chat.service.ChatRoomService;
 import com.example.demo.config.StompPreHandler;
 import com.example.demo.enums.chat.MessageType;
 import com.example.demo.enums.member.MemberRole;
+import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.member.repository.WeddingPlannerRepository;
 import com.example.demo.member.service.CustomUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +30,7 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final SimpMessagingTemplate template;
     private final CustomUserDetailsService customUserDetailsService;
+    private final WeddingPlannerRepository weddingPlannerRepository;
 
 
     @PostMapping("/customer/{portfolioId}")
@@ -35,8 +38,14 @@ public class ChatRoomController {
     public ResponseEntity<ChatRoomDTO.Response> enterChatRoomByPortfolioIdForCustomer(@PathVariable Long portfolioId) {
         ChatRoomDTO.Response createdChatRoom = chatRoomService.enterChatRoomByPortfolioId(portfolioId);
 
-        String uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
-        boolean isConnected = StompPreHandler.isUserConnected(uuid);
+        WeddingPlanner weddingPlanner = weddingPlannerRepository.findByPortfolioId(portfolioId)
+                .orElseThrow(() -> {
+                    log.error("Wedding planner not found with portfolio ID: {}", portfolioId);
+                    return new RuntimeException("WeddingPlanner not found");
+                });
+
+        String weddingPlannerUuid = weddingPlanner.getUUID();
+        boolean isConnected = StompPreHandler.isUserConnected(weddingPlannerUuid);
 
         if (isConnected) {
             MessageDTO.Request messageRequest = MessageDTO.Request.builder()
@@ -46,7 +55,7 @@ public class ChatRoomController {
                     .contents("New Chat Room Created")
                     .build();
 
-            template.convertAndSendToUser(uuid, "/sub/" + createdChatRoom.getChatRoomId(), createdChatRoom);
+            template.convertAndSend("/sub/" + weddingPlannerUuid, messageRequest);
         }
 
         log.info("Entered chat room for customer with portfolio ID: {}", portfolioId);
