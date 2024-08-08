@@ -108,7 +108,7 @@ public class ChatRoomService {
         ChatRoom chatRoom = getChatRoomById(chatRoomId);
 
         updateOppositeReadFlag(chatRoom);
-        return getMessagesByChatRoom(chatRoom);
+        return getMessagesByChatRoomForCustomer(chatRoom);
     }
 
     public ChatRoomDTO.Response createChatRoomByPortfolioId(Customer customer, WeddingPlanner weddingPlanner) {
@@ -187,17 +187,42 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
         return chatRoom.getId();
     }
-
-    public ChatRoomDTO.Response getMessagesByChatRoomId(Long chatRoomId) {
+    
+    public ChatRoomDTO.Response getMessagesByChatRoomIdForCustomer(Long chatRoomId) {
         log.info("Fetching messages by chat room ID: {}", chatRoomId);
         ChatRoom chatRoom = getChatRoomById(chatRoomId);
 
         updateOppositeReadFlag(chatRoom);
-        return getMessagesByChatRoom(chatRoom);
+        return getMessagesByChatRoomForCustomer(chatRoom);
     }
 
-    public ChatRoomDTO.Response getMessagesByChatRoom(ChatRoom chatRoom) {
+    public ChatRoomDTO.Response getMessagesByChatRoomIdForWeddingPlanner(Long chatRoomId) {
+        log.info("Fetching messages by chat room ID: {}", chatRoomId);
+        ChatRoom chatRoom = getChatRoomById(chatRoomId);
+
+        updateOppositeReadFlag(chatRoom);
+        return getMessagesByChatRoomForWeddingPlanner(chatRoom);
+    }
+
+    public ChatRoomDTO.Response getMessagesByChatRoomForCustomer(ChatRoom chatRoom) {
         String Uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
+        chatRoom.addUser(Uuid);
+
+        chatRoomRepository.save(chatRoom);
+
+        List<Message> messages = chatRoom.getMessages();
+        List<MessageDTO.Response> messageResponses = messages.stream()
+                .map(messageMapper::entityToResponse)// set clubId to each Response
+                .collect(Collectors.toList());
+
+        ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
+        response.setMessages(messageResponses);
+
+        return response;
+    }
+
+    public ChatRoomDTO.Response getMessagesByChatRoomForWeddingPlanner(ChatRoom chatRoom) {
+        String Uuid = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().getUUID();
         chatRoom.addUser(Uuid);
 
         chatRoomRepository.save(chatRoom);
