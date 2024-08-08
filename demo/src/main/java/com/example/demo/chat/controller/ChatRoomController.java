@@ -28,36 +28,12 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
-    private final SimpMessagingTemplate template;
-    private final CustomUserDetailsService customUserDetailsService;
-    private final WeddingPlannerRepository weddingPlannerRepository;
 
 
     @PostMapping("/customer/{portfolioId}")
     @Operation(summary = "[신랑신부] 포트폴리오 아이디로 채팅방 입장(생성 및 입장)")
     public ResponseEntity<ChatRoomDTO.Response> enterChatRoomByPortfolioIdForCustomer(@PathVariable Long portfolioId) {
         ChatRoomDTO.Response createdChatRoom = chatRoomService.enterChatRoomByPortfolioId(portfolioId);
-
-        WeddingPlanner weddingPlanner = weddingPlannerRepository.findByPortfolioId(portfolioId)
-                .orElseThrow(() -> {
-                    log.error("Wedding planner not found with portfolio ID: {}", portfolioId);
-                    return new RuntimeException("WeddingPlanner not found");
-                });
-
-        String weddingPlannerUuid = weddingPlanner.getUUID();
-        boolean isConnected = StompPreHandler.isUserConnected(weddingPlannerUuid);
-
-        if (isConnected) {
-            MessageDTO.Request messageRequest = MessageDTO.Request.builder()
-                    .chatRoomId(createdChatRoom.getChatRoomId())
-                    .messageType(MessageType.ENTER)
-                    .senderRole(MemberRole.CUSTOMER)
-                    .contents("New Chat Room Created")
-                    .build();
-
-            template.convertAndSend("/sub/" + weddingPlannerUuid, messageRequest);
-        }
-
         log.info("Entered chat room for customer with portfolio ID: {}", portfolioId);
         return ResponseEntity.status(201).body(createdChatRoom);
     }

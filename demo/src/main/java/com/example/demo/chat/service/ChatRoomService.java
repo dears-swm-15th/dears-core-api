@@ -9,9 +9,12 @@ import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.chat.repository.MessageRepository;
+import com.example.demo.config.StompPreHandler;
+import com.example.demo.enums.chat.MessageType;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.member.repository.WeddingPlannerRepository;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
@@ -19,6 +22,7 @@ import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -42,6 +46,12 @@ public class ChatRoomService {
     private final MessageRepository messageRepository;
     private final MessageMapper messageMapper = MessageMapper.INSTANCE;
 
+    private final WeddingPlannerRepository weddingPlannerRepository;
+
+
+    private final SimpMessagingTemplate template;
+
+
     public ChatRoom getChatRoomById(Long chatRoomId) {
         log.info("Fetching chat room by ID: {}", chatRoomId);
         return chatRoomRepository.findById(chatRoomId)
@@ -49,6 +59,28 @@ public class ChatRoomService {
                     log.error("Chat room not found with ID: {}", chatRoomId);
                     return new RuntimeException("ChatRoom not found");
                 });
+    }
+
+    public void sendNewChatRoomTrigger(Long portfolioId, Long chatRoomId) {
+        WeddingPlanner weddingPlanner = weddingPlannerRepository.findByPortfolioId(portfolioId)
+                .orElseThrow(() -> {
+                    log.error("Wedding planner not found with portfolio ID: {}", portfolioId);
+                    return new RuntimeException("WeddingPlanner not found");
+                });
+
+        String weddingPlannerUuid = weddingPlanner.getUUID();
+        boolean isConnected = StompPreHandler.isUserConnected(weddingPlannerUuid);
+
+        if (isConnected) {
+            MessageDTO.Request messageRequest = MessageDTO.Request.builder()
+                    .chatRoomId(chatRoomId)
+                    .messageType(MessageType.ENTER)
+                    .senderRole(MemberRole.CUSTOMER)
+                    .contents("New Chat Room Created")
+                    .build();
+
+            template.convertAndSend("/sub/" + weddingPlannerUuid, messageRequest);
+        }
     }
 
     public ChatRoomDTO.Response enterChatRoomByPortfolioId(Long portfolioId) {
@@ -64,7 +96,11 @@ public class ChatRoomService {
 
         if (!isChatRoomExist(customer, weddingPlanner)) {
             log.info("Chat room does not exist for customer ID: {} and wedding planner ID: {}", customer.getId(), weddingPlanner.getId());
-            return createChatRoomByPortfolioId(customer, weddingPlanner);
+            ChatRoomDTO.Response createdChatRoomResponse =  createChatRoomByPortfolioId(customer, weddingPlanner);
+
+            sendNewChatRoomTrigger(portfolioId, createdChatRoomResponse.getChatRoomId());
+
+            return createdChatRoomResponse;
         }
 
         Long chatRoomId = getChatRoomIdByCustomerAndWeddingPlanner(customer, weddingPlanner);
