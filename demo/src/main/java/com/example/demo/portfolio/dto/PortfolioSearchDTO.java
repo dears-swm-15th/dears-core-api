@@ -64,8 +64,8 @@ public class PortfolioSearchDTO {
 
     }
 
-    @Getter
     @Setter
+    @Getter
     @ToString
     @NoArgsConstructor
     @AllArgsConstructor
@@ -81,15 +81,20 @@ public class PortfolioSearchDTO {
         @Schema(type = "string", example = "김지수")
         private String plannerName;
 
-        @Schema(type = "float", example = "3.723123")
-        private Float ratingSum;
+        @Schema(type = "string", example = "GANGNAM")
+        private String region;
 
-        @Schema(type = "integer", example = "42")
-        private Integer ratingCount;
+        @Schema(type = "string", example = "src/wedding_planner/imgs")
+        private String profileImageUrl;
 
         @Schema(type = "integer", example = "20000")
         private Integer minEstimate;
 
+        @Schema(type = "integer", example = "4.2")
+        private Float avgRating;
+
+        @Schema(type = "integer", example = "10")
+        private Integer reviewCount;
     }
 
 }
