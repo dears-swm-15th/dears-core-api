@@ -71,6 +71,9 @@ public class ChatRoomService {
         String weddingPlannerUuid = weddingPlanner.getUUID();
         boolean isConnected = StompPreHandler.isUserConnected(weddingPlannerUuid);
 
+        log.info("Wedding Planner UUID: {}", weddingPlannerUuid);
+        log.info("Connected: {}", isConnected);
+
         if (isConnected) {
             MessageDTO.Request messageRequest = MessageDTO.Request.builder()
                     .chatRoomId(chatRoomId)

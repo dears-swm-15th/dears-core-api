@@ -38,7 +38,7 @@ public class ChatRoomController {
         return ResponseEntity.status(201).body(createdChatRoom);
     }
 
-    @PostMapping("/customer/{chatRoomId}")
+    @PostMapping("/customer/enter/{chatRoomId}")
     @Operation(summary = "[신랑신부] 채팅방 아이디로 채팅방 입장")
     public ResponseEntity<ChatRoomDTO.Response> getChatRoomByIdForCustomer(@PathVariable Long chatRoomId) {
         ChatRoomDTO.Response chatRoomByChatRoomId = chatRoomService.getMessagesByChatRoomIdForCustomer(chatRoomId);
@@ -46,7 +46,7 @@ public class ChatRoomController {
         return ResponseEntity.status(200).body(chatRoomByChatRoomId);
     }
 
-    @PostMapping("/weddingplanner/{chatRoomId}")
+    @PostMapping("/weddingplanner/enter/{chatRoomId}")
     @Operation(summary = "[웨딩플래너] 채팅방 아이디로 채팅방 입장")
     public ResponseEntity<ChatRoomDTO.Response> getChatRoomByIdForWeddingPlanner(@PathVariable Long chatRoomId) {
         ChatRoomDTO.Response chatRoomByChatRoomId = chatRoomService.getMessagesByChatRoomIdForWeddingPlanner(chatRoomId);
