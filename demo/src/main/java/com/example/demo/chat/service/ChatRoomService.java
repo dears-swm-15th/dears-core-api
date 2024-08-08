@@ -81,7 +81,7 @@ public class ChatRoomService {
 
         chatRoom.setCustomer(customer);
         chatRoom.setWeddingPlanner(weddingPlanner);
-        
+
         chatRoomRepository.save(chatRoom);
         log.info("Created chat room with ID: {}", chatRoom.getId());
 
@@ -150,6 +150,14 @@ public class ChatRoomService {
         log.info("Getting chat room ID for customer ID: {} and wedding planner ID: {}", customer.getId(), weddingPlanner.getId());
         ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
         return chatRoom.getId();
+    }
+
+    public ChatRoomDTO.Response getMessagesByChatRoomId(Long chatRoomId) {
+        log.info("Fetching messages by chat room ID: {}", chatRoomId);
+        ChatRoom chatRoom = getChatRoomById(chatRoomId);
+
+        updateOppositeReadFlag(chatRoom);
+        return getMessagesByChatRoom(chatRoom);
     }
 
     public ChatRoomDTO.Response getMessagesByChatRoom(ChatRoom chatRoom) {
