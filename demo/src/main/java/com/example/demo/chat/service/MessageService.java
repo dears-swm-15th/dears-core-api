@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -27,41 +29,34 @@ public class MessageService {
 
     private final ChatRoomService chatRoomService;
 
-    private final CustomUserDetailsService customUserDetailsService;
-
     private final ChatRoomMapper chatRoomMapper = ChatRoomMapper.INSTANCE;
     private final ChatRoomRepository chatRoomRepository;
 
 
     @Transactional
-    public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest) {
+    public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest, String Uuid) {
         messageRequest.setSenderRole(MemberRole.CUSTOMER);
 
-        return saveMessage(messageRequest);
+        return saveMessage(messageRequest, Uuid);
     }
 
     @Transactional
-    public MessageDTO.Response sendMessageByWeddingPlanner(MessageDTO.Request messageRequest) {
+    public MessageDTO.Response sendMessageByWeddingPlanner(MessageDTO.Request messageRequest, String Uuid) {
         messageRequest.setSenderRole(MemberRole.WEDDING_PLANNER);
-
-        return saveMessage(messageRequest);
+        return saveMessage(messageRequest, Uuid);
     }
 
-    public MessageDTO.Response saveMessage(MessageDTO.Request messageRequest) {
+    public MessageDTO.Response saveMessage(MessageDTO.Request messageRequest, String Uuid) {
         ChatRoom chatRoom = chatRoomService.getChatRoomById(messageRequest.getChatRoomId());
         Message message = messageMapper.requestToEntity(messageRequest);
 
-        // Set readCount based on participants
-        if (chatRoom.getUserIds().size() > 1) {
-            message.setReadCount(1); // Assuming the sender has read the message
-        } else {
-            message.setReadCount(0);
-        }
-
+        message.setOppositeReadFlag(true);
         messageRepository.save(message);
 
-        chatRoom.addMessage(message);
+        // TODO : Redis로 변경
+        chatRoom.addUser(Uuid);
 
+        chatRoom.addMessage(message);
         chatRoomRepository.save(chatRoom);
 
         return messageMapper.entityToResponse(message);
@@ -70,14 +65,13 @@ public class MessageService {
     public ChatRoomDTO.Response enterChatRoom(MessageDTO.Request messageRequest, String Uuid) {
         ChatRoom chatRoom = chatRoomService.getChatRoomById(messageRequest.getChatRoomId());
 
-        chatRoom.addUser(Uuid);
-
-        // set every readCount to 0
-        chatRoom.getMessages().forEach(message -> message.setReadCount(0));
-
         chatRoomRepository.save(chatRoom);
 
         return chatRoomMapper.entityToResponse(chatRoom);
+    }
+
+    public int getAllUnreadMessages(String uuid) {
+        return chatRoomService.getCustomersUnreadMessages(uuid);
     }
 
 }

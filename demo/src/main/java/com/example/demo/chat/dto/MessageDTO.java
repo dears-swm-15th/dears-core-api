@@ -46,6 +46,17 @@ public class MessageDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    public static class UnreadMessageResponse {
+
+        private int unreadMessageCount;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class PortfolioRequest {
 
         private MessageType messageType;

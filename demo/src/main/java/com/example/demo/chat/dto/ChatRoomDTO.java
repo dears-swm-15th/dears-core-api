@@ -30,5 +30,7 @@ public class ChatRoomDTO {
         private List<MessageDTO.Response> messages;
 
         private HashSet<String> userIds;
+
+        private Long chatRoomId;
     }
 }

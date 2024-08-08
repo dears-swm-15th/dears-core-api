@@ -9,6 +9,7 @@ import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.chat.repository.MessageRepository;
+import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.service.CustomUserDetailsService;
@@ -84,6 +85,18 @@ public class ChatRoomService {
                 .messages(List.of())
                 .userIds(new HashSet<>())
                 .build();
+    }
+
+    public int getCustomersUnreadMessages(String customerUuid) {
+        log.info("Fetching all chat rooms's unreadMessages for customer");
+        Customer customer = customUserDetailsService.getCustomerByUuid(customerUuid);
+        List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
+
+        return chatRooms.stream()
+                .mapToInt(chatRoom ->
+                        chatRoomRepository.countUnreadMessages(chatRoom.getId(), MemberRole.WEDDING_PLANNER)
+                )
+                .sum();
     }
 
     public List<ChatRoomOverviewDTO.Response> getCustomersAllChatRoom() {

@@ -24,7 +24,14 @@ public class MessageController {
     @Operation(summary = "채팅방 연결")
     public void connect(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
         // TODO : 프로그램 실행 시, 모든 채팅방 연결.
+
+        String authUuid = accessor.getSessionAttributes().get("Authorization").toString();
+        int unreadMessageResponse = messageService.getAllUnreadMessages(authUuid);
+
+        System.out.println("UNREAD MESSAGE RESPONSE: " + unreadMessageResponse);
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
+        template.convertAndSend("/sub/" + authUuid, new MessageDTO.UnreadMessageResponse(unreadMessageResponse)); //convertAndSendToUser로 변경 가능
+        System.out.println("ACCESSOR(CONNECT): " + accessor.getSessionAttributes());
         log.info("Connected to chat room with ID: {}", messageRequest.getChatRoomId());
     }
 
@@ -58,9 +65,9 @@ public class MessageController {
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
 
         log.debug("ACCESSOR(SEND): {}", accessor.getSessionAttributes());
-        String customerUuid = accessor.getSessionAttributes().get("Authorization").toString();
+        String weddingPlannerUuid = accessor.getSessionAttributes().get("Authorization").toString();
 
-        messageService.enterChatRoom(messageRequest, customerUuid);
+        messageService.enterChatRoom(messageRequest, weddingPlannerUuid);
 
         log.info("Entered chat room with ID: {}", messageRequest.getChatRoomId());
     }
@@ -68,31 +75,32 @@ public class MessageController {
     @MessageMapping(value = "/customer/send")
     @Operation(summary = "[신랑신부] 메세지 전송")
     public void sendByCustomer(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+        String customerUuid = accessor.getSessionAttributes().get("Authorization").toString();
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
 
-        messageService.sendMessageByCustomer(messageRequest);
-
+        messageService.sendMessageByCustomer(messageRequest, customerUuid);
         log.debug("Customer sent message to chat room with ID: {}", messageRequest.getChatRoomId());
     }
 
     @MessageMapping(value = "/weddinplanner/send")
     @Operation(summary = "[웨딩플래너] 메세지 전송")
-    public void sendByWeddingPlanner(MessageDTO.Request messageRequest) {
-
-        messageService.sendMessageByWeddingPlanner(messageRequest);
-
+    public void sendByWeddingPlanner(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+        String weddingPlannerUuid = accessor.getSessionAttributes().get("Authorization").toString();
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
+
+        messageService.sendMessageByWeddingPlanner(messageRequest, weddingPlannerUuid);
         log.info("WeddingPlanner sent message to chat room with ID: {}", messageRequest.getChatRoomId());
     }
 
-//    @MessageMapping(value = "/leave")
-//    @Operation(summary = "채팅방 퇴장")
-//    public void leave(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
-//        // TODO : 방 퇴장 시, 상태 LEAVE로 변경 필요
-//
-//        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
-//        log.info("Left chat room with ID: {}", messageRequest.getChatRoomId());
-//    }
+    @MessageMapping(value = "/leave")
+    @Operation(summary = "채팅방 퇴장")
+    public void leave(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+        // TODO : 방 퇴장 시, 상태 LEAVE로 변경 필요
+
+        //지금까지 내가 읽은 것들 표시
+        template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
+        log.info("Left chat room with ID: {}", messageRequest.getChatRoomId());
+    }
 
     @MessageMapping(value = "/disconnect")
     @Operation(summary = "채팅방 연결 해제")
