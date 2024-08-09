@@ -72,7 +72,12 @@ public class MessageService {
 
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
 
-        message.setOppositeReadFlag(true);
+        if (chatRoom.getUserIds().size() == 2) {
+            message.setOppositeReadFlag(true);
+        } else {
+            message.setOppositeReadFlag(false);
+        }
+
         messageRepository.save(message);
 
         // TODO : Redis로 변경
