@@ -43,14 +43,11 @@ public class ChatRoomService {
     private final PortfolioService portfolioService;
     private final PortfolioRepository portfolioRepository;
 
-    private final MessageRepository messageRepository;
     private final MessageMapper messageMapper = MessageMapper.INSTANCE;
 
     private final WeddingPlannerRepository weddingPlannerRepository;
 
-
     private final SimpMessagingTemplate template;
-
 
     public ChatRoom getChatRoomById(Long chatRoomId) {
         log.info("Fetching chat room by ID: {}", chatRoomId);
@@ -69,12 +66,12 @@ public class ChatRoomService {
                 });
 
         String weddingPlannerUuid = weddingPlanner.getUUID();
-        boolean isConnected = StompPreHandler.isUserConnected(weddingPlannerUuid);
+        boolean isOppositeConnected = StompPreHandler.isUserConnected(weddingPlannerUuid);
 
         log.info("Wedding Planner UUID: {}", weddingPlannerUuid);
-        log.info("Connected: {}", isConnected);
+        log.info("Connected: {}", isOppositeConnected);
 
-        if (isConnected) {
+        if (isOppositeConnected) {
             MessageDTO.Request messageRequest = MessageDTO.Request.builder()
                     .chatRoomId(chatRoomId)
                     .messageType(MessageType.ENTER)
