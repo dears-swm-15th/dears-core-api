@@ -12,7 +12,6 @@ import com.example.demo.member.repository.CustomerRepository;
 import com.example.demo.member.repository.WeddingPlannerRepository;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.repository.PortfolioRepository;
-import com.example.demo.portfolio.service.PortfolioSearchService;
 import com.example.demo.review.domain.Review;
 import com.example.demo.review.repository.ReviewRepository;
 import com.example.demo.wishlist.domain.WishList;
