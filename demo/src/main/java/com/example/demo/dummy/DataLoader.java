@@ -49,9 +49,6 @@ public class DataLoader implements CommandLineRunner {
 
     @Autowired
     private ChatRoomRepository chatRoomRepository;
-  
-    @Autowired
-    private PortfolioSearchService portfolioSearchService;
 
     @Override
     public void run(String... args) throws Exception {
