@@ -2,6 +2,7 @@ package com.example.demo.review.domain;
 
 import com.example.demo.base.BaseTimeEntity;
 import com.example.demo.enums.review.RadarKey;
+import com.example.demo.enums.review.ReviewTag;
 import com.example.demo.portfolio.domain.Portfolio;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,9 +39,7 @@ public class Review extends BaseTimeEntity {
         @ElementCollection
         @CollectionTable(name = "review_tags", joinColumns = @JoinColumn(name = "review_id"))
         @Column(name = "tag_value")
-        private List<String> tags;
-        // tag: name or code?
-        // colorCode: at view or server?
+        private List<ReviewTag> tags;
 
         @ElementCollection
         @CollectionTable(name = "review_photos", joinColumns = @JoinColumn(name = "review_id"))
