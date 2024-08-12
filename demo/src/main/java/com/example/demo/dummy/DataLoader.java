@@ -6,7 +6,6 @@ import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.enums.chat.MessageType;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
-import com.example.demo.enums.review.ReviewTag;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.repository.CustomerRepository;
@@ -91,9 +90,47 @@ public class DataLoader implements CommandLineRunner {
         radar2.put(RadarKey.PRICE_RATIONALITY, 4.2f);
         radar2.put(RadarKey.SCHEDULE_COMPLIANCE, 4.8f);
 
+        Portfolio portfolio1 = Portfolio.builder()
+                .organization("Organization One")
+                .plannerName("Jeff")
+                .region(Region.CHUNGDAM)
+                .introduction("Introduction to Organization One.")
+                .contactInfo("contact@organizationone.com")
+                .profileImageUrl("portfolio/3/7310ef17-c1ea-40e1-a786-aa3ddf82b721.jpg")
+                .consultingFee(100)
+                .description("Description of services offered by Organization One.")
+                .estimateSum(300)
+                .minEstimate(100)
+                .services(services1)
+                .weddingPhotoUrls(weddingPhotos1)
+                .weddingPlanner(planner1)
+                .radarSum(radar1)
+                .wishListCount(0)
+                .viewCount(0)
+                .build();
+
+        Portfolio portfolio2 = Portfolio.builder()
+                .organization("Organization Two")
+                .plannerName("Clara")
+                .region(Region.GANGNAM)
+                .introduction("Introduction to Organization Two.")
+                .contactInfo("contact@organizationtwo.com")
+                .profileImageUrl("image2.jpg")
+                .consultingFee(200)
+                .description("Description of services offered by Organization Two.")
+                .estimateSum(500)
+                .minEstimate(200)
+                .services(services2)
+                .weddingPhotoUrls(weddingPhotos2)
+                .weddingPlanner(planner2)
+                .radarSum(radar2)
+                .wishListCount(0)
+                .viewCount(0)
+                .build();
+
         // Create Reviews
-        List<ReviewTag> reviewTags1 = Arrays.asList(ReviewTag.ACCOMPANY, ReviewTag.GIFT);
-        List<ReviewTag> reviewTags2 = Arrays.asList(ReviewTag.UNACCOMPANY, ReviewTag.HONEYMOON);
+        List<String> reviewTags1 = Arrays.asList("tag1", "tag2");
+        List<String> reviewTags2 = Arrays.asList("tagA", "tagB");
 
         List<String> reviewPhotos1 = Arrays.asList(
                 "review/3/d55ac892-e175-4c57-bdd1-250fea3b4364.jpg",
@@ -122,7 +159,7 @@ public class DataLoader implements CommandLineRunner {
                 .reviewerName("사용자123")
                 .rating(4.5f)
                 .estimate(350)
-                .tags(List.of(ReviewTag.ACCOMPANY, ReviewTag.GIFT))
+                .tags(reviewTags1)
                 .weddingPhotoUrls(reviewPhotos1)
                 .radar(reviewRadar1)
                 .build();
@@ -134,7 +171,7 @@ public class DataLoader implements CommandLineRunner {
                 .reviewerId(1L)
                 .rating(4.6f)
                 .estimate(450)
-                .tags(List.of(ReviewTag.UNACCOMPANY, ReviewTag.HONEYMOON))
+                .tags(reviewTags2)
                 .weddingPhotoUrls(reviewPhotos2)
                 .radar(reviewRadar2)
                 .build();
