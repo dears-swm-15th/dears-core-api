@@ -37,7 +37,7 @@ public class ReviewDTO {
         @Schema(type = "integer", example = "1000000")
         private Integer minEstimate;
 
-        @Schema(type = "array", example = "[\"비동행\", \"신혼여행\"]")
+        @Schema(type = "array", example = "[\"UNACCOMPANY\", \"HONEYMOON\"]")
         private List<String> tags;
 
         @Schema(type = "array", example = "[\"src/portfolio/23/img1.jpg\", \"src/portfolio/23/img2.jpg\"]")
@@ -80,7 +80,7 @@ public class ReviewDTO {
         @Schema(type = "integer", example = "1500000")
         private Integer estimate;
 
-        @Schema(type = "array", example = "[\"비동행\", \"신혼여행\"]")
+        @Schema(type = "array", example = "[\"UNACCOMPANY\", \"HONEYMOON\"]")
         private List<String> tags;
 
         @Schema(type = "array", example = "[\"src/portfolio/23/img1.jpg\", \"src/portfolio/23/img2.jpg\"]")
