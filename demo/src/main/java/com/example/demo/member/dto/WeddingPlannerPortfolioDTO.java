@@ -22,6 +22,13 @@ public class WeddingPlannerPortfolioDTO {
 
         private String profileImageUrl;
 
+        public String getProfileImageUrl() {
+            if (profileImageUrl == null)
+            {
+                this.profileImageUrl = "";
+            }
+            return profileImageUrl;
+        }
 
     }
 }
