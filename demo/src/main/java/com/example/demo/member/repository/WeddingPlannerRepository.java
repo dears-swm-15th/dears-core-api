@@ -11,4 +11,5 @@ public interface WeddingPlannerRepository extends JpaRepository<WeddingPlanner, 
 
     Optional<WeddingPlanner> findByUUID(String separator);
 
+    Optional<WeddingPlanner> findByPortfolioId(Long portfolioId);
 }

@@ -2,12 +2,20 @@ package com.example.demo.chat.controller;
 
 import com.example.demo.chat.dto.ChatRoomDTO;
 import com.example.demo.chat.dto.ChatRoomOverviewDTO;
+import com.example.demo.chat.dto.MessageDTO;
 import com.example.demo.chat.service.ChatRoomService;
+import com.example.demo.config.StompPreHandler;
+import com.example.demo.enums.chat.MessageType;
+import com.example.demo.enums.member.MemberRole;
+import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.member.repository.WeddingPlannerRepository;
+import com.example.demo.member.service.CustomUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +29,7 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
 
+
     @PostMapping("/customer/{portfolioId}")
     @Operation(summary = "[신랑신부] 포트폴리오 아이디로 채팅방 입장(생성 및 입장)")
     public ResponseEntity<ChatRoomDTO.Response> enterChatRoomByPortfolioIdForCustomer(@PathVariable Long portfolioId) {
@@ -29,10 +38,18 @@ public class ChatRoomController {
         return ResponseEntity.status(201).body(createdChatRoom);
     }
 
-    @PostMapping("/weddingplanner/{chatRoomId}")
+    @PostMapping("/customer/enter/{chatRoomId}")
+    @Operation(summary = "[신랑신부] 채팅방 아이디로 채팅방 입장")
+    public ResponseEntity<ChatRoomDTO.Response> getChatRoomByIdForCustomer(@PathVariable Long chatRoomId) {
+        ChatRoomDTO.Response chatRoomByChatRoomId = chatRoomService.getMessagesByChatRoomIdForCustomer(chatRoomId);
+        log.info("Entered chat room for customer with chat room ID: {}", chatRoomId);
+        return ResponseEntity.status(200).body(chatRoomByChatRoomId);
+    }
+
+    @PostMapping("/weddingplanner/enter/{chatRoomId}")
     @Operation(summary = "[웨딩플래너] 채팅방 아이디로 채팅방 입장")
     public ResponseEntity<ChatRoomDTO.Response> getChatRoomByIdForWeddingPlanner(@PathVariable Long chatRoomId) {
-        ChatRoomDTO.Response chatRoomByChatRoomId = chatRoomService.getChatRoomByChatRoomId(chatRoomId);
+        ChatRoomDTO.Response chatRoomByChatRoomId = chatRoomService.getMessagesByChatRoomIdForWeddingPlanner(chatRoomId);
         log.info("Entered chat room for wedding planner with chat room ID: {}", chatRoomId);
         return ResponseEntity.status(200).body(chatRoomByChatRoomId);
     }

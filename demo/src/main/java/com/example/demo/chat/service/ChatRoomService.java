@@ -2,7 +2,6 @@ package com.example.demo.chat.service;
 
 import com.example.demo.chat.domain.ChatRoom;
 import com.example.demo.chat.domain.Message;
-import com.example.demo.chat.domain.ReadFlag;
 import com.example.demo.chat.dto.ChatRoomDTO;
 import com.example.demo.chat.dto.ChatRoomOverviewDTO;
 import com.example.demo.chat.dto.MessageDTO;
@@ -10,10 +9,12 @@ import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.chat.repository.MessageRepository;
-import com.example.demo.chat.repository.ReadFlagRepository;
+import com.example.demo.config.StompPreHandler;
+import com.example.demo.enums.chat.MessageType;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
+import com.example.demo.member.repository.WeddingPlannerRepository;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
@@ -21,9 +22,13 @@ import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,10 +43,11 @@ public class ChatRoomService {
     private final PortfolioService portfolioService;
     private final PortfolioRepository portfolioRepository;
 
-    private final MessageRepository messageRepository;
     private final MessageMapper messageMapper = MessageMapper.INSTANCE;
 
-    private final ReadFlagRepository readFlagRepository;
+    private final WeddingPlannerRepository weddingPlannerRepository;
+
+    private final SimpMessagingTemplate template;
 
     public ChatRoom getChatRoomById(Long chatRoomId) {
         log.info("Fetching chat room by ID: {}", chatRoomId);
@@ -52,6 +58,31 @@ public class ChatRoomService {
                 });
     }
 
+    public void sendNewChatRoomTrigger(Long portfolioId, Long chatRoomId) {
+        WeddingPlanner weddingPlanner = weddingPlannerRepository.findByPortfolioId(portfolioId)
+                .orElseThrow(() -> {
+                    log.error("Wedding planner not found with portfolio ID: {}", portfolioId);
+                    return new RuntimeException("WeddingPlanner not found");
+                });
+
+        String weddingPlannerUuid = weddingPlanner.getUUID();
+        boolean isOppositeConnected = StompPreHandler.isUserConnected(weddingPlannerUuid);
+
+        log.info("Wedding Planner UUID: {}", weddingPlannerUuid);
+        log.info("Connected: {}", isOppositeConnected);
+
+        if (isOppositeConnected) {
+            MessageDTO.Request messageRequest = MessageDTO.Request.builder()
+                    .chatRoomId(chatRoomId)
+                    .messageType(MessageType.ENTER)
+                    .senderRole(MemberRole.CUSTOMER)
+                    .contents("New Chat Room Created")
+                    .build();
+
+            template.convertAndSend("/sub/" + weddingPlannerUuid, messageRequest);
+        }
+    }
+
     public ChatRoomDTO.Response enterChatRoomByPortfolioId(Long portfolioId) {
         log.info("Entering chat room by portfolio ID: {}", portfolioId);
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
@@ -60,16 +91,24 @@ public class ChatRoomService {
                     log.error("Portfolio not found with ID: {}", portfolioId);
                     return new RuntimeException("Portfolio not found");
                 });
+
         WeddingPlanner weddingPlanner = portfolio.getWeddingPlanner();
 
         if (!isChatRoomExist(customer, weddingPlanner)) {
             log.info("Chat room does not exist for customer ID: {} and wedding planner ID: {}", customer.getId(), weddingPlanner.getId());
-            return createChatRoomByPortfolioId(customer, weddingPlanner);
+            ChatRoomDTO.Response createdChatRoomResponse =  createChatRoomByPortfolioId(customer, weddingPlanner);
+
+            sendNewChatRoomTrigger(portfolioId, createdChatRoomResponse.getChatRoomId());
+
+            return createdChatRoomResponse;
         }
 
         Long chatRoomId = getChatRoomIdByCustomerAndWeddingPlanner(customer, weddingPlanner);
         log.info("Chat room exists, entering existing chat room with ID: {}", chatRoomId);
-        return getChatRoomByChatRoomId(chatRoomId);
+        ChatRoom chatRoom = getChatRoomById(chatRoomId);
+
+        updateOppositeReadFlag(chatRoom);
+        return getMessagesByChatRoomForCustomer(chatRoom);
     }
 
     public ChatRoomDTO.Response createChatRoomByPortfolioId(Customer customer, WeddingPlanner weddingPlanner) {
@@ -79,23 +118,25 @@ public class ChatRoomService {
         chatRoom.setCustomer(customer);
         chatRoom.setWeddingPlanner(weddingPlanner);
 
-        ReadFlag customerReadFlag = ReadFlag.builder()
-                .memberRole(MemberRole.CUSTOMER)
-                .lastReadMessageId(0L)
-                .chatRoom(chatRoom)
-                .build();
-
-        ReadFlag weddingPlannerReadFlag = ReadFlag.builder()
-                .memberRole(MemberRole.WEDDING_PLANNER)
-                .lastReadMessageId(0L)
-                .chatRoom(chatRoom)
-                .build();
-
         chatRoomRepository.save(chatRoom);
-        readFlagRepository.save(customerReadFlag);
-        readFlagRepository.save(weddingPlannerReadFlag);
         log.info("Created chat room with ID: {}", chatRoom.getId());
-        return chatRoomMapper.entityToResponse(chatRoom);
+
+        return ChatRoomDTO.Response.builder()
+                .messages(List.of())
+                .userIds(new HashSet<>())
+                .build();
+    }
+
+    public int getCustomersUnreadMessages(String customerUuid) {
+        log.info("Fetching all chat rooms's unreadMessages for customer");
+        Customer customer = customUserDetailsService.getCustomerByUuid(customerUuid);
+        List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
+
+        return chatRooms.stream()
+                .mapToInt(chatRoom ->
+                        chatRoomRepository.countUnreadMessages(chatRoom.getId(), MemberRole.WEDDING_PLANNER)
+                )
+                .sum();
     }
 
     public List<ChatRoomOverviewDTO.Response> getCustomersAllChatRoom() {
@@ -107,14 +148,13 @@ public class ChatRoomService {
                 .map(chatRoom -> {
                     Portfolio portfolio = portfolioService.getPortfolioByWeddingPlannerId(chatRoom.getWeddingPlanner().getId());
                     PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolio.getId());
-                    List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
                     return ChatRoomOverviewDTO.Response.builder()
                             .chatRoomId(chatRoom.getId())
                             .othersProfileImageUrl(portfolioResponse.getWeddingPlannerPortfolioResponse().getProfileImageUrl())
                             .othersName(portfolioResponse.getWeddingPlannerPortfolioResponse().getName())
-                            .lastMessage(messages.get(messages.size() - 1).getContents())
-                            .lastMessageCreatedAt(messages.get(messages.size() - 1).getCreatedAt())
+                            .lastMessage(chatRoom.getLastMessageContent())
+                            .lastMessageCreatedAt(chatRoom.getLastMessageCreatedAt())
                             .organizationName(portfolioResponse.getOrganization())
                             .portfolioId(portfolioResponse.getId())
                             .build();
@@ -130,14 +170,13 @@ public class ChatRoomService {
         return chatRooms.stream()
                 .map(chatRoom -> {
                     Customer customer = chatRoom.getCustomer();
-                    List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
 
                     return ChatRoomOverviewDTO.Response.builder()
                             .chatRoomId(chatRoom.getId())
                             .othersProfileImageUrl(customer.getProfileImageUrl())
                             .othersName(customer.getName())
-                            .lastMessage(messages.get(messages.size() - 1).getContents())
-                            .lastMessageCreatedAt(messages.get(messages.size() - 1).getCreatedAt())
+                            .lastMessage(chatRoom.getLastMessageContent())
+                            .lastMessageCreatedAt(chatRoom.getLastMessageCreatedAt())
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -148,45 +187,69 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
         return chatRoom.getId();
     }
+    
+    public ChatRoomDTO.Response getMessagesByChatRoomIdForCustomer(Long chatRoomId) {
+        log.info("Fetching messages by chat room ID: {}", chatRoomId);
+        ChatRoom chatRoom = getChatRoomById(chatRoomId);
 
-    public ChatRoomDTO.Response getChatRoomByChatRoomId(Long chatRoomId) {
-        log.info("Fetching chat room by chat room ID: {}", chatRoomId);
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> {
-                    log.error("Chat room not found with ID: {}", chatRoomId);
-                    return new RuntimeException("ChatRoom not found");
-                });
+        updateOppositeReadFlag(chatRoom);
+        return getMessagesByChatRoomForCustomer(chatRoom);
+    }
 
-        ReadFlag customerReadFlag = readFlagRepository.findByChatRoomIdAndMemberRole(chatRoom.getId(), MemberRole.CUSTOMER)
-                .orElseThrow(() -> {
-                    log.error("ReadFlag not found for chat room ID: {} and role: CUSTOMER", chatRoomId);
-                    return new RuntimeException("ReadFlag not found");
-                });
-        ReadFlag weddingPlannerReadFlag = readFlagRepository.findByChatRoomIdAndMemberRole(chatRoom.getId(), MemberRole.WEDDING_PLANNER)
-                .orElseThrow(() -> {
-                    log.error("ReadFlag not found for chat room ID: {} and role: WEDDING_PLANNER", chatRoomId);
-                    return new RuntimeException("ReadFlag not found");
-                });
+    public ChatRoomDTO.Response getMessagesByChatRoomIdForWeddingPlanner(Long chatRoomId) {
+        log.info("Fetching messages by chat room ID: {}", chatRoomId);
+        ChatRoom chatRoom = getChatRoomById(chatRoomId);
 
-        List<Message> messages = messageRepository.findByChatRoomId(chatRoom.getId());
+        updateOppositeReadFlag(chatRoom);
+        return getMessagesByChatRoomForWeddingPlanner(chatRoom);
+    }
 
+    public ChatRoomDTO.Response getMessagesByChatRoomForCustomer(ChatRoom chatRoom) {
+        String Uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
+        chatRoom.addUser(Uuid);
+
+        chatRoomRepository.save(chatRoom);
+
+        List<Message> messages = chatRoom.getMessages();
         List<MessageDTO.Response> messageResponses = messages.stream()
-                .map(messageMapper::entityToResponse)
-                // set clubId to each Response
-                .map(messageResponse -> {
-                    messageResponse.setChatRoomId(chatRoomId);
-                    return messageResponse;
-                })
+                .map(messageMapper::entityToResponse)// set clubId to each Response
                 .collect(Collectors.toList());
 
         ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
-
         response.setMessages(messageResponses);
-        response.setCustomerLastReadMessageId(customerReadFlag.getLastReadMessageId());
-        response.setWeddingPlannerLastReadMessageId(weddingPlannerReadFlag.getLastReadMessageId());
 
         return response;
     }
+
+    public ChatRoomDTO.Response getMessagesByChatRoomForWeddingPlanner(ChatRoom chatRoom) {
+        String Uuid = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().getUUID();
+        chatRoom.addUser(Uuid);
+
+        chatRoomRepository.save(chatRoom);
+
+        List<Message> messages = chatRoom.getMessages();
+        List<MessageDTO.Response> messageResponses = messages.stream()
+                .map(messageMapper::entityToResponse)// set clubId to each Response
+                .collect(Collectors.toList());
+
+        ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
+        response.setMessages(messageResponses);
+
+        return response;
+    }
+
+    private void updateOppositeReadFlag(ChatRoom chatRoom) {
+        log.info("Updating opposite read flag for chat room with ID: {}", chatRoom.getId());
+        List<Message> messages = chatRoom.getMessages();
+
+        MemberRole memberRole = customUserDetailsService.getCurrentAuthenticatedMemberRole();
+        for (Message message : messages) {
+            if (message.getSenderRole() != memberRole) {
+                message.setOppositeReadFlag(true);
+            }
+        }
+    }
+
 
     public void deleteChatRoom(Long chatRoomId) {
         log.info("Deleting chat room with ID: {}", chatRoomId);

@@ -1,5 +1,9 @@
 package com.example.demo.dummy;
 
+import com.example.demo.chat.domain.ChatRoom;
+import com.example.demo.chat.domain.Message;
+import com.example.demo.chat.repository.ChatRoomRepository;
+import com.example.demo.enums.chat.MessageType;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
 import com.example.demo.member.domain.Customer;
@@ -45,6 +49,9 @@ public class DataLoader implements CommandLineRunner {
     private WishListRepository wishListRepository;
 
     @Autowired
+    private ChatRoomRepository chatRoomRepository;
+  
+    @Autowired
     private PortfolioSearchService portfolioSearchService;
 
     @Override
@@ -82,6 +89,44 @@ public class DataLoader implements CommandLineRunner {
         radar2.put(RadarKey.PERSONAL_CUSTOMIZATION, 4.5f);
         radar2.put(RadarKey.PRICE_RATIONALITY, 4.2f);
         radar2.put(RadarKey.SCHEDULE_COMPLIANCE, 4.8f);
+
+        Portfolio portfolio1 = Portfolio.builder()
+                .organization("Organization One")
+                .plannerName("Jeff")
+                .region(Region.CHUNGDAM)
+                .introduction("Introduction to Organization One.")
+                .contactInfo("contact@organizationone.com")
+                .profileImageUrl("portfolio/3/7310ef17-c1ea-40e1-a786-aa3ddf82b721.jpg")
+                .consultingFee(100)
+                .description("Description of services offered by Organization One.")
+                .estimateSum(300)
+                .minEstimate(100)
+                .services(services1)
+                .weddingPhotoUrls(weddingPhotos1)
+                .weddingPlanner(planner1)
+                .radarSum(radar1)
+                .wishListCount(0)
+                .viewCount(0)
+                .build();
+
+        Portfolio portfolio2 = Portfolio.builder()
+                .organization("Organization Two")
+                .plannerName("Clara")
+                .region(Region.GANGNAM)
+                .introduction("Introduction to Organization Two.")
+                .contactInfo("contact@organizationtwo.com")
+                .profileImageUrl("image2.jpg")
+                .consultingFee(200)
+                .description("Description of services offered by Organization Two.")
+                .estimateSum(500)
+                .minEstimate(200)
+                .services(services2)
+                .weddingPhotoUrls(weddingPhotos2)
+                .weddingPlanner(planner2)
+                .radarSum(radar2)
+                .wishListCount(0)
+                .viewCount(0)
+                .build();
 
         // Create Reviews
         List<String> reviewTags1 = Arrays.asList("tag1", "tag2");
@@ -194,9 +239,6 @@ public class DataLoader implements CommandLineRunner {
         portfolioRepository.save(portfolio1);
         portfolioRepository.save(portfolio2);
 
-        portfolioSearchService.indexDocumentUsingDTO(portfolio1);
-        portfolioSearchService.indexDocumentUsingDTO(portfolio2);
-
         reviewRepository.save(review1);
         reviewRepository.save(review2);
 
@@ -213,6 +255,32 @@ public class DataLoader implements CommandLineRunner {
 
         wishListRepository.save(wishList1);
         wishListRepository.save(wishList2);
+
+        Message message1 = Message.builder()
+                .contents("웨딩플래너 님 안녕하세요!")
+                .messageType(MessageType.SEND)
+                .isDeleted(false)
+                .oppositeReadFlag(true)
+                .senderRole(CUSTOMER)
+                .build();
+
+        Message message2 = Message.builder()
+                .contents("안녕하세요! 어떻게 도와드릴까요?")
+                .messageType(MessageType.SEND)
+                .isDeleted(false)
+                .oppositeReadFlag(false)
+                .senderRole(WEDDING_PLANNER)
+                .build();
+
+        ChatRoom chatRoom1 = ChatRoom.builder()
+                .customer(customer1)
+                .weddingPlanner(planner1)
+                .messages(Arrays.asList(message1, message2))
+                .isDeleted(false)
+                .lastMessageContent("웨딩플래너 님 안녕하세요!")
+                .build();
+
+        chatRoomRepository.save(chatRoom1);
 
         System.out.println("Sample data loaded.");
     }
