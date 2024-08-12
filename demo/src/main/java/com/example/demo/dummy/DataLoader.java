@@ -90,44 +90,6 @@ public class DataLoader implements CommandLineRunner {
         radar2.put(RadarKey.PRICE_RATIONALITY, 4.2f);
         radar2.put(RadarKey.SCHEDULE_COMPLIANCE, 4.8f);
 
-        Portfolio portfolio1 = Portfolio.builder()
-                .organization("Organization One")
-                .plannerName("Jeff")
-                .region(Region.CHUNGDAM)
-                .introduction("Introduction to Organization One.")
-                .contactInfo("contact@organizationone.com")
-                .profileImageUrl("portfolio/3/7310ef17-c1ea-40e1-a786-aa3ddf82b721.jpg")
-                .consultingFee(100)
-                .description("Description of services offered by Organization One.")
-                .estimateSum(300)
-                .minEstimate(100)
-                .services(services1)
-                .weddingPhotoUrls(weddingPhotos1)
-                .weddingPlanner(planner1)
-                .radarSum(radar1)
-                .wishListCount(0)
-                .viewCount(0)
-                .build();
-
-        Portfolio portfolio2 = Portfolio.builder()
-                .organization("Organization Two")
-                .plannerName("Clara")
-                .region(Region.GANGNAM)
-                .introduction("Introduction to Organization Two.")
-                .contactInfo("contact@organizationtwo.com")
-                .profileImageUrl("image2.jpg")
-                .consultingFee(200)
-                .description("Description of services offered by Organization Two.")
-                .estimateSum(500)
-                .minEstimate(200)
-                .services(services2)
-                .weddingPhotoUrls(weddingPhotos2)
-                .weddingPlanner(planner2)
-                .radarSum(radar2)
-                .wishListCount(0)
-                .viewCount(0)
-                .build();
-
         // Create Reviews
         List<String> reviewTags1 = Arrays.asList("tag1", "tag2");
         List<String> reviewTags2 = Arrays.asList("tagA", "tagB");
