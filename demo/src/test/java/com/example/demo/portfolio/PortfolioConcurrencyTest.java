@@ -1,5 +1,6 @@
 package com.example.demo.portfolio;
 
+import com.example.demo.config.OpenSearchConfig;
 import com.example.demo.config.S3Config;
 import com.example.demo.config.S3Uploader;
 import com.example.demo.portfolio.domain.Portfolio;
@@ -8,6 +9,7 @@ import com.example.demo.portfolio.service.PortfolioService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.opensearch.client.opensearch.OpenSearchClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,6 +30,12 @@ public class PortfolioConcurrencyTest {
 
     @MockBean
     private S3Config s3Config;
+
+    @MockBean
+    private OpenSearchConfig openSearchConfig;
+
+    @MockBean
+    private OpenSearchClient openSearchClient;
 
 
     @Autowired

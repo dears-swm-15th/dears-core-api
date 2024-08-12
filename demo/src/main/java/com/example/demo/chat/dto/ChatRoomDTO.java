@@ -1,12 +1,10 @@
 package com.example.demo.chat.dto;
 
-import com.example.demo.chat.domain.Message;
-import com.example.demo.chat.domain.ReadFlag;
-import com.example.demo.enums.member.MemberRole;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class ChatRoomDTO {
 
@@ -20,8 +18,6 @@ public class ChatRoomDTO {
         private Long id;
 
         private Long portfolioId;
-
-        private Long weddingPlannerId;
     }
 
     @Getter
@@ -31,12 +27,10 @@ public class ChatRoomDTO {
     @AllArgsConstructor
     @Builder
     public static class Response {
-        private Long id;
-
         private List<MessageDTO.Response> messages;
 
-        private Long customerLastReadMessageId;
+        private HashSet<String> userIds;
 
-        private Long weddingPlannerLastReadMessageId;
+        private Long chatRoomId;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.demo.chat.dto;
 
 import com.example.demo.enums.chat.MessageType;
+import com.example.demo.enums.member.MemberRole;
 import lombok.*;
 
 public class MessageDTO {
@@ -12,7 +13,7 @@ public class MessageDTO {
     @AllArgsConstructor
     @Builder
     public static class Request {
-        private Long id;
+        private MemberRole senderRole;
 
         private MessageType messageType;
 
@@ -30,6 +31,8 @@ public class MessageDTO {
     public static class Response {
         private Long id;
 
+        private MemberRole senderRole;
+
         private MessageType messageType;
 
         private String contents;
@@ -43,12 +46,20 @@ public class MessageDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    public static class UnreadMessageResponse {
+
+        private int unreadMessageCount;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class PortfolioRequest {
-        private Long id;
 
         private MessageType messageType;
-
-        private String contents;
 
         private Long portfolioId;
     }

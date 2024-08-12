@@ -1,6 +1,7 @@
 package com.example.demo.chat.repository;
 
 import com.example.demo.chat.domain.ChatRoom;
+import com.example.demo.enums.member.MemberRole;
 import com.example.demo.portfolio.domain.Portfolio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,9 +15,11 @@ import java.util.List;
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
+
     boolean existsByCustomerIdAndWeddingPlannerId(Long customerId, Long weddingPlannerId);
 
     List<ChatRoom> findByCustomerId(Long customerId);
+
     List<ChatRoom> findByWeddingPlannerId(Long weddingPlannerId);
 
     ChatRoom findByCustomerIdAndWeddingPlannerId(Long customerId, Long weddingPlannerId);
@@ -28,5 +31,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     @Query(value = "SELECT * from ChatRoom chat_room WHERE chat_room.is_deleted = true", nativeQuery = true)
     List<Portfolio> findSoftDeletedChatRooms();
+
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.chatRoom.id = :chatRoomId AND m.senderRole = :senderRole AND m.oppositeReadFlag = false")
+    int countUnreadMessages(@Param("chatRoomId") Long chatRoomId, @Param("senderRole") MemberRole senderRole);
 
 }

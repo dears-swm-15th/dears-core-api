@@ -98,6 +98,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info("Getting current authenticated customer");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        log.info("AUTHENTICATION PLEASE: {}", authentication);
+
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             String memberName = authentication.getName();
             Customer customer = customerRepository.findByUUID(memberName)
@@ -189,7 +191,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public MypageDTO.MyPageUpdateResponse updateWeddingPlannerMyPage(MypageDTO.WeddingPlannerRequest weddingPlannerRequest) {
         WeddingPlanner weddingPlanner = getCurrentAuthenticatedWeddingPlanner();
 
-        if (weddingPlannerRequest.getName() != null && !weddingPlannerRequest.getName().isEmpty()) {
+        if (!weddingPlannerRequest.getName().isEmpty()) {
             weddingPlanner.setName(weddingPlannerRequest.getName());
         }
         String profileImagePresignedUrl = "";
@@ -202,5 +204,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (profileImagePresignedUrl != ""){ response.setProfileImagePresignedUrl(profileImagePresignedUrl); }
         log.info("Updated wedding planner my page for UUID: {}", weddingPlanner.getUUID());
         return response;
+    }
+
+    public Customer getCustomerByUuid(String uuid) {
+        log.info("Getting customer by UUID: {}", uuid);
+        Customer customer = customerRepository.findByUUID(uuid)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        log.info("Found customer with UUID: {}", uuid);
+        return customer;
     }
 }
