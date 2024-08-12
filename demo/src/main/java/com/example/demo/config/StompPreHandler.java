@@ -86,6 +86,7 @@ public class StompPreHandler implements ChannelInterceptor {
         }
 
         if (StompCommand.SEND.equals(accessor.getCommand())) {
+            log.info("STOMP SEND");
             StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
             String authHeader = accessor.getSessionAttributes().get("Authorization").toString();
             log.info("AUTH HEADER: " + authHeader);
@@ -97,6 +98,8 @@ public class StompPreHandler implements ChannelInterceptor {
         }
 
         else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
+            log.info("STOMP DISCONNECTED");
+
             String sessionId = accessor.getSessionId();
             connectedUsers.remove(sessionId);
         }
