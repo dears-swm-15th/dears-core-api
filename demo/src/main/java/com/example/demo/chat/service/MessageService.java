@@ -37,33 +37,31 @@ public class MessageService {
 
 
     @Transactional
-    public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest, String Uuid) {
+    public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest, String customerUuid) {
         messageRequest.setSenderRole(MemberRole.CUSTOMER);
 
         ChatRoom chatRoom = chatRoomRepository.findById(messageRequest.getChatRoomId()).orElseThrow();
         WeddingPlanner weddingPlanner = chatRoom.getWeddingPlanner();
         boolean isOppositeConnected = StompPreHandler.isUserConnected(weddingPlanner.getUUID());
 
-        if (isOppositeConnected) {
-            return sendMessage(messageRequest, Uuid);
+        if (!isOppositeConnected) {
+            // TODO : FCM
         }
-        // TODO : FCM
-        return null;
+        return sendMessage(messageRequest, customerUuid);
     }
 
     @Transactional
-    public MessageDTO.Response sendMessageByWeddingPlanner(MessageDTO.Request messageRequest, String Uuid) {
+    public MessageDTO.Response sendMessageByWeddingPlanner(MessageDTO.Request messageRequest, String weddingPlannerUuid) {
         messageRequest.setSenderRole(MemberRole.WEDDING_PLANNER);
 
         ChatRoom chatRoom = chatRoomRepository.findById(messageRequest.getChatRoomId()).orElseThrow();
         Customer customer = chatRoom.getCustomer();
         boolean isOppositeConnected = StompPreHandler.isUserConnected(customer.getUUID());
 
-        if (isOppositeConnected) {
-            return sendMessage(messageRequest, Uuid);
+        if (!isOppositeConnected) {
+            // TODO : FCM
         }
-        // TODO : FCM
-        return null;
+        return sendMessage(messageRequest, weddingPlannerUuid);
     }
 
     public MessageDTO.Response sendMessage(MessageDTO.Request messageRequest, String Uuid) {

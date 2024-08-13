@@ -8,7 +8,6 @@ import com.example.demo.chat.dto.MessageDTO;
 import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
-import com.example.demo.chat.repository.MessageRepository;
 import com.example.demo.config.StompPreHandler;
 import com.example.demo.enums.chat.MessageType;
 import com.example.demo.enums.member.MemberRole;
@@ -27,8 +26,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -109,7 +106,6 @@ public class ChatRoomService {
         log.info("Chat room exists, entering existing chat room with ID: {}", chatRoomId);
         ChatRoom chatRoom = getChatRoomById(chatRoomId);
 
-        updateOppositeReadFlag(chatRoom);
         return getMessagesByChatRoomForCustomer(chatRoom);
     }
 
@@ -141,7 +137,7 @@ public class ChatRoomService {
                 .reduce(0, Integer::sum);
     }
 
-    public Integer getWeddingPlanners(String weddingPlannerUuid) {
+    public Integer getWeddingPlannersUnreadCount(String weddingPlannerUuid) {
         log.info("Fetching all chat rooms's unreadMessages for wedding planner");
         WeddingPlanner weddingPlanner = customUserDetailsService.getWeddingPlannerByUuid(weddingPlannerUuid);
         List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerId(weddingPlanner.getId());
@@ -171,6 +167,7 @@ public class ChatRoomService {
                             .lastMessageCreatedAt(chatRoom.getLastMessageCreatedAt())
                             .organizationName(portfolioResponse.getOrganization())
                             .portfolioId(portfolioResponse.getId())
+                            .unreadMessageCount(getCustomersUnreadCount(customer.getUUID()))
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -191,6 +188,7 @@ public class ChatRoomService {
                             .othersName(customer.getName())
                             .lastMessage(chatRoom.getLastMessageContent())
                             .lastMessageCreatedAt(chatRoom.getLastMessageCreatedAt())
+                            .unreadMessageCount(getWeddingPlannersUnreadCount(weddingPlanner.getUUID()))
                             .build();
                 })
                 .collect(Collectors.toList());

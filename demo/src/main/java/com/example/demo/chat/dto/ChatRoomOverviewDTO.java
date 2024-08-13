@@ -47,7 +47,6 @@ public class ChatRoomOverviewDTO {
         @Schema(type = "integer", example = "2")
         private Long portfolioId;
 
-        // TODO : user role 구분해서 다르게 처리
         @Schema(type = "integer", example = "2")
         private Integer unreadMessageCount;
     }
