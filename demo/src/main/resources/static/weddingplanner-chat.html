@@ -104,13 +104,6 @@
                 }
             });
 
-            // Send connection request
-            stompClient.send("/pub/shared/connect", headers, JSON.stringify({
-                'messageType': 'SEND',
-                'chatRoomId': chatRoomId,
-                'senderRole': 'WEDDING_PLANNER',
-                'contents': 'Connected to chat room'
-            }));
         });
     }
 
