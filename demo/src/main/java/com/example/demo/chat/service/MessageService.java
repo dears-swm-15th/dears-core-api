@@ -83,7 +83,7 @@ public class MessageService {
         // TODO : Redis로 변경
         chatRoom.addUser(Uuid);
         chatRoom.addMessage(message);
-        chatRoom.setLastMessageContent(message.getContents());
+        chatRoom.setLastMessageContent(message.getContent());
         chatRoom.setLastMessageCreatedAt(message.getCreatedAt());
 
         chatRoomRepository.save(chatRoom);
@@ -97,10 +97,6 @@ public class MessageService {
         chatRoomRepository.save(chatRoom);
 
         return chatRoomMapper.entityToResponse(chatRoom);
-    }
-
-    public int getAllUnreadMessages(String uuid) {
-        return chatRoomService.getCustomersUnreadMessages(uuid);
     }
 
 }

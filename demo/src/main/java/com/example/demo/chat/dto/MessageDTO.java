@@ -17,7 +17,7 @@ public class MessageDTO {
 
         private MessageType messageType;
 
-        private String contents;
+        private String content;
 
         private Long chatRoomId;
     }
@@ -33,7 +33,7 @@ public class MessageDTO {
 
         private MemberRole senderRole;
 
-        private String contents;
+        private String content;
     }
 
 

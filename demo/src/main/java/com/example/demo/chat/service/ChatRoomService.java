@@ -76,7 +76,7 @@ public class ChatRoomService {
                     .chatRoomId(chatRoomId)
                     .messageType(MessageType.ENTER)
                     .senderRole(MemberRole.CUSTOMER)
-                    .contents("New Chat Room Created")
+                    .content("New Chat Room Created")
                     .build();
 
             template.convertAndSend("/sub/" + weddingPlannerUuid, messageRequest);
@@ -96,9 +96,11 @@ public class ChatRoomService {
 
         if (!isChatRoomExist(customer, weddingPlanner)) {
             log.info("Chat room does not exist for customer ID: {} and wedding planner ID: {}", customer.getId(), weddingPlanner.getId());
-            ChatRoomDTO.Response createdChatRoomResponse =  createChatRoomByPortfolioId(customer, weddingPlanner);
+            ChatRoomDTO.Response createdChatRoomResponse = createChatRoomByPortfolioId(customer, weddingPlanner);
 
-            sendNewChatRoomTrigger(portfolioId, createdChatRoomResponse.getChatRoomId());
+            ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
+
+            sendNewChatRoomTrigger(portfolioId, chatRoom.getId());
 
             return createdChatRoomResponse;
         }
@@ -127,16 +129,28 @@ public class ChatRoomService {
                 .build();
     }
 
-    public int getCustomersUnreadMessages(String customerUuid) {
+    public Integer getCustomersUnreadCount(String customerUuid) {
         log.info("Fetching all chat rooms's unreadMessages for customer");
         Customer customer = customUserDetailsService.getCustomerByUuid(customerUuid);
         List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
 
         return chatRooms.stream()
-                .mapToInt(chatRoom ->
+                .map(chatRoom ->
                         chatRoomRepository.countUnreadMessages(chatRoom.getId(), MemberRole.WEDDING_PLANNER)
                 )
-                .sum();
+                .reduce(0, Integer::sum);
+    }
+
+    public Integer getWeddingPlanners(String weddingPlannerUuid) {
+        log.info("Fetching all chat rooms's unreadMessages for wedding planner");
+        WeddingPlanner weddingPlanner = customUserDetailsService.getWeddingPlannerByUuid(weddingPlannerUuid);
+        List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerId(weddingPlanner.getId());
+
+        return chatRooms.stream()
+                .map(chatRoom ->
+                        chatRoomRepository.countUnreadMessages(chatRoom.getId(), MemberRole.CUSTOMER)
+                )
+                .reduce(0, Integer::sum);
     }
 
     public List<ChatRoomOverviewDTO.Response> getCustomersAllChatRoom() {

@@ -52,7 +52,7 @@ public class ChatRoom extends BaseTimeEntity {
 
     public void addMessage(Message message) {
         messages.add(message);
-        this.lastMessageContent = message.getContents();
+        this.lastMessageContent = message.getContent();
         this.lastMessageCreatedAt = message.getCreatedAt();
     }
 

@@ -93,7 +93,7 @@
             var chatRoomId = document.getElementById("chatRoomId").value;
             stompClient.subscribe('/sub/' + chatRoomId, function (message) {
                 var messageBody = JSON.parse(message.body);
-                showMessage(messageBody.contents, messageBody.senderRole);
+                showMessage(messageBody.content, messageBody.senderRole);
             });
 
             stompClient.subscribe('/sub/' + authToken, function (message) {
@@ -114,7 +114,7 @@
                 'messageType': 'DISCONNECT',
                 'chatRoomId': chatRoomId,
                 'senderRole': 'WEDDING_PLANNER',
-                'contents': 'Disconnected from chat room'
+                'content': 'Disconnected from chat room'
             }));
             stompClient.disconnect();
             console.log("Disconnected");
@@ -127,7 +127,7 @@
             'messageType': 'LEAVE',
             'chatRoomId': chatRoomId,
             'senderRole': 'WEDDING_PLANNER',
-            'contents': 'Left the chat room'
+            'content': 'Left the chat room'
         }));
     }
 
@@ -137,7 +137,7 @@
             'messageType': 'ENTER',
             'chatRoomId': chatRoomId,
             'senderRole': 'WEDDING_PLANNER',
-            'contents': 'Entered the chat room'
+            'content': 'Entered the chat room'
         }));
     }
 
@@ -148,7 +148,7 @@
             'messageType': 'SEND',
             'chatRoomId': chatRoomId,
             'senderRole': 'WEDDING_PLANNER',
-            'contents': message
+            'content': message
         }));
     }
 

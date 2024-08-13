@@ -93,7 +93,7 @@
             var chatRoomId = document.getElementById("chatRoomId").value;
             stompClient.subscribe('/sub/' + chatRoomId, function (message) {
                 var messageBody = JSON.parse(message.body);
-                showMessage(messageBody.contents, messageBody.senderRole);
+                showMessage(messageBody.content, messageBody.senderRole);
             });
             stompClient.subscribe('/sub/' + authToken, function (message) {
                 var messageBody = JSON.parse(message.body);
@@ -109,7 +109,7 @@
                 'messageType': 'SEND',
                 'chatRoomId': chatRoomId,
                 'senderRole': 'CUSTOMER',
-                'contents': 'Connected to chat room'
+                'content': 'Connected to chat room'
             }));
         });
     }
@@ -121,7 +121,7 @@
                 'messageType': 'DISCONNECT',
                 'chatRoomId': chatRoomId,
                 'senderRole': 'CUSTOMER',
-                'contents': 'Disconnected from chat room'
+                'content': 'Disconnected from chat room'
             }));
             stompClient.disconnect();
             console.log("Disconnected");
@@ -134,7 +134,7 @@
             'messageType': 'LEAVE',
             'chatRoomId': chatRoomId,
             'senderRole': 'CUSTOMER',
-            'contents': 'Left the chat room'
+            'content': 'Left the chat room'
         }));
     }
 
@@ -144,7 +144,7 @@
             'messageType': 'ENTER',
             'chatRoomId': chatRoomId,
             'senderRole': 'CUSTOMER',
-            'contents': 'Entered the chat room'
+            'content': 'Entered the chat room'
         }));
     }
 
@@ -155,7 +155,7 @@
             'messageType': 'SEND',
             'chatRoomId': chatRoomId,
             'senderRole': 'CUSTOMER',
-            'contents': message
+            'content': message
         }));
     }
 

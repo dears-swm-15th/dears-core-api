@@ -216,7 +216,7 @@ public class DataLoader implements CommandLineRunner {
         wishListRepository.save(wishList2);
 
         Message message1 = Message.builder()
-                .contents("웨딩플래너 님 안녕하세요!")
+                .content("웨딩플래너 님 안녕하세요!")
                 .messageType(MessageType.SEND)
                 .isDeleted(false)
                 .oppositeReadFlag(true)
@@ -224,7 +224,7 @@ public class DataLoader implements CommandLineRunner {
                 .build();
 
         Message message2 = Message.builder()
-                .contents("안녕하세요! 어떻게 도와드릴까요?")
+                .content("안녕하세요! 어떻게 도와드릴까요?")
                 .messageType(MessageType.SEND)
                 .isDeleted(false)
                 .oppositeReadFlag(false)
