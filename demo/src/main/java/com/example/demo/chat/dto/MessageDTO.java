@@ -33,23 +33,9 @@ public class MessageDTO {
 
         private MemberRole senderRole;
 
-        private MessageType messageType;
-
         private String contents;
-
-        private Long chatRoomId;
     }
 
-    @Getter
-    @Setter
-    @ToString
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class UnreadMessageResponse {
-
-        private int unreadMessageCount;
-    }
 
     @Getter
     @Setter
