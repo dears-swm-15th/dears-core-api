@@ -83,6 +83,8 @@ public class MessageService {
         // TODO : Redis로 변경
         chatRoom.addUser(Uuid);
         chatRoom.addMessage(message);
+        chatRoom.setLastMessageContent(message.getContents());
+        chatRoom.setLastMessageCreatedAt(message.getCreatedAt());
 
         chatRoomRepository.save(chatRoom);
 
