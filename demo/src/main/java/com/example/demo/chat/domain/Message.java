@@ -27,7 +27,7 @@ public class Message extends BaseTimeEntity {
     private boolean isDeleted = Boolean.FALSE;
 
     private MessageType messageType;
-    private String contents;
+    private String content;
 
     private boolean oppositeReadFlag;
 

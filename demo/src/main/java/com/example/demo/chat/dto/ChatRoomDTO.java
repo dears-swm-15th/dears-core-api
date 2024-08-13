@@ -29,8 +29,7 @@ public class ChatRoomDTO {
     public static class Response {
         private List<MessageDTO.Response> messages;
 
+        // TODO : isOppositeConnected 로 변경 여지
         private HashSet<String> userIds;
-
-        private Long chatRoomId;
     }
 }
