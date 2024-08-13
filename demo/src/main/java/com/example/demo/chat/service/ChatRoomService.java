@@ -99,7 +99,7 @@ public class ChatRoomService {
 
             sendNewChatRoomTrigger(portfolioId, chatRoom.getId());
 
-            return createdChatRoomResponse;
+            return getMessagesByChatRoomForCustomer(chatRoom);
         }
 
         Long chatRoomId = getChatRoomIdByCustomerAndWeddingPlanner(customer, weddingPlanner);
@@ -115,6 +115,7 @@ public class ChatRoomService {
 
         chatRoom.setCustomer(customer);
         chatRoom.setWeddingPlanner(weddingPlanner);
+        chatRoom.setMessages(List.of());
 
         chatRoomRepository.save(chatRoom);
         log.info("Created chat room with ID: {}", chatRoom.getId());
@@ -194,6 +195,28 @@ public class ChatRoomService {
                 .collect(Collectors.toList());
     }
 
+    public List<ChatRoomOverviewDTO.Response> leaveChatRoomForCustomer(Long chatRoomId) {
+        log.info("Leaving chat room for customer with chat room ID: {}", chatRoomId);
+        ChatRoom chatRoom = getChatRoomById(chatRoomId);
+        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
+
+        chatRoom.removeUser(customer.getUUID());
+        chatRoomRepository.save(chatRoom);
+
+        return getCustomersAllChatRoom();
+    }
+
+    public List<ChatRoomOverviewDTO.Response> leaveChatRoomForWeddingPlanner(Long chatRoomId) {
+        log.info("Leaving chat room for wedding planner with chat room ID: {}", chatRoomId);
+        ChatRoom chatRoom = getChatRoomById(chatRoomId);
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
+
+        chatRoom.removeUser(weddingPlanner.getUUID());
+        chatRoomRepository.save(chatRoom);
+
+        return getWeddingPlannersAllChatRoom();
+    }
+
     public Long getChatRoomIdByCustomerAndWeddingPlanner(Customer customer, WeddingPlanner weddingPlanner) {
         log.info("Getting chat room ID for customer ID: {} and wedding planner ID: {}", customer.getId(), weddingPlanner.getId());
         ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
@@ -217,6 +240,7 @@ public class ChatRoomService {
     }
 
     public ChatRoomDTO.Response getMessagesByChatRoomForCustomer(ChatRoom chatRoom) {
+        log.info("Fetching messages by chat room for customer");
         String Uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
         chatRoom.addUser(Uuid);
 
@@ -234,6 +258,7 @@ public class ChatRoomService {
     }
 
     public ChatRoomDTO.Response getMessagesByChatRoomForWeddingPlanner(ChatRoom chatRoom) {
+        log.info("Fetching messages by chat room for wedding planner");
         String Uuid = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().getUUID();
         chatRoom.addUser(Uuid);
 

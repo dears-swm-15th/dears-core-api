@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -73,10 +74,26 @@ public class ChatRoomController {
     // TODO : 현재 유저만 나가야 함.
     // TODO : 메소드 명, API route 변경
     @PostMapping("/shared/delete/{chatRoomId}")
-    @Operation(summary = "특정 채팅방 나가기")
+    @Operation(summary = "[공통] 특정 채팅방 삭제")
     public ResponseEntity<Void> deleteChatRoom(@PathVariable Long chatRoomId) {
         chatRoomService.deleteChatRoom(chatRoomId);
         log.info("Deleted chat room with ID: {}", chatRoomId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/customer/leave/{chatRoomId}")
+    @Operation(summary = "[신랑신부] 특정 채팅방 나가기")
+    public ResponseEntity<List<ChatRoomOverviewDTO.Response>> leaveChatRoomForCustomer(@PathVariable Long chatRoomId) {
+        List<ChatRoomOverviewDTO.Response> currentUsersAllChatRoom = chatRoomService.leaveChatRoomForCustomer(chatRoomId);
+        log.info("Left chat room with ID: {}", chatRoomId);
+        return ResponseEntity.status(200).body(currentUsersAllChatRoom);
+    }
+
+    @GetMapping("/weddingplanner/leave/{chatRoomId}")
+    @Operation(summary = "[웨딩플래너] 특정 채팅방 나가기")
+    public ResponseEntity<List<ChatRoomOverviewDTO.Response>> leaveChatRoomForWeddingPlanner(@PathVariable Long chatRoomId) {
+        List<ChatRoomOverviewDTO.Response> currentUsersAllChatRoom = chatRoomService.leaveChatRoomForWeddingPlanner(chatRoomId);
+        log.info("Left chat room with ID: {}", chatRoomId);
+        return ResponseEntity.status(200).body(currentUsersAllChatRoom);
     }
 }
