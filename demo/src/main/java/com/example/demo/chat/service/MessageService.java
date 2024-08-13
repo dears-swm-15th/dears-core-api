@@ -4,6 +4,7 @@ package com.example.demo.chat.service;
 import com.example.demo.chat.domain.ChatRoom;
 import com.example.demo.chat.domain.Message;
 import com.example.demo.chat.dto.ChatRoomDTO;
+import com.example.demo.chat.dto.ChatRoomOverviewDTO;
 import com.example.demo.chat.dto.MessageDTO;
 import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
@@ -19,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -89,12 +92,23 @@ public class MessageService {
         return messageMapper.entityToResponse(message);
     }
 
-    public ChatRoomDTO.Response enterChatRoom(MessageDTO.Request messageRequest, String Uuid) {
-        ChatRoom chatRoom = chatRoomService.getChatRoomById(messageRequest.getChatRoomId());
+    public void leaveChatRoomForCustomer(MessageDTO.Request messageRequest, String customerUuid) {
+        log.info("Leaving chat room for customer with chat room ID: {}", messageRequest.getChatRoomId());
+        ChatRoom chatRoom = chatRoomRepository.findById(messageRequest.getChatRoomId())
+                .orElseThrow();
 
+        chatRoom.removeUser(customerUuid);
         chatRoomRepository.save(chatRoom);
-
-        return chatRoomMapper.entityToResponse(chatRoom);
     }
+
+    public void leaveChatRoomForWeddingPlanner(MessageDTO.Request messageRequest, String weddingPlannerUuid) {
+        log.info("Leaving chat room for wedding planner with chat room ID: {}", messageRequest.getChatRoomId());
+        ChatRoom chatRoom = chatRoomRepository.findById(messageRequest.getChatRoomId())
+                .orElseThrow();
+
+        chatRoom.removeUser(weddingPlannerUuid);
+        chatRoomRepository.save(chatRoom);
+    }
+
 
 }

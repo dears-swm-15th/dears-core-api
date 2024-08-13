@@ -45,7 +45,6 @@
             </form>
             <button id="connect" class="btn btn-default" onclick="connect()">Connect</button>
             <button id="disconnect" class="btn btn-default" onclick="disconnect()">Disconnect</button>
-            <button id="enter" class="btn btn-default" onclick="enter()">Enter</button>
             <button id="leave" class="btn btn-default" onclick="leave()">Leave</button>
         </div>
         <div class="col-md-6">
@@ -139,7 +138,7 @@
 
     function leave() {
         var chatRoomId = document.getElementById("chatRoomId").value;
-        stompClient.send("/pub/shared/leave", {}, JSON.stringify({
+        stompClient.send("/pub/customer/leave", {}, JSON.stringify({
             'messageType': 'LEAVE',
             'chatRoomId': chatRoomId,
             'senderRole': 'CUSTOMER',

@@ -195,28 +195,6 @@ public class ChatRoomService {
                 .collect(Collectors.toList());
     }
 
-    public List<ChatRoomOverviewDTO.Response> leaveChatRoomForCustomer(Long chatRoomId) {
-        log.info("Leaving chat room for customer with chat room ID: {}", chatRoomId);
-        ChatRoom chatRoom = getChatRoomById(chatRoomId);
-        Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
-
-        chatRoom.removeUser(customer.getUUID());
-        chatRoomRepository.save(chatRoom);
-
-        return getCustomersAllChatRoom();
-    }
-
-    public List<ChatRoomOverviewDTO.Response> leaveChatRoomForWeddingPlanner(Long chatRoomId) {
-        log.info("Leaving chat room for wedding planner with chat room ID: {}", chatRoomId);
-        ChatRoom chatRoom = getChatRoomById(chatRoomId);
-        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
-
-        chatRoom.removeUser(weddingPlanner.getUUID());
-        chatRoomRepository.save(chatRoom);
-
-        return getWeddingPlannersAllChatRoom();
-    }
-
     public Long getChatRoomIdByCustomerAndWeddingPlanner(Customer customer, WeddingPlanner weddingPlanner) {
         log.info("Getting chat room ID for customer ID: {} and wedding planner ID: {}", customer.getId(), weddingPlanner.getId());
         ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
@@ -286,7 +264,6 @@ public class ChatRoomService {
             }
         }
     }
-
 
     public void deleteChatRoom(Long chatRoomId) {
         log.info("Deleting chat room with ID: {}", chatRoomId);

@@ -80,20 +80,4 @@ public class ChatRoomController {
         log.info("Deleted chat room with ID: {}", chatRoomId);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/customer/leave/{chatRoomId}")
-    @Operation(summary = "[신랑신부] 특정 채팅방 나가기")
-    public ResponseEntity<List<ChatRoomOverviewDTO.Response>> leaveChatRoomForCustomer(@PathVariable Long chatRoomId) {
-        List<ChatRoomOverviewDTO.Response> currentUsersAllChatRoom = chatRoomService.leaveChatRoomForCustomer(chatRoomId);
-        log.info("Left chat room with ID: {}", chatRoomId);
-        return ResponseEntity.status(200).body(currentUsersAllChatRoom);
-    }
-
-    @GetMapping("/weddingplanner/leave/{chatRoomId}")
-    @Operation(summary = "[웨딩플래너] 특정 채팅방 나가기")
-    public ResponseEntity<List<ChatRoomOverviewDTO.Response>> leaveChatRoomForWeddingPlanner(@PathVariable Long chatRoomId) {
-        List<ChatRoomOverviewDTO.Response> currentUsersAllChatRoom = chatRoomService.leaveChatRoomForWeddingPlanner(chatRoomId);
-        log.info("Left chat room with ID: {}", chatRoomId);
-        return ResponseEntity.status(200).body(currentUsersAllChatRoom);
-    }
 }
