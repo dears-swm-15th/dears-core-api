@@ -231,15 +231,15 @@ public class DataLoader implements CommandLineRunner {
                 .senderRole(WEDDING_PLANNER)
                 .build();
 
-        ChatRoom chatRoom1 = ChatRoom.builder()
-                .customer(customer1)
-                .weddingPlanner(planner1)
-                .messages(Arrays.asList(message1, message2))
-                .isDeleted(false)
-                .lastMessageContent("웨딩플래너 님 안녕하세요!")
-                .build();
-
-        chatRoomRepository.save(chatRoom1);
+//        ChatRoom chatRoom1 = ChatRoom.builder()
+//                .customer(customer1)
+//                .weddingPlanner(planner1)
+//                .messages(Arrays.asList(message1, message2))
+//                .isDeleted(false)
+//                .lastMessageContent("웨딩플래너 님 안녕하세요!")
+//                .build();
+//
+//        chatRoomRepository.save(chatRoom1);
 
         System.out.println("Sample data loaded.");
     }
