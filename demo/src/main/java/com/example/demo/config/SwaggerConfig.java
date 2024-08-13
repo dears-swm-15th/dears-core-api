@@ -29,8 +29,14 @@ public class SwaggerConfig {
     private Info apiInfo() {
         return new Info()
                 .title("Dears API Documentation")
-                .description("Customer : 51fc7d6b-7f86-43cf-b5c7-de4c46046d71\n\n" +
-                        "Wedding Planner : b1b3825f-304f-4bce-b3b7-91b70fe79cb7")
-                .version("0.1.0");
+                .description(
+                         """
+                         Customer | Clara : 51fc7d6b-7f86-43cf-b5c7-de4c46046d71\n
+                         Customer | Jeff : ed21f25b-f51c-4e07-b1f5-4ffb2d9a0531\n
+                         Wedding Planner | Alice : b1b3825f-304f-4bce-b3b7-91b70fe79cb7\n
+                         Wedding Planner | Bob : c14h814f-33gf-4b4e-z5z7-31b70fe74cb8
+                         """
+                )
+                .version("0.1.1");
     }
 }
