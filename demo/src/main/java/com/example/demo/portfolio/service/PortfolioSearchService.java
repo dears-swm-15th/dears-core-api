@@ -1,9 +1,13 @@
 package com.example.demo.portfolio.service;
 
+import com.example.demo.member.domain.Customer;
+import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioSearchDTO;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
+import com.example.demo.wishlist.repository.WishListRepository;
 import com.example.demo.wishlist.service.WishListService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
@@ -17,18 +21,15 @@ import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class PortfolioSearchService {
 
     private final OpenSearchClient openSearchClient;
-    private static final String indexName = "portfolio";
     private final PortfolioMapper portfolioMapper;
-    private final WishListService wishListService;
+    private final CustomUserDetailsService memberService;
+    private final WishListRepository wishListRepository;
 
-    public PortfolioSearchService(OpenSearchClient openSearchClient, PortfolioMapper portfolioMapper, WishListService wishListService) {
-        this.openSearchClient = openSearchClient;
-        this.portfolioMapper = portfolioMapper;
-        this.wishListService = wishListService;
-    }
+    private static final String indexName = "portfolio";
 
     // 인덱스 생성
     public void createIndex() {
@@ -86,7 +87,7 @@ public class PortfolioSearchService {
             List<Hit<PortfolioSearchDTO.Request>> hits = response.hits().hits();
             for (Hit<PortfolioSearchDTO.Request> hit : hits) {
                 PortfolioSearchDTO.Response searchResponse = portfolioMapper.requestToSearchResponse(hit.source());
-                searchResponse.setIsWishListed(wishListService.isWishListed(searchResponse.getId()));
+                searchResponse.setIsWishListed(isWishListed(searchResponse.getId()));
                 resultList.add(searchResponse);
             }
             log.info("Found {} documents with keyword: {}", resultList.size(), keyword);
@@ -130,5 +131,10 @@ public class PortfolioSearchService {
         } catch (Exception e) {
             log.error("Error deleting document by ID: {}", id, e);
         }
+    }
+
+    public boolean isWishListed(Long portfolioId) {
+        Customer customer = memberService.getCurrentAuthenticatedCustomer();
+        return wishListRepository.existsByCustomerIdAndPortfolioId(customer.getId(), portfolioId);
     }
 }
