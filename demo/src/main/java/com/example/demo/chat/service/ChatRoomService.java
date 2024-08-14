@@ -19,6 +19,7 @@ import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.service.PortfolioService;
+import com.example.demo.wishlist.service.WishListService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -45,6 +46,7 @@ public class ChatRoomService {
     private final WeddingPlannerRepository weddingPlannerRepository;
 
     private final SimpMessagingTemplate template;
+    private final WishListService wishListService;
 
     public ChatRoom getChatRoomById(Long chatRoomId) {
         log.info("Fetching chat room by ID: {}", chatRoomId);
@@ -165,6 +167,7 @@ public class ChatRoomService {
                             .organizationName(portfolioResponse.getOrganization())
                             .portfolioId(portfolioResponse.getId())
                             .unreadMessageCount(getCustomersUnreadCount(customer.getUUID()))
+                            .isWishListed(wishListService.isWishListed(portfolioResponse.getId()))
                             .build();
                 })
                 .collect(Collectors.toList());
