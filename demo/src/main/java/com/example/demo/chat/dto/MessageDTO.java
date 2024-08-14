@@ -4,6 +4,8 @@ import com.example.demo.enums.chat.MessageType;
 import com.example.demo.enums.member.MemberRole;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 public class MessageDTO {
 
     @Getter
@@ -34,6 +36,8 @@ public class MessageDTO {
         private MemberRole senderRole;
 
         private String content;
+
+        private LocalDateTime createdAt;
     }
 
 
