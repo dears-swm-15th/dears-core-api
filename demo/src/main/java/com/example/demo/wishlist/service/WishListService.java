@@ -37,8 +37,9 @@ public class WishListService {
         Long memberId = memberService.getCurrentAuthenticatedCustomer().getId();
         log.info("Fetching wishlist for member ID: {}", memberId);
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        Page<WishList> wishLists = wishListRepository.findAllByCustomerId(memberId, pageRequest);
+        Page<WishList> wishLists = wishListRepository.findAllByCustomerIdOrderByUpdatedAtDesc(memberId, pageRequest);
         log.info("Found {} items in wishlist for member ID: {}", wishLists.getTotalElements(), memberId);
+
         return wishLists.stream()
                 .map(wishList -> portfolioMapper.entityToOverviewResponse(wishList.getPortfolio()))
                 // set avgRating using calculateAvgRating method
