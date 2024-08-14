@@ -90,6 +90,8 @@ public class PortfolioSearchDTO {
         @Schema(type = "integer", example = "20000")
         private Integer minEstimate;
 
+        @Schema(type = "boolean", example = "true")
+        private Boolean isWishListed;
     }
 
 }
