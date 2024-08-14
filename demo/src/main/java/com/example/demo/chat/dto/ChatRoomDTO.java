@@ -31,5 +31,7 @@ public class ChatRoomDTO {
 
         // TODO : isOppositeConnected 로 변경 여지
         private HashSet<String> userIds;
+
+        private Long chatRoomId;
     }
 }

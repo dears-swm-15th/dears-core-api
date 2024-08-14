@@ -91,20 +91,15 @@ public class ChatRoomService {
 
         WeddingPlanner weddingPlanner = portfolio.getWeddingPlanner();
 
+
         if (!isChatRoomExist(customer, weddingPlanner)) {
             log.info("Chat room does not exist for customer ID: {} and wedding planner ID: {}", customer.getId(), weddingPlanner.getId());
             ChatRoomDTO.Response createdChatRoomResponse = createChatRoomByPortfolioId(customer, weddingPlanner);
 
-            ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
-
-            sendNewChatRoomTrigger(portfolioId, chatRoom.getId());
-
-            return getMessagesByChatRoomForCustomer(chatRoom);
+            sendNewChatRoomTrigger(portfolioId, createdChatRoomResponse.getChatRoomId());
         }
 
-        Long chatRoomId = getChatRoomIdByCustomerAndWeddingPlanner(customer, weddingPlanner);
-        log.info("Chat room exists, entering existing chat room with ID: {}", chatRoomId);
-        ChatRoom chatRoom = getChatRoomById(chatRoomId);
+        ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
 
         return getMessagesByChatRoomForCustomer(chatRoom);
     }
@@ -123,6 +118,7 @@ public class ChatRoomService {
         return ChatRoomDTO.Response.builder()
                 .messages(List.of())
                 .userIds(new HashSet<>())
+                .chatRoomId(chatRoom.getId())
                 .build();
     }
 
@@ -153,7 +149,7 @@ public class ChatRoomService {
     public List<ChatRoomOverviewDTO.Response> getCustomersAllChatRoom() {
         log.info("Fetching all chat rooms for customer");
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
-        List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
+        List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerIdOrderByLastMessageCreatedAtDesc(customer.getId());
 
         return chatRooms.stream()
                 .map(chatRoom -> {
@@ -177,7 +173,7 @@ public class ChatRoomService {
     public List<ChatRoomOverviewDTO.Response> getWeddingPlannersAllChatRoom() {
         log.info("Fetching all chat rooms for wedding planner");
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
-        List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerId(weddingPlanner.getId());
+        List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerIdOrderByLastMessageCreatedAtDesc(weddingPlanner.getId());
 
         return chatRooms.stream()
                 .map(chatRoom -> {
@@ -231,6 +227,7 @@ public class ChatRoomService {
 
         ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
         response.setMessages(messageResponses);
+        response.setChatRoomId(chatRoom.getId());
 
         return response;
     }
