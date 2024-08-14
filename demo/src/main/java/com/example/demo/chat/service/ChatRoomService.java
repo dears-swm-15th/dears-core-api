@@ -149,7 +149,7 @@ public class ChatRoomService {
     public List<ChatRoomOverviewDTO.Response> getCustomersAllChatRoom() {
         log.info("Fetching all chat rooms for customer");
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
-        List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
+        List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerIdOrderByLastMessageCreatedAtDesc(customer.getId());
 
         return chatRooms.stream()
                 .map(chatRoom -> {
@@ -173,7 +173,7 @@ public class ChatRoomService {
     public List<ChatRoomOverviewDTO.Response> getWeddingPlannersAllChatRoom() {
         log.info("Fetching all chat rooms for wedding planner");
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
-        List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerId(weddingPlanner.getId());
+        List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerIdOrderByLastMessageCreatedAtDesc(weddingPlanner.getId());
 
         return chatRooms.stream()
                 .map(chatRoom -> {
