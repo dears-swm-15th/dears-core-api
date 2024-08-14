@@ -2,21 +2,12 @@ package com.example.demo.chat.controller;
 
 import com.example.demo.chat.dto.ChatRoomDTO;
 import com.example.demo.chat.dto.ChatRoomOverviewDTO;
-import com.example.demo.chat.dto.MessageDTO;
 import com.example.demo.chat.service.ChatRoomService;
-import com.example.demo.config.StompPreHandler;
-import com.example.demo.enums.chat.MessageType;
-import com.example.demo.enums.member.MemberRole;
-import com.example.demo.member.domain.WeddingPlanner;
-import com.example.demo.member.repository.WeddingPlannerRepository;
-import com.example.demo.member.service.CustomUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
