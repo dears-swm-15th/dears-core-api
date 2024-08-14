@@ -3,6 +3,7 @@ package com.example.demo.portfolio.service;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioSearchDTO;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
+import com.example.demo.wishlist.service.WishListService;
 import lombok.extern.slf4j.Slf4j;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
@@ -21,10 +22,12 @@ public class PortfolioSearchService {
     private final OpenSearchClient openSearchClient;
     private static final String indexName = "portfolio";
     private final PortfolioMapper portfolioMapper;
+    private final WishListService wishListService;
 
-    public PortfolioSearchService(OpenSearchClient openSearchClient, PortfolioMapper portfolioMapper) {
+    public PortfolioSearchService(OpenSearchClient openSearchClient, PortfolioMapper portfolioMapper, WishListService wishListService) {
         this.openSearchClient = openSearchClient;
         this.portfolioMapper = portfolioMapper;
+        this.wishListService = wishListService;
     }
 
     // 인덱스 생성
@@ -82,7 +85,9 @@ public class PortfolioSearchService {
             SearchResponse<PortfolioSearchDTO.Request> response = openSearchClient.search(request, PortfolioSearchDTO.Request.class);
             List<Hit<PortfolioSearchDTO.Request>> hits = response.hits().hits();
             for (Hit<PortfolioSearchDTO.Request> hit : hits) {
-                resultList.add(portfolioMapper.requestToSearchResponse(hit.source()));
+                PortfolioSearchDTO.Response searchResponse = portfolioMapper.requestToSearchResponse(hit.source());
+                searchResponse.setIsWishListed(wishListService.isWishListed(searchResponse.getId()));
+                resultList.add(searchResponse);
             }
             log.info("Found {} documents with keyword: {}", resultList.size(), keyword);
         } catch (Exception e) {

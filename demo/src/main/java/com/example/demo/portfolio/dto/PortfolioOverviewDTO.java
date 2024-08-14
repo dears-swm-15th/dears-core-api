@@ -38,6 +38,9 @@ public class PortfolioOverviewDTO {
         @Schema(type = "integer", example = "10")
         private Integer reviewCount;
 
+        @Schema(type = "boolean", example = "true")
+        private Boolean isWishiListed;
+
         public String getProfileImageUrl() {
             if (profileImageUrl == null) {
                 this.profileImageUrl = "";

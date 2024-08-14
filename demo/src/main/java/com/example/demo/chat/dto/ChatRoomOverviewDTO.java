@@ -49,5 +49,8 @@ public class ChatRoomOverviewDTO {
 
         @Schema(type = "integer", example = "2")
         private Integer unreadMessageCount;
+
+        @Schema(type = "boolean", example = "true")
+        private Boolean isWishListed;
     }
 }
