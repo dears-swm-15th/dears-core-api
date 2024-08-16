@@ -19,6 +19,9 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         show_sql: true
         format_sql: true
+        jdbc:
+          time_zone: Korea/Seoul
+
   data:
     redis:
       port: 6379
