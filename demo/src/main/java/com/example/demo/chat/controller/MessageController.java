@@ -1,6 +1,7 @@
 package com.example.demo.chat.controller;
 
 import com.example.demo.chat.dto.MessageDTO;
+import com.example.demo.chat.service.ChatRoomService;
 import com.example.demo.chat.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class MessageController {
     private final MessageService messageService;
+    private final ChatRoomService chatRoomService;
 
     @MessageMapping(value = "/customer/send")
     @Operation(summary = "[신랑신부] 메세지 전송")
@@ -34,4 +36,21 @@ public class MessageController {
         log.info("WeddingPlanner sent message to chat room with ID: {}", messageRequest.getChatRoomId());
     }
 
+    @MessageMapping(value = "/customer/leave")
+    @Operation(summary = "[신랑신부] 채팅방 나가기")
+    public void leaveByCustomer(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+        String customerUuid = accessor.getSessionAttributes().get("Authorization").toString();
+
+        messageService.leaveChatRoomForCustomer(messageRequest, customerUuid);
+        log.info("Customer left chat room with ID: {}", messageRequest.getChatRoomId());
+    }
+
+    @MessageMapping(value = "/weddingplanner/leave")
+    @Operation(summary = "[웨딩플래너] 채팅방 나가기")
+    public void leaveByWeddingPlanner(MessageDTO.Request messageRequest, @DestinationVariable SimpMessageHeaderAccessor accessor) {
+        String weddingPlannerUuid = accessor.getSessionAttributes().get("Authorization").toString();
+
+        messageService.leaveChatRoomForWeddingPlanner(messageRequest, weddingPlannerUuid);
+        log.info("WeddingPlanner left chat room with ID: {}", messageRequest.getChatRoomId());
+    }
 }

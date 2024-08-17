@@ -213,4 +213,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info("Found customer with UUID: {}", uuid);
         return customer;
     }
+
+    public WeddingPlanner getWeddingPlannerByUuid(String uuid) {
+        log.info("Getting wedding planner by UUID: {}", uuid);
+        WeddingPlanner weddingPlanner = weddingPlannerRepository.findByUUID(uuid)
+                .orElseThrow(() -> new RuntimeException("WeddingPlanner not found"));
+        log.info("Found wedding planner with UUID: {}", uuid);
+        return weddingPlanner;
+    }
 }

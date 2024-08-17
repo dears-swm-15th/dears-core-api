@@ -106,7 +106,7 @@
 //        MessageDTO.Request body = MessageDTO.Request.builder()
 //                .id(1L)
 //                .messageType(MessageType.SEND)
-//                .contents("Hello, World!")
+//                .content("Hello, World!")
 //                .chatRoomId(1L)
 //                .build();
 //

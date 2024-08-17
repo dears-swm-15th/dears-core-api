@@ -8,7 +8,6 @@ import com.example.demo.chat.dto.MessageDTO;
 import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
-import com.example.demo.chat.repository.MessageRepository;
 import com.example.demo.config.StompPreHandler;
 import com.example.demo.enums.chat.MessageType;
 import com.example.demo.enums.member.MemberRole;
@@ -20,6 +19,7 @@ import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.service.PortfolioService;
+import com.example.demo.wishlist.service.WishListService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -27,8 +27,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +46,7 @@ public class ChatRoomService {
     private final WeddingPlannerRepository weddingPlannerRepository;
 
     private final SimpMessagingTemplate template;
+    private final WishListService wishListService;
 
     public ChatRoom getChatRoomById(Long chatRoomId) {
         log.info("Fetching chat room by ID: {}", chatRoomId);
@@ -76,7 +75,7 @@ public class ChatRoomService {
                     .chatRoomId(chatRoomId)
                     .messageType(MessageType.ENTER)
                     .senderRole(MemberRole.CUSTOMER)
-                    .contents("New Chat Room Created")
+                    .content("New Chat Room Created")
                     .build();
 
             template.convertAndSend("/sub/" + weddingPlannerUuid, messageRequest);
@@ -94,20 +93,16 @@ public class ChatRoomService {
 
         WeddingPlanner weddingPlanner = portfolio.getWeddingPlanner();
 
+
         if (!isChatRoomExist(customer, weddingPlanner)) {
             log.info("Chat room does not exist for customer ID: {} and wedding planner ID: {}", customer.getId(), weddingPlanner.getId());
-            ChatRoomDTO.Response createdChatRoomResponse =  createChatRoomByPortfolioId(customer, weddingPlanner);
+            ChatRoomDTO.Response createdChatRoomResponse = createChatRoomByPortfolioId(customer, weddingPlanner);
 
             sendNewChatRoomTrigger(portfolioId, createdChatRoomResponse.getChatRoomId());
-
-            return createdChatRoomResponse;
         }
 
-        Long chatRoomId = getChatRoomIdByCustomerAndWeddingPlanner(customer, weddingPlanner);
-        log.info("Chat room exists, entering existing chat room with ID: {}", chatRoomId);
-        ChatRoom chatRoom = getChatRoomById(chatRoomId);
+        ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
 
-        updateOppositeReadFlag(chatRoom);
         return getMessagesByChatRoomForCustomer(chatRoom);
     }
 
@@ -117,6 +112,7 @@ public class ChatRoomService {
 
         chatRoom.setCustomer(customer);
         chatRoom.setWeddingPlanner(weddingPlanner);
+        chatRoom.setMessages(List.of());
 
         chatRoomRepository.save(chatRoom);
         log.info("Created chat room with ID: {}", chatRoom.getId());
@@ -124,25 +120,38 @@ public class ChatRoomService {
         return ChatRoomDTO.Response.builder()
                 .messages(List.of())
                 .userIds(new HashSet<>())
+                .chatRoomId(chatRoom.getId())
                 .build();
     }
 
-    public int getCustomersUnreadMessages(String customerUuid) {
+    public Integer getCustomersUnreadCount(String customerUuid) {
         log.info("Fetching all chat rooms's unreadMessages for customer");
         Customer customer = customUserDetailsService.getCustomerByUuid(customerUuid);
         List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
 
         return chatRooms.stream()
-                .mapToInt(chatRoom ->
+                .map(chatRoom ->
                         chatRoomRepository.countUnreadMessages(chatRoom.getId(), MemberRole.WEDDING_PLANNER)
                 )
-                .sum();
+                .reduce(0, Integer::sum);
+    }
+
+    public Integer getWeddingPlannersUnreadCount(String weddingPlannerUuid) {
+        log.info("Fetching all chat rooms's unreadMessages for wedding planner");
+        WeddingPlanner weddingPlanner = customUserDetailsService.getWeddingPlannerByUuid(weddingPlannerUuid);
+        List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerId(weddingPlanner.getId());
+
+        return chatRooms.stream()
+                .map(chatRoom ->
+                        chatRoomRepository.countUnreadMessages(chatRoom.getId(), MemberRole.CUSTOMER)
+                )
+                .reduce(0, Integer::sum);
     }
 
     public List<ChatRoomOverviewDTO.Response> getCustomersAllChatRoom() {
         log.info("Fetching all chat rooms for customer");
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
-        List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
+        List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerIdOrderByLastMessageCreatedAtDesc(customer.getId());
 
         return chatRooms.stream()
                 .map(chatRoom -> {
@@ -157,6 +166,8 @@ public class ChatRoomService {
                             .lastMessageCreatedAt(chatRoom.getLastMessageCreatedAt())
                             .organizationName(portfolioResponse.getOrganization())
                             .portfolioId(portfolioResponse.getId())
+                            .unreadMessageCount(getCustomersUnreadCount(customer.getUUID()))
+                            .isWishListed(wishListService.isWishListed(portfolioResponse.getId()))
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -165,7 +176,7 @@ public class ChatRoomService {
     public List<ChatRoomOverviewDTO.Response> getWeddingPlannersAllChatRoom() {
         log.info("Fetching all chat rooms for wedding planner");
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
-        List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerId(weddingPlanner.getId());
+        List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerIdOrderByLastMessageCreatedAtDesc(weddingPlanner.getId());
 
         return chatRooms.stream()
                 .map(chatRoom -> {
@@ -177,6 +188,7 @@ public class ChatRoomService {
                             .othersName(customer.getName())
                             .lastMessage(chatRoom.getLastMessageContent())
                             .lastMessageCreatedAt(chatRoom.getLastMessageCreatedAt())
+                            .unreadMessageCount(getWeddingPlannersUnreadCount(weddingPlanner.getUUID()))
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -205,6 +217,7 @@ public class ChatRoomService {
     }
 
     public ChatRoomDTO.Response getMessagesByChatRoomForCustomer(ChatRoom chatRoom) {
+        log.info("Fetching messages by chat room for customer");
         String Uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
         chatRoom.addUser(Uuid);
 
@@ -217,11 +230,13 @@ public class ChatRoomService {
 
         ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
         response.setMessages(messageResponses);
+        response.setChatRoomId(chatRoom.getId());
 
         return response;
     }
 
     public ChatRoomDTO.Response getMessagesByChatRoomForWeddingPlanner(ChatRoom chatRoom) {
+        log.info("Fetching messages by chat room for wedding planner");
         String Uuid = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().getUUID();
         chatRoom.addUser(Uuid);
 
@@ -249,7 +264,6 @@ public class ChatRoomService {
             }
         }
     }
-
 
     public void deleteChatRoom(Long chatRoomId) {
         log.info("Deleting chat room with ID: {}", chatRoomId);

@@ -4,6 +4,7 @@ package com.example.demo.chat.service;
 import com.example.demo.chat.domain.ChatRoom;
 import com.example.demo.chat.domain.Message;
 import com.example.demo.chat.dto.ChatRoomDTO;
+import com.example.demo.chat.dto.ChatRoomOverviewDTO;
 import com.example.demo.chat.dto.MessageDTO;
 import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
@@ -19,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,33 +40,31 @@ public class MessageService {
 
 
     @Transactional
-    public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest, String Uuid) {
+    public MessageDTO.Response sendMessageByCustomer(MessageDTO.Request messageRequest, String customerUuid) {
         messageRequest.setSenderRole(MemberRole.CUSTOMER);
 
         ChatRoom chatRoom = chatRoomRepository.findById(messageRequest.getChatRoomId()).orElseThrow();
         WeddingPlanner weddingPlanner = chatRoom.getWeddingPlanner();
         boolean isOppositeConnected = StompPreHandler.isUserConnected(weddingPlanner.getUUID());
 
-        if (isOppositeConnected) {
-            return sendMessage(messageRequest, Uuid);
+        if (!isOppositeConnected) {
+            // TODO : FCM
         }
-        // TODO : FCM
-        return null;
+        return sendMessage(messageRequest, customerUuid);
     }
 
     @Transactional
-    public MessageDTO.Response sendMessageByWeddingPlanner(MessageDTO.Request messageRequest, String Uuid) {
+    public MessageDTO.Response sendMessageByWeddingPlanner(MessageDTO.Request messageRequest, String weddingPlannerUuid) {
         messageRequest.setSenderRole(MemberRole.WEDDING_PLANNER);
 
         ChatRoom chatRoom = chatRoomRepository.findById(messageRequest.getChatRoomId()).orElseThrow();
         Customer customer = chatRoom.getCustomer();
         boolean isOppositeConnected = StompPreHandler.isUserConnected(customer.getUUID());
 
-        if (isOppositeConnected) {
-            return sendMessage(messageRequest, Uuid);
+        if (!isOppositeConnected) {
+            // TODO : FCM
         }
-        // TODO : FCM
-        return null;
+        return sendMessage(messageRequest, weddingPlannerUuid);
     }
 
     public MessageDTO.Response sendMessage(MessageDTO.Request messageRequest, String Uuid) {
@@ -83,7 +84,7 @@ public class MessageService {
         // TODO : Redis로 변경
         chatRoom.addUser(Uuid);
         chatRoom.addMessage(message);
-        chatRoom.setLastMessageContent(message.getContents());
+        chatRoom.setLastMessageContent(message.getContent());
         chatRoom.setLastMessageCreatedAt(message.getCreatedAt());
 
         chatRoomRepository.save(chatRoom);
@@ -91,16 +92,23 @@ public class MessageService {
         return messageMapper.entityToResponse(message);
     }
 
-    public ChatRoomDTO.Response enterChatRoom(MessageDTO.Request messageRequest, String Uuid) {
-        ChatRoom chatRoom = chatRoomService.getChatRoomById(messageRequest.getChatRoomId());
+    public void leaveChatRoomForCustomer(MessageDTO.Request messageRequest, String customerUuid) {
+        log.info("Leaving chat room for customer with chat room ID: {}", messageRequest.getChatRoomId());
+        ChatRoom chatRoom = chatRoomRepository.findById(messageRequest.getChatRoomId())
+                .orElseThrow();
 
+        chatRoom.removeUser(customerUuid);
         chatRoomRepository.save(chatRoom);
-
-        return chatRoomMapper.entityToResponse(chatRoom);
     }
 
-    public int getAllUnreadMessages(String uuid) {
-        return chatRoomService.getCustomersUnreadMessages(uuid);
+    public void leaveChatRoomForWeddingPlanner(MessageDTO.Request messageRequest, String weddingPlannerUuid) {
+        log.info("Leaving chat room for wedding planner with chat room ID: {}", messageRequest.getChatRoomId());
+        ChatRoom chatRoom = chatRoomRepository.findById(messageRequest.getChatRoomId())
+                .orElseThrow();
+
+        chatRoom.removeUser(weddingPlannerUuid);
+        chatRoomRepository.save(chatRoom);
     }
+
 
 }
