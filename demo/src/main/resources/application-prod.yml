@@ -38,3 +38,12 @@ logging:
   level:
     org:
       springframework: info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  endpoint:
+    prometheus:
+      enabled: true
