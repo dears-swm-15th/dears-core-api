@@ -24,6 +24,10 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     ChatRoom findByCustomerIdAndWeddingPlannerId(Long customerId, Long weddingPlannerId);
 
+    List<ChatRoom> findByCustomerIdOrderByLastMessageCreatedAtDesc(Long customerId);
+
+    List<ChatRoom> findByWeddingPlannerIdOrderByLastMessageCreatedAtDesc(Long weddingPlannerId);
+
     @Transactional
     @Modifying
     @Query("UPDATE ChatRoom c SET c.isDeleted = true WHERE c.id = :id")

@@ -8,7 +8,6 @@ import com.example.demo.portfolio.dto.PortfolioOverviewDTO;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.service.PortfolioService;
-import com.example.demo.review.domain.Review;
 import com.example.demo.review.service.ReviewService;
 import com.example.demo.wishlist.domain.WishList;
 import com.example.demo.wishlist.repository.WishListRepository;
@@ -38,8 +37,9 @@ public class WishListService {
         Long memberId = memberService.getCurrentAuthenticatedCustomer().getId();
         log.info("Fetching wishlist for member ID: {}", memberId);
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        Page<WishList> wishLists = wishListRepository.findAllByCustomerId(memberId, pageRequest);
+        Page<WishList> wishLists = wishListRepository.findAllByCustomerIdOrderByUpdatedAtDesc(memberId, pageRequest);
         log.info("Found {} items in wishlist for member ID: {}", wishLists.getTotalElements(), memberId);
+
         return wishLists.stream()
                 .map(wishList -> portfolioMapper.entityToOverviewResponse(wishList.getPortfolio()))
                 // set avgRating using calculateAvgRating method
@@ -49,6 +49,7 @@ public class WishListService {
                     PortfolioDTO.Response portfolioResponse = portfolioMapper.entityToResponse(portfolio);
 
                     portfolioOverview.setAvgRating(calculateAvgRating(portfolioResponse));
+                    portfolioOverview.setIsWishiListed(true);
 
                     //get review count from repository count at certain portfolio overview
                     Integer reviewCount = reviewService.getReviewCountById(portfolioResponse.getId());
@@ -93,5 +94,10 @@ public class WishListService {
         Portfolio portfolio = portfolioService.decreaseWishListCount(portfolioId);
         wishListRepository.deleteByCustomerIdAndPortfolioId(customer.getId(), portfolio.getId());
         log.info("Successfully deleted portfolio ID: {} from wishlist for customer ID: {}", portfolioId, customer.getId());
+    }
+
+    public boolean isWishListed(Long portfolioId) {
+        Customer customer = memberService.getCurrentAuthenticatedCustomer();
+        return wishListRepository.existsByCustomerIdAndPortfolioId(customer.getId(), portfolioId);
     }
 }
