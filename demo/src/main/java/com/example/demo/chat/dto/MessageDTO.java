@@ -4,6 +4,8 @@ import com.example.demo.enums.chat.MessageType;
 import com.example.demo.enums.member.MemberRole;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 public class MessageDTO {
 
     @Getter
@@ -17,7 +19,7 @@ public class MessageDTO {
 
         private MessageType messageType;
 
-        private String contents;
+        private String content;
 
         private Long chatRoomId;
     }
@@ -33,23 +35,11 @@ public class MessageDTO {
 
         private MemberRole senderRole;
 
-        private MessageType messageType;
+        private String content;
 
-        private String contents;
-
-        private Long chatRoomId;
+        private LocalDateTime createdAt;
     }
 
-    @Getter
-    @Setter
-    @ToString
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class UnreadMessageResponse {
-
-        private int unreadMessageCount;
-    }
 
     @Getter
     @Setter
