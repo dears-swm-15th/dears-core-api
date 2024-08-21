@@ -56,8 +56,7 @@ public class DataLoader implements CommandLineRunner {
         List<String> services1 = Arrays.asList("서비스1", "서비스2");
         List<String> services2 = Arrays.asList("서비스A", "서비스B");
 
-        List<String> weddingPhotos1 = Arrays.asList("portfolio/3/7df63e8a-7666-4c92-8c55-fdd26005e97e.jpeg",
-                "portfolio/3/6c30499a-f568-416c-8bf9-4e62a20c7cee.jpeg");
+        List<String> weddingPhotos1 = Arrays.asList("portfolio/dummy/jeju.jpeg");
         List<String> weddingPhotos2 = Arrays.asList("wedding2_1.jpg", "wedding2_2.jpg");
 
         WeddingPlanner planner1 = WeddingPlanner.builder()
@@ -141,7 +140,7 @@ public class DataLoader implements CommandLineRunner {
                 .region(Region.CHUNGDAM)
                 .introduction("Introduction to Organization One.")
                 .contactInfo("contact@organizationone.com")
-                .profileImageUrl("portfolio/3/7310ef17-c1ea-40e1-a786-aa3ddf82b721.jpg")
+                .profileImageUrl("portfolio/dummy/7310ef17-c1ea-40e1-a786-aa3ddf82b721.jpg")
                 .consultingFee(100)
                 .description("Description of services offered by Organization One.")
                 .estimateSum(300)
@@ -161,7 +160,7 @@ public class DataLoader implements CommandLineRunner {
                 .region(Region.GANGNAM)
                 .introduction("Introduction to Organization Two.")
                 .contactInfo("contact@organizationtwo.com")
-                .profileImageUrl("image2.jpg")
+                .profileImageUrl("portfolio/dummy/636300258690471320-jordanharris.jpeg")
                 .consultingFee(200)
                 .description("Description of services offered by Organization Two.")
                 .estimateSum(500)

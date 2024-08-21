@@ -4,6 +4,7 @@ import com.example.demo.enums.member.MemberRole;
 import lombok.*;
 
 public class WeddingPlannerPortfolioDTO {
+
     @Setter
     @Getter
     @ToString

@@ -160,8 +160,8 @@ public class ChatRoomService {
 
                     return ChatRoomOverviewDTO.Response.builder()
                             .chatRoomId(chatRoom.getId())
-                            .othersProfileImageUrl(portfolioResponse.getWeddingPlannerPortfolioResponse().getProfileImageUrl())
-                            .othersName(portfolioResponse.getWeddingPlannerPortfolioResponse().getName())
+                            .othersProfileImageUrl(portfolioResponse.getProfileImageUrl())
+                            .othersName(portfolioResponse.getPlannerName())
                             .lastMessage(chatRoom.getLastMessageContent())
                             .lastMessageCreatedAt(chatRoom.getLastMessageCreatedAt())
                             .organizationName(portfolioResponse.getOrganization())
