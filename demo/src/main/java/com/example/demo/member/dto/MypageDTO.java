@@ -92,6 +92,9 @@ public class MypageDTO {
     @Builder
     public static class CustomerServiceRequest {
 
+        @Schema(type = "string", example = "고객센터 문의합니다.")
+        private String title;
+
         @Schema(type = "string", example = "웨딩플래너 수가 너무 부족해요.")
         private String content;
 
