@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.commons.httpclient.HttpClientConfiguration;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
@@ -17,7 +18,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class DemoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+        ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
     }
-
 }
+
