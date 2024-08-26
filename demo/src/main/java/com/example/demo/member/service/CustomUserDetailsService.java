@@ -1,6 +1,7 @@
 package com.example.demo.member.service;
 
 import com.example.demo.config.S3Uploader;
+import com.example.demo.discord.DiscordMessageProvider;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.CustomerContext;
@@ -42,6 +43,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final CustomerMapper customerMapper;
     private final WeddingPlannerMapper weddingPlannerMapper;
     private final S3Uploader s3Uploader;
+
+    private final DiscordMessageProvider discordMessageProvider;
+
 
     @Override
     public UserDetails loadUserByUsername(String UUID) throws UsernameNotFoundException {
@@ -220,5 +224,16 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new RuntimeException("WeddingPlanner not found"));
         log.info("Found wedding planner with UUID: {}", uuid);
         return weddingPlanner;
+    }
+
+    public MypageDTO.CustomerServiceResponse createCustomerService(MypageDTO.CustomerServiceRequest customerServiceRequest) {
+        discordMessageProvider.sendCustomerServiceMessage(customerServiceRequest.getContent());
+
+        MypageDTO.CustomerServiceResponse response = MypageDTO.CustomerServiceResponse.builder()
+                .content(customerServiceRequest.getContent())
+                .build();
+
+        log.info("Customer service request sent: {}", customerServiceRequest.getContent());
+        return response;
     }
 }
