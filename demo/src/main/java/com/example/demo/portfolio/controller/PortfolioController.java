@@ -101,7 +101,9 @@ public class PortfolioController {
 
     @GetMapping("/shared/search")
     @Operation(summary = "[공통] 포트폴리오 검색하여 조회")
-    public ResponseEntity<List<PortfolioSearchDTO.Response>> getSearchPortfolio(ㅎ) {
+    public ResponseEntity<List<PortfolioSearchDTO.Response>> getSearchPortfolio(
+            @Parameter(description = "검색 키워드")
+            @RequestParam String content) {
         List<PortfolioSearchDTO.Response> searchResult = portfolioSearchService.search(content);
         log.info("Searched portfolios with content: {}", content);
         return ResponseEntity.ok(searchResult);
