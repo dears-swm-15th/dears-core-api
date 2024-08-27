@@ -1,6 +1,5 @@
 package com.example.demo.portfolio;
 
-import com.example.demo.config.OpenSearchConfig;
 import com.example.demo.config.S3Config;
 import com.example.demo.config.S3Uploader;
 import com.example.demo.portfolio.domain.Portfolio;
@@ -10,7 +9,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.opensearch.client.opensearch.OpenSearchClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -35,12 +33,6 @@ public class PortfolioRepositoryTest {
 
     @MockBean
     private S3Config s3Config;
-
-    @MockBean
-    private OpenSearchConfig openSearchConfig;
-
-    @MockBean
-    private OpenSearchClient openSearchClient;
 
     @Before
     public void setUp() {
