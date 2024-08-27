@@ -1,6 +1,5 @@
 package com.example.demo.portfolio;
 
-import com.example.demo.config.OpenSearchConfig;
 import com.example.demo.config.S3Config;
 import com.example.demo.config.S3Uploader;
 import com.example.demo.portfolio.domain.Portfolio;
@@ -30,12 +29,6 @@ public class PortfolioConcurrencyTest {
 
     @MockBean
     private S3Config s3Config;
-
-    @MockBean
-    private OpenSearchConfig openSearchConfig;
-
-    @MockBean
-    private OpenSearchClient openSearchClient;
 
 
     @Autowired

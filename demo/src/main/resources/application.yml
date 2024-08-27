@@ -26,12 +26,6 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  elasticsearch:
-    uris: ${ELASTICSEARCH_URL}
-    username: ${ELASTICSEARCH_USERNAME}
-    password: ${ELASTICSEARCH_PASSWORD}
-    repositories:
-      enabled: true
   data:
     redis:
       port: 6379
