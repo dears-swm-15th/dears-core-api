@@ -34,7 +34,6 @@ public class PortfolioService {
     private final WeddingPlannerMapper weddingPlannerMapper = WeddingPlannerMapper.INSTANCE;
     private final ReviewRepository reviewRepository;
     private final S3Uploader s3Uploader;
-    private final PortfolioSearchService portfolioSearchService;
     private final CustomUserDetailsService customUserDetailsService;
 
     public List<PortfolioDTO.Response> getAllPortfolios() {
@@ -101,7 +100,6 @@ public class PortfolioService {
         response.setPresignedProfileImageUrl(profileImagePresignedUrl);
         response.setPresignedWeddingPhotoUrls(weddingPhotoPresignedUrlList);
 
-        portfolioSearchService.indexDocumentUsingDTO(savedPortfolio);
         return response;
     }
 
@@ -157,7 +155,6 @@ public class PortfolioService {
         if (!weddingPhotosPresignedUrlList.isEmpty()) {
             response.setPresignedWeddingPhotoUrls(weddingPhotosPresignedUrlList);
         }
-        portfolioSearchService.updateDocumentUsingDTO(savedPortfolio);
         return response;
     }
 
@@ -171,7 +168,6 @@ public class PortfolioService {
         deletePortfolioImages(portfolio);
         weddingPlanner.setPortfolio(null);
         portfolioRepository.softDeleteById(portfolioId);
-        portfolioSearchService.deleteDocumentById(portfolioId);
 
         log.info("Deleted portfolio with ID: {}", portfolioId);
     }
@@ -189,7 +185,6 @@ public class PortfolioService {
         Portfolio portfolio = getPortfolioWithLock(portfolioId);
         portfolio.increaseWishListCount();
         portfolioRepository.save(portfolio);
-        portfolioSearchService.updateDocumentUsingDTO(portfolio);
 
         log.info("Increased wishlist count for portfolio with ID: {}", portfolioId);
         return portfolio;
@@ -201,7 +196,6 @@ public class PortfolioService {
         Portfolio portfolio = getPortfolioWithLock(portfolioId);
         portfolio.decreaseWishListCount();
         portfolioRepository.save(portfolio);
-        portfolioSearchService.updateDocumentUsingDTO(portfolio);
 
         log.info("Decreased wishlist count for portfolio with ID: {}", portfolioId);
         return portfolio;
@@ -215,7 +209,6 @@ public class PortfolioService {
 
         updatePortfolioWithNewReview(portfolio, reviewRequest);
         portfolioRepository.save(portfolio);
-        portfolioSearchService.updateDocumentUsingDTO(portfolio);
 
         log.info("Reflected new review for portfolio with ID: {}", reviewRequest.getPortfolioId());
         return portfolio;
@@ -228,7 +221,6 @@ public class PortfolioService {
 
         updatePortfolioWithModifiedReview(portfolio, reviewRequest, existingReview);
         portfolioRepository.save(portfolio);
-        portfolioSearchService.updateDocumentUsingDTO(portfolio);
 
         log.info("Reflected modified review for portfolio with ID: {}", reviewRequest.getPortfolioId());
         return portfolio;
