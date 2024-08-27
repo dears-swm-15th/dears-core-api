@@ -47,3 +47,8 @@ management:
   endpoint:
     prometheus:
       enabled: true
+
+discord:
+  customer-service: discord-customer-service
+webhooks:
+  customer-service: ${DISCORD_CUSTOMER_SERVICE}

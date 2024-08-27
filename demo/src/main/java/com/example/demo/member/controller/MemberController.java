@@ -1,5 +1,6 @@
 package com.example.demo.member.controller;
 
+import com.example.demo.discord.DiscordMessageProvider;
 import com.example.demo.member.dto.AuthDTO;
 import com.example.demo.member.dto.MypageDTO;
 import com.example.demo.member.service.CustomUserDetailsService;
@@ -34,6 +35,13 @@ public class MemberController {
         MypageDTO.CustomerResponse myPage = customUserDetailsService.getCustomerMyPage();
         log.info("Fetched customer my page");
         return ResponseEntity.status(200).body(myPage);
+    }
+
+    @PostMapping("/mypage/customer/customerservice")
+    @Operation(summary = "[신랑신부] 고객센터 문의", description = "고객센터에 문의합니다.")
+    public ResponseEntity<MypageDTO.CustomerServiceResponse> createCustomerService(@RequestBody MypageDTO.CustomerServiceRequest customerServiceRequest) {
+        MypageDTO.CustomerServiceResponse customerServiceResponse = customUserDetailsService.createCustomerService(customerServiceRequest);
+        return ResponseEntity.status(201).body(customerServiceResponse);
     }
 
     @GetMapping("/mypage/weddingplanner/me")
