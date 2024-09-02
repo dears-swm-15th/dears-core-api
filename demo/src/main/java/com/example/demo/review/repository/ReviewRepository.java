@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    List<Review> findByPortfolioId(Long portfolioId);
+    List<Review> findByPortfolio(Portfolio portfolio);
 
     @Transactional
     @Modifying
