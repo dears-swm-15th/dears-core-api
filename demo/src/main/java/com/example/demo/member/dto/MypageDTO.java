@@ -84,4 +84,30 @@ public class MypageDTO {
     }
 
 
+    @Setter
+    @Getter
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CustomerServiceRequest {
+
+        @Schema(type = "string", example = "웨딩플래너 수가 너무 부족해요.")
+        private String content;
+
+    }
+
+    @Setter
+    @Getter
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CustomerServiceResponse {
+
+        @Schema(type = "string", example = "고객센터로 문의가 접수되었습니다.")
+        private String content;
+
+    }
+
 }

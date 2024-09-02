@@ -26,6 +26,9 @@ public class PortfolioSearchDTO {
         @Schema(type = "string", example = "김지수")
         private String plannerName;
 
+        @Schema(type = "string", example = "src/wedding_planner/imgs")
+        private String profileImageUrl;
+
         @Schema(type = "string", example = "GANGNAM")
         private String region;
 
@@ -77,6 +80,9 @@ public class PortfolioSearchDTO {
 
         @Schema(type = "string", example = "에바웨딩스")
         private String organization;
+
+        @Schema(type = "string", example = "src/wedding_planner/imgs")
+        private String profileImageUrl;
 
         @Schema(type = "string", example = "김지수")
         private String plannerName;

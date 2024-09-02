@@ -135,10 +135,10 @@ public class DataLoader implements CommandLineRunner {
                 .build();
 
         Portfolio portfolio1 = Portfolio.builder()
-                .organization("Organization One")
+                .organization("Forever Weddings")
                 .plannerName("Alice")
                 .region(Region.CHUNGDAM)
-                .introduction("Introduction to Organization One.")
+                .introduction("청담에서 활동하는 Alice입니다")
                 .contactInfo("contact@organizationone.com")
                 .profileImageUrl("portfolio/dummy/7310ef17-c1ea-40e1-a786-aa3ddf82b721.jpg")
                 .consultingFee(100)
@@ -158,7 +158,7 @@ public class DataLoader implements CommandLineRunner {
                 .organization("Organization Two")
                 .plannerName("Bob")
                 .region(Region.GANGNAM)
-                .introduction("Introduction to Organization Two.")
+                .introduction("Yours Weddings")
                 .contactInfo("contact@organizationtwo.com")
                 .profileImageUrl("portfolio/dummy/636300258690471320-jordanharris.jpeg")
                 .consultingFee(200)
