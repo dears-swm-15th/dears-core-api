@@ -174,10 +174,10 @@ public class PortfolioService {
         log.info("Deleted portfolio with ID: {}", portfolioId);
     }
 
-    public List<PortfolioDTO.Response> getAllSoftDeletedPortfolios() {
+    public List<PortfolioOverviewDTO.Response> getAllSoftDeletedPortfolios() {
         log.info("Starting getAllSoftDeletedPortfolios method");
         return portfolioRepository.findSoftDeletedPortfolios().stream()
-                .map(portfolioMapper::entityToResponse)
+                .map(portfolioMapper::entityToOverviewResponse)
                 .collect(Collectors.toList());
     }
 

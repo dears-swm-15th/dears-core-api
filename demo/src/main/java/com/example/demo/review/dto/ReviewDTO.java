@@ -20,9 +20,6 @@ public class ReviewDTO {
     public static class Request {
 
         @Schema(type = "string", example = "name1")
-        private String reviewerName;
-
-        @Schema(type = "string", example = "name1")
         private String content;
 
         @Schema(type = "boolean", example = "true")
@@ -97,7 +94,7 @@ public class ReviewDTO {
 
         @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
         private LocalDateTime updatedAt;
-        
+
         public List<String> getPresignedWeddingPhotoUrls() {
             if (this.presignedWeddingPhotoUrls == null) {
                 this.presignedWeddingPhotoUrls = new ArrayList<>();
