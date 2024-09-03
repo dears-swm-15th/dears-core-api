@@ -21,13 +21,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query(value = "UPDATE Review r SET r.isDeleted = true WHERE r.id = :id")
     void softDeleteById(@Param("id") Long id);
 
-    @Query(value = "SELECT * from Review r WHERE r.is_deleted = true", nativeQuery = true)
+    @Query("SELECT r from Review r WHERE r.isDeleted = true")
     List<Review> findSoftDeletedReviews();
 
-    @Query(value = "SELECT * from Review r WHERE r.is_provided = true and r.reviewer_id = :weddingPlannerId", nativeQuery = true)
+    @Query("SELECT r from Review r WHERE r.isProvided = true and r.reviewerId = :weddingPlannerId")
     List<Review> findReviewsForWeddingPlanner(Long weddingPlannerId);
 
-    @Query(value = "SELECT * from Review r WHERE r.is_provided = false and r.reviewer_id = :customerId", nativeQuery = true)
+    @Query("SELECT r from Review r WHERE r.isProvided = false and r.reviewerId = :customerId")
     List<Review> findReviewsForCustomer(Long customerId);
 
     Integer countByPortfolioId(Long id);
