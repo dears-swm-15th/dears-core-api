@@ -75,6 +75,8 @@ public class ReviewService {
         reviewRepository.save(review);
 
         ReviewDTO.Response response = reviewMapper.entityToResponse(review);
+        response.setPortfolioId(portfolio.getId());
+        response.setPresignedWeddingPhotoUrls(presignedUrlList);
 
         log.info("Successfully created review for wedding planner with ID: {}", review.getId());
         return response;
@@ -106,6 +108,7 @@ public class ReviewService {
 
         ReviewDTO.Response response = reviewMapper.entityToResponse(review);
         response.setPortfolioId(portfolio.getId());
+        response.setPresignedWeddingPhotoUrls(presignedUrlList);
 
         log.info("Successfully created review for customer with ID: {}", review.getId());
         return response;
@@ -152,6 +155,9 @@ public class ReviewService {
         Review updatedReview = reviewRepository.save(existingReview);
 
         ReviewDTO.Response response = reviewMapper.entityToResponse(updatedReview);
+        response.setPortfolioId(portfolio.getId());
+        response.setPresignedWeddingPhotoUrls(weddingPhotosPresignedUrlList);
+
 
         log.info("Successfully modified review for wedding planner with ID: {}", reviewId);
         return response;
@@ -201,6 +207,9 @@ public class ReviewService {
         Review updatedReview = reviewRepository.save(existingReview);
 
         ReviewDTO.Response response = reviewMapper.entityToResponse(updatedReview);
+        response.setPortfolioId(portfolio.getId());
+        response.setPresignedWeddingPhotoUrls(weddingPhotosPresignedUrlList);
+
 
         log.info("Successfully modified review for customer with ID: {}", reviewId);
         return response;
