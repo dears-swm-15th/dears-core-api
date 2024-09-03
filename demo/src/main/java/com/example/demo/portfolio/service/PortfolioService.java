@@ -276,6 +276,7 @@ public class PortfolioService {
     private ReviewDTO.Response mapToReviewResponse(Review review) {
         return ReviewDTO.Response.builder()
                 .id(review.getId())
+                .reviewerName(review.getReviewerName())
                 .portfolioId(review.getPortfolio().getId())
                 .rating(review.getRating())
                 .estimate(review.getEstimate())
