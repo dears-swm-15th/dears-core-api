@@ -69,7 +69,7 @@ public class ReviewService {
         Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
         review.setPortfolio(portfolio);
         review.setReviewerId(weddingPlanner.getId());
-        review.setReviewerName("사용자" + weddingPlanner.getName().substring(0, 3));
+        review.setReviewerName(weddingPlanner.getName());
         review.setIsProvided(true);
 
         reviewRepository.save(review);
@@ -100,6 +100,7 @@ public class ReviewService {
         List<String> presignedUrlList = s3Uploader.getPresignedUrls(review.getWeddingPhotoUrls());
 
         Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
+        review.setReviewerName(customer.getName());
         review.setPortfolio(portfolio);
         review.setReviewerId(customer.getId());
         review.setIsProvided(false);
