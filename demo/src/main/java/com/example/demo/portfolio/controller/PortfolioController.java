@@ -37,7 +37,7 @@ public class PortfolioController {
     public ResponseEntity<PortfolioDTO.Response> getPortfolioById(
             @Parameter(description = "portfolioId")
             @PathVariable Long portfolioId) {
-        if (customUserDetailsService.getCurrentAuthenticatedMemberRole().equals(CUSTOMER)){
+        if (customUserDetailsService.getCurrentAuthenticatedMemberRole().equals(CUSTOMER)) {
             portfolioService.increaseViewCount(portfolioId);
         }
         PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolioId);
@@ -85,8 +85,8 @@ public class PortfolioController {
 
     @GetMapping("/shared/soft-deleted")
     @Operation(summary = "[공통] soft-deleted가 된 포트폴리오 조회")
-    public ResponseEntity<List<PortfolioDTO.Response>> getAllSoftDeleted() {
-        List<PortfolioDTO.Response> softDeletedPortfolios = portfolioService.getAllSoftDeletedPortfolios();
+    public ResponseEntity<List<PortfolioOverviewDTO.Response>> getAllSoftDeleted() {
+        List<PortfolioOverviewDTO.Response> softDeletedPortfolios = portfolioService.getAllSoftDeletedPortfolios();
         log.info("Fetched all soft-deleted portfolios");
         return ResponseEntity.ok(softDeletedPortfolios);
     }
