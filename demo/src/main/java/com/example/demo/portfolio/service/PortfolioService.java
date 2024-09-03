@@ -5,11 +5,11 @@ import com.example.demo.enums.review.RadarKey;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.mapper.WeddingPlannerMapper;
 import com.example.demo.member.service.CustomUserDetailsService;
+import com.example.demo.portfolio.domain.Portfolio;
+import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.portfolio.dto.PortfolioOverviewDTO;
 import com.example.demo.portfolio.mapper.PortfolioMapper;
 import com.example.demo.portfolio.repository.PortfolioRepository;
-import com.example.demo.portfolio.domain.Portfolio;
-import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.review.domain.Review;
 import com.example.demo.review.dto.ReviewDTO;
 import com.example.demo.review.repository.ReviewRepository;
@@ -63,7 +63,9 @@ public class PortfolioService {
 
     public List<ReviewDTO.Response> getReviewsByPortfolioId(Long portfolioId) {
         log.info("Starting getReviewsByPortfolioId method for portfolio ID: {}", portfolioId);
-        return reviewRepository.findByPortfolioId(portfolioId).stream()
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow();
+        return reviewRepository.findByPortfolio(portfolio).stream()
                 .map(this::mapToReviewResponse)
                 .collect(Collectors.toList());
     }
@@ -111,7 +113,7 @@ public class PortfolioService {
 
 
         String profileImagePresigendUrl = "";
-        if(portfolioRequest.getProfileImageUrl() != null && !portfolioRequest.getProfileImageUrl().equals(existingPortfolio.getProfileImageUrl())) {
+        if (portfolioRequest.getProfileImageUrl() != null && !portfolioRequest.getProfileImageUrl().equals(existingPortfolio.getProfileImageUrl())) {
             //Delete existing image from s3 and upload new image
             s3Uploader.deleteFile(existingPortfolio.getProfileImageUrl());
             existingPortfolio.setProfileImageUrl(s3Uploader.makeUniqueFileName("portfolio", portfolioId, portfolioRequest.getProfileImageUrl()));
@@ -274,6 +276,7 @@ public class PortfolioService {
     private ReviewDTO.Response mapToReviewResponse(Review review) {
         return ReviewDTO.Response.builder()
                 .id(review.getId())
+                .reviewerName(review.getReviewerName())
                 .portfolioId(review.getPortfolio().getId())
                 .rating(review.getRating())
                 .estimate(review.getEstimate())
@@ -281,6 +284,7 @@ public class PortfolioService {
                 .content(review.getContent())
                 .createdAt(review.getCreatedAt())
                 .updatedAt(review.getUpdatedAt())
+                .weddingPhotoUrls(review.getWeddingPhotoUrls())
                 .build();
     }
 
