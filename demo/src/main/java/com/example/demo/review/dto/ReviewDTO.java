@@ -45,7 +45,7 @@ public class ReviewDTO {
 
         @Schema(type = "object", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_RATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6}")
         private Map<RadarKey, Float> radar;
-        
+
         @Schema(type = "integer", example = "2")
         private Long portfolioId;
 
@@ -89,22 +89,12 @@ public class ReviewDTO {
         @Schema(type = "object", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_RATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6}")
         private Map<RadarKey, Float> radar;
 
-        @Schema(type = "array", example = "[\"https://s3.amazonaws.com/bucket/weddingPhoto1.jpg\", \"https://s3.amazonaws.com/bucket/weddingPhoto2.jpg\"]", description = "각각 10분동안 유효하며, 보낸 이미지 순서대로 presigned URL이 반환됩니다.")
-        private List<String> presignedWeddingPhotoUrls;
-
         @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
         private LocalDateTime createdAt;
 
         @Schema(type = "LocalDateTime", example = "2024-07-04 16:53:33.130731")
         private LocalDateTime updatedAt;
-
-
-        public List<String> getPresignedWeddingPhotoUrls() {
-            if (this.presignedWeddingPhotoUrls == null) {
-                this.presignedWeddingPhotoUrls = new ArrayList<>();
-            }
-            return this.presignedWeddingPhotoUrls;
-        }
+        
 
         public List<String> getWeddingPhotoUrls() {
             if (this.weddingPhotoUrls == null) {

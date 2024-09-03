@@ -284,6 +284,7 @@ public class PortfolioService {
                 .content(review.getContent())
                 .createdAt(review.getCreatedAt())
                 .updatedAt(review.getUpdatedAt())
+                .weddingPhotoUrls(review.getWeddingPhotoUrls())
                 .build();
     }
 

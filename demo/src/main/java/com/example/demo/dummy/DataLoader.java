@@ -1,11 +1,10 @@
 package com.example.demo.dummy;
 
-import com.example.demo.chat.domain.ChatRoom;
 import com.example.demo.chat.domain.Message;
 import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.enums.chat.MessageType;
-import com.example.demo.enums.review.RadarKey;
 import com.example.demo.enums.portfolio.Region;
+import com.example.demo.enums.review.RadarKey;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.repository.CustomerRepository;
@@ -19,7 +18,6 @@ import com.example.demo.wishlist.repository.WishListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.HashMap;
