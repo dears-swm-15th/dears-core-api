@@ -1,10 +1,16 @@
 package com.example.demo.discord;
 
 import com.example.demo.discord.event.DiscordFeignCustomerService;
-import com.example.demo.member.domain.Customer;
+import com.example.demo.discord.event.DiscordFeignException;
+import com.example.demo.discord.message.CustomerServiceMessage;
+import com.example.demo.discord.message.ExceptionMessage;
+import com.example.demo.enums.member.MemberRole;
+import com.example.demo.error.ErrorResponse;
 import com.example.demo.member.dto.MypageDTO;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -15,45 +21,78 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DiscordMessageProvider {
 
+    private static final Logger log = LoggerFactory.getLogger(DiscordMessageProvider.class);
     private final DiscordFeignCustomerService discordFeignCustomerService;
+    private final DiscordFeignException discordFeignException;
 
-    public void sendCustomerServiceMessage(Customer customer, MypageDTO.CustomerServiceRequest request) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    String formattedTimestamp = LocalDateTime.now().format(formatter);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedTimestamp = LocalDateTime.now().format(formatter);
 
+    public void sendCustomerServiceMessage(String username, MemberRole role, String UUID, MypageDTO.CustomerServiceRequest request) {
         // Example embed creation
-        DiscordMessage.Embed embed = new DiscordMessage.Embed(
+        CustomerServiceMessage.Embed embed = new CustomerServiceMessage.Embed(
                 request.getTitle(),          // title
                 request.getContent(),        // description
                 4886754,                     // color (Cyan)
-                new DiscordMessage.Footer(formattedTimestamp),
 //                new DiscordMessage.Image("https://example.com/image.png"),
 //                new DiscordMessage.Thumbnail("https://example.com/thumbnail.png"),
-                new DiscordMessage.Author(customer.getName() + "(" +  customer.getUUID() + ")")
-//                List.of(
-//                        new DiscordMessage.Field("Date", "date", true),
-//                        new DiscordMessage.Field("Time", "time", true)
-//                )
+                new CustomerServiceMessage.Author(username),
+                List.of(
+                        new CustomerServiceMessage.Field("Role", role.getRoleName(), true),
+                        new CustomerServiceMessage.Field("UUID", UUID, true)
+                ),
+                new CustomerServiceMessage.Footer(formattedTimestamp)
         );
 
+        log.warn("embed: {}", embed);
+
         // Creating a Discord message with the embed
-        DiscordMessage discordMessage = DiscordMessage.createCustomerServiceMessage(
+        CustomerServiceMessage customerServiceMessage = CustomerServiceMessage.createCustomerServiceMessage(
                 EventMessage.CUSTOMER_SERVICE.getMessage(),
                 List.of(embed)
         );
 
-        sendCustomerMessageToDiscord(discordMessage);
+        sendExceptionMessageToDiscord(customerServiceMessage);
     }
 
-    private void sendCustomerMessageToDiscord(DiscordMessage discordMessage) {
+    private void sendExceptionMessageToDiscord(CustomerServiceMessage customerServiceMessage) {
         try {
-            discordFeignCustomerService.sendMessage(discordMessage);
+            discordFeignCustomerService.sendMessage(customerServiceMessage);
         } catch (FeignException e) {
-            throw new RuntimeException("ErrorMessage: INVALID_DISCORD_MESSAGE");
+            throw new FeignException.BadRequest(e.getMessage(), e.request(), e.request().body(), e.request().headers());
         }
     }
 
+    public void sendExceptionMessage(String username, MemberRole role, String UUID, ErrorResponse response) {
+        ExceptionMessage.Embed embed = new ExceptionMessage.Embed(
+                response.getResultMsg(),
+                response.getReason(),
+                16711680,
+                List.of(
+                        new ExceptionMessage.Field("Status", String.valueOf(response.getStatus()), true),
+                        new ExceptionMessage.Field("Division Code", response.getDivisionCode(), true),
+                        new ExceptionMessage.Field("", "", true),
+                        new ExceptionMessage.Field("Username", username, true),
+                        new ExceptionMessage.Field("Role", role.getRoleName(), true),
+                        new ExceptionMessage.Field("UUID", UUID, true)
+                ),
+                new ExceptionMessage.Footer(formattedTimestamp)
+        );
 
+        ExceptionMessage customerServiceMessage = ExceptionMessage.createExceptionMessage(
+                EventMessage.EXCEPTION.getMessage(),
+                List.of(embed)
+        );
 
+        sendExceptionMessageToDiscord(customerServiceMessage);
+    }
+
+    private void sendExceptionMessageToDiscord(ExceptionMessage exceptionMessage) {
+        try {
+            discordFeignException.sendMessage(exceptionMessage);
+        } catch (FeignException e) {
+            throw new FeignException.BadRequest(e.getMessage(), e.request(), e.request().body(), e.request().headers());
+        }
+    }
 }
