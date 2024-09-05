@@ -1,7 +1,11 @@
 package com.example.demo.error;
 
+import com.example.demo.discord.DiscordMessageProvider;
+import com.example.demo.enums.member.MemberRole;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonParseException;
+import feign.FeignException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +25,10 @@ import java.io.IOException;
 
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+    private final DiscordMessageProvider discordMessageProvider;
 
     /**
      * [Exception] API 호출 시 '객체' 혹은 '파라미터' 데이터 값이 유효하지 않은 경우
@@ -173,19 +180,27 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(FeignException.BadRequest.class)
+    protected ResponseEntity<ErrorResponse> handleFeignClientException(FeignException.FeignClientException ex) {
+        log.error("handleFeignClientException", ex);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.FEIGN_CLIENT_ERROR, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
 
     // ==================================================================================================================
 
     /**
-     * [Exception] 모든 Exception 경우 발생
+     * [Exception] 모든 Runtime Exception 경우 발생
      *
      * @param ex Exception
      * @return ResponseEntity<ErrorResponse>
      */
     @ExceptionHandler(Exception.class)
-    protected final ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
-        log.error("Exception", ex);
+    public final ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
+        log.error("RuntimeException", ex);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage());
+        discordMessageProvider.sendExceptionMessage("Clara", MemberRole.CUSTOMER, "test-1234", response);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
