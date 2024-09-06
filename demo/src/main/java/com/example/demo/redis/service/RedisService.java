@@ -64,4 +64,32 @@ public class RedisService {
     public boolean checkExistsValue(String value) {
         return !value.equals("false");
     }
+
+    public void setSetValue(String key, String value) {
+        redisTemplate.opsForSet().add(key, value);
+    }
+
+    public String getSetValue(String key) {
+        return redisTemplate.opsForSet().members(key).toString();
+    }
+
+    public Long getSetSize(String key) {
+        return redisTemplate.opsForSet().size(key);
+    }
+
+    public boolean checkExistsSetValue(String key, String value) {
+        return redisTemplate.opsForSet().isMember(key, value);
+    }
+
+    public void deleteSetValue(String key, String value) {
+        redisTemplate.opsForSet().remove(key, value);
+    }
+
+    public void getAllSetValue(String key) {
+        redisTemplate.opsForSet().members(key);
+    }
+
+    public void deleteAllSet() {
+        redisTemplate.delete(redisTemplate.keys("*"));
+    }
 }
