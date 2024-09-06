@@ -8,6 +8,7 @@ import com.example.demo.enums.member.MemberRole;
 import com.example.demo.error.ErrorResponse;
 import com.example.demo.member.dto.MypageDTO;
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,14 @@ public class DiscordMessageProvider {
     private static final Logger log = LoggerFactory.getLogger(DiscordMessageProvider.class);
     private final DiscordFeignCustomerService discordFeignCustomerService;
     private final DiscordFeignException discordFeignException;
+    private final HttpServletRequest request;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     String formattedTimestamp = LocalDateTime.now().format(formatter);
 
+    private String getRequestPath() {
+        return request.getRequestURI();
+    }
 
     public void sendCustomerServiceMessage(String username, MemberRole role, String UUID, MypageDTO.CustomerServiceRequest request) {
         // Example embed creation
@@ -72,7 +77,7 @@ public class DiscordMessageProvider {
                 List.of(
                         new ExceptionMessage.Field("Status", String.valueOf(response.getStatus()), true),
                         new ExceptionMessage.Field("Division Code", response.getDivisionCode(), true),
-                        new ExceptionMessage.Field("", "", true),
+                        new ExceptionMessage.Field("Request URL", getRequestPath(), true),
                         new ExceptionMessage.Field("Username", username, true),
                         new ExceptionMessage.Field("Role", role.getRoleName(), true),
                         new ExceptionMessage.Field("UUID", UUID, true)
