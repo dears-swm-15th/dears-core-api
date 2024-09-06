@@ -200,7 +200,7 @@ public class GlobalExceptionHandler {
     public final ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
         log.error("RuntimeException", ex);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage());
-        discordMessageProvider.sendExceptionMessage("Clara", MemberRole.CUSTOMER, "51fc7d6b-7f86-43cf-b5c7-de4c46046d71", response);
+        discordMessageProvider.sendExceptionMessage("Clara", MemberRole.CUSTOMER, "51fc7d6b-7f86-43cf-b5c7-de4c46046d71", response, ex);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

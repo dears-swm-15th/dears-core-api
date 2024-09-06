@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -29,6 +31,12 @@ public class DiscordMessageProvider {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     String formattedTimestamp = LocalDateTime.now().format(formatter);
+
+    private static String exceptionToString(Exception ex) {
+        StringWriter stringWriter = new StringWriter();
+        ex.printStackTrace(new PrintWriter(stringWriter));
+        return stringWriter.toString();
+    }
 
     private String getRequestPath() {
         return request.getRequestURI();
@@ -50,8 +58,6 @@ public class DiscordMessageProvider {
                 new CustomerServiceMessage.Footer(formattedTimestamp)
         );
 
-        log.warn("embed: {}", embed);
-
         // Creating a Discord message with the embed
         CustomerServiceMessage customerServiceMessage = CustomerServiceMessage.createCustomerServiceMessage(
                 EventMessage.CUSTOMER_SERVICE.getMessage(),
@@ -69,8 +75,8 @@ public class DiscordMessageProvider {
         }
     }
 
-    public void sendExceptionMessage(String username, MemberRole role, String UUID, ErrorResponse response) {
-        ExceptionMessage.Embed embed = new ExceptionMessage.Embed(
+    public void sendExceptionMessage(String username, MemberRole role, String UUID, ErrorResponse response, Exception ex) {
+        ExceptionMessage.Embed summary = new ExceptionMessage.Embed(
                 response.getResultMsg(),
                 response.getReason(),
                 16711680,
@@ -85,9 +91,17 @@ public class DiscordMessageProvider {
                 new ExceptionMessage.Footer(formattedTimestamp)
         );
 
+        ExceptionMessage.Embed detail = new ExceptionMessage.Embed(
+                "Exception Details",
+                exceptionToString(ex).substring(0, 2048),
+                16711680,
+                List.of(),
+                new ExceptionMessage.Footer(formattedTimestamp)
+        );
+
         ExceptionMessage customerServiceMessage = ExceptionMessage.createExceptionMessage(
                 EventMessage.EXCEPTION.getMessage(),
-                List.of(embed)
+                List.of(summary, detail)
         );
 
         sendExceptionMessageToDiscord(customerServiceMessage);
