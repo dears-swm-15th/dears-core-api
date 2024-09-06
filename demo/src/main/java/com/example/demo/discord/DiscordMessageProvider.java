@@ -6,6 +6,7 @@ import com.example.demo.discord.message.CustomerServiceMessage;
 import com.example.demo.discord.message.ExceptionMessage;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.error.ErrorResponse;
+import com.example.demo.error.UserInfo;
 import com.example.demo.member.dto.MypageDTO;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -75,7 +76,7 @@ public class DiscordMessageProvider {
         }
     }
 
-    public void sendExceptionMessage(String username, MemberRole role, String UUID, ErrorResponse response, Exception ex) {
+    public void sendExceptionMessage(UserInfo userInfo, ErrorResponse response, Exception ex) {
         ExceptionMessage.Embed summary = new ExceptionMessage.Embed(
                 response.getResultMsg(),
                 response.getReason(),
@@ -84,9 +85,9 @@ public class DiscordMessageProvider {
                         new ExceptionMessage.Field("Status", String.valueOf(response.getStatus()), true),
                         new ExceptionMessage.Field("Division Code", response.getDivisionCode(), true),
                         new ExceptionMessage.Field("Request URL", getRequestPath(), true),
-                        new ExceptionMessage.Field("Username", username, true),
-                        new ExceptionMessage.Field("Role", role.getRoleName(), true),
-                        new ExceptionMessage.Field("UUID", UUID, true)
+                        new ExceptionMessage.Field("Username", userInfo.username(), true),
+                        new ExceptionMessage.Field("Role", userInfo.role().getRoleName(), true),
+                        new ExceptionMessage.Field("UUID", userInfo.UUID(), true)
                 ),
                 new ExceptionMessage.Footer(formattedTimestamp)
         );
