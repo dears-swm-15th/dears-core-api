@@ -75,7 +75,8 @@ public enum ErrorCode {
     // Transaction Delete Error
     DELETE_ERROR(200, "9999", "Delete Transaction Error Exception"),
 
-    ; // End
+    // Feign Client Error
+    FEIGN_CLIENT_ERROR(400, "9999", "Feign Client Error Exception");
 
     /**
      * ******************************* Error Code Constructor ***************************************

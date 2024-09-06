@@ -1,25 +1,25 @@
-package com.example.demo.discord;
+package com.example.demo.discord.message;
 
 import java.util.List;
 
-public record DiscordMessage(
-        String content,
+public record CustomerServiceMessage(
+        String message,
         List<Embed> embeds
 ) {
 
-    public static DiscordMessage createCustomerServiceMessage(String message, List<Embed> embeds) {
-        return new DiscordMessage(message, embeds);
+    public static CustomerServiceMessage createCustomerServiceMessage(String message, List<Embed> embeds) {
+        return new CustomerServiceMessage(message, embeds);
     }
 
     public static record Embed(
             String title,
             String description,
             int color,
-            Footer footer,
 //            Image image,
 //            Thumbnail thumbnail,
-            Author author
-//            List<Field> fields
+            Author author,
+            List<Field> fields,
+            Footer footer
     ) {
     }
 
@@ -45,8 +45,10 @@ public record DiscordMessage(
 
     public static record Field(
             String name,
-            String time,
+            String value,
             boolean inline
     ) {
     }
+
+
 }

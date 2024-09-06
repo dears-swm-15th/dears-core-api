@@ -50,5 +50,7 @@ management:
 
 discord:
   customer-service: discord-customer-service
+  exception: discord-exception
 webhooks:
   customer-service: ${DISCORD_CUSTOMER_SERVICE}
+  exception: ${DISCORD_EXCEPTION}

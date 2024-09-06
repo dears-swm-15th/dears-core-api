@@ -1,9 +1,7 @@
 package com.example.demo.member.service;
 
 import com.example.demo.config.S3Uploader;
-import com.example.demo.discord.DiscordMessage;
 import com.example.demo.discord.DiscordMessageProvider;
-import com.example.demo.discord.event.DiscordFeignCustomerService;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.CustomerContext;
@@ -47,7 +45,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final S3Uploader s3Uploader;
 
     private final DiscordMessageProvider discordMessageProvider;
-    private final DiscordFeignCustomerService discordFeignCustomerService;
 
     @Override
     public UserDetails loadUserByUsername(String UUID) throws UsernameNotFoundException {
@@ -139,6 +136,26 @@ public class CustomUserDetailsService implements UserDetailsService {
         return null;
     }
 
+    public String getCurrentAuthenticatedMemberName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+            if (getCurrentAuthenticatedMemberRole() == MemberRole.CUSTOMER) {
+                return getCurrentAuthenticatedCustomer().getName();
+            } else {
+                return getCurrentAuthenticatedWeddingPlanner().getName();
+            }
+        }
+        return null;
+    }
+
+    public String getCurrentAuthenticatedMemberUUID() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+            return authentication.getName();
+        }
+        return null;
+    }
+
     private MemberRole getMemberRole(Authentication authentication) {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -189,7 +206,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         MypageDTO.MyPageUpdateResponse response = customerMapper.entityToMypageUpdateResponse(customer);
-        if (profileImagePresignedUrl != ""){ response.setProfileImagePresignedUrl(profileImagePresignedUrl); }
+        if (profileImagePresignedUrl != "") {
+            response.setProfileImagePresignedUrl(profileImagePresignedUrl);
+        }
         log.info("Updated customer my page for UUID: {}", customer.getUUID());
         return response;
     }
@@ -207,7 +226,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         MypageDTO.MyPageUpdateResponse response = weddingPlannerMapper.entityToMypageUpdateResponse(weddingPlanner);
-        if (profileImagePresignedUrl != ""){ response.setProfileImagePresignedUrl(profileImagePresignedUrl); }
+        if (profileImagePresignedUrl != "") {
+            response.setProfileImagePresignedUrl(profileImagePresignedUrl);
+        }
         log.info("Updated wedding planner my page for UUID: {}", weddingPlanner.getUUID());
         return response;
     }
@@ -229,16 +250,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     public MypageDTO.CustomerServiceResponse createCustomerService(MypageDTO.CustomerServiceRequest customerServiceRequest) {
-        Customer customer = getCurrentAuthenticatedCustomer();
-        discordMessageProvider.sendCustomerServiceMessage(customer, customerServiceRequest);
+        String username = getCurrentAuthenticatedMemberName();
+        MemberRole role = getCurrentAuthenticatedMemberRole();
+        String UUID = getCurrentAuthenticatedMemberUUID();
+
+        discordMessageProvider.sendCustomerServiceMessage(username, role, UUID, customerServiceRequest);
 
         MypageDTO.CustomerServiceResponse response = MypageDTO.CustomerServiceResponse.builder()
                 .content(customerServiceRequest.getContent())
                 .build();
 
         log.info("Customer service request sent: {}", customerServiceRequest.getContent());
-
-
 
         return response;
     }
