@@ -6,13 +6,17 @@ import com.example.demo.discord.message.CustomerServiceMessage;
 import com.example.demo.discord.message.ExceptionMessage;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.error.ErrorResponse;
+import com.example.demo.error.UserInfo;
 import com.example.demo.member.dto.MypageDTO;
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -24,10 +28,20 @@ public class DiscordMessageProvider {
     private static final Logger log = LoggerFactory.getLogger(DiscordMessageProvider.class);
     private final DiscordFeignCustomerService discordFeignCustomerService;
     private final DiscordFeignException discordFeignException;
+    private final HttpServletRequest request;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     String formattedTimestamp = LocalDateTime.now().format(formatter);
 
+    private static String exceptionToString(Exception ex) {
+        StringWriter stringWriter = new StringWriter();
+        ex.printStackTrace(new PrintWriter(stringWriter));
+        return stringWriter.toString();
+    }
+
+    private String getRequestPath() {
+        return request.getRequestURI();
+    }
 
     public void sendCustomerServiceMessage(String username, MemberRole role, String UUID, MypageDTO.CustomerServiceRequest request) {
         // Example embed creation
@@ -44,8 +58,6 @@ public class DiscordMessageProvider {
                 ),
                 new CustomerServiceMessage.Footer(formattedTimestamp)
         );
-
-        log.warn("embed: {}", embed);
 
         // Creating a Discord message with the embed
         CustomerServiceMessage customerServiceMessage = CustomerServiceMessage.createCustomerServiceMessage(
@@ -64,25 +76,33 @@ public class DiscordMessageProvider {
         }
     }
 
-    public void sendExceptionMessage(String username, MemberRole role, String UUID, ErrorResponse response) {
-        ExceptionMessage.Embed embed = new ExceptionMessage.Embed(
+    public void sendExceptionMessage(UserInfo userInfo, ErrorResponse response, Exception ex) {
+        ExceptionMessage.Embed summary = new ExceptionMessage.Embed(
                 response.getResultMsg(),
                 response.getReason(),
                 16711680,
                 List.of(
                         new ExceptionMessage.Field("Status", String.valueOf(response.getStatus()), true),
                         new ExceptionMessage.Field("Division Code", response.getDivisionCode(), true),
-                        new ExceptionMessage.Field("", "", true),
-                        new ExceptionMessage.Field("Username", username, true),
-                        new ExceptionMessage.Field("Role", role.getRoleName(), true),
-                        new ExceptionMessage.Field("UUID", UUID, true)
+                        new ExceptionMessage.Field("Request URL", getRequestPath(), true),
+                        new ExceptionMessage.Field("Username", userInfo.username(), true),
+                        new ExceptionMessage.Field("Role", userInfo.role().getRoleName(), true),
+                        new ExceptionMessage.Field("UUID", userInfo.UUID(), true)
                 ),
+                new ExceptionMessage.Footer(formattedTimestamp)
+        );
+
+        ExceptionMessage.Embed detail = new ExceptionMessage.Embed(
+                "Exception Details",
+                exceptionToString(ex).substring(0, 2048),
+                16711680,
+                List.of(),
                 new ExceptionMessage.Footer(formattedTimestamp)
         );
 
         ExceptionMessage customerServiceMessage = ExceptionMessage.createExceptionMessage(
                 EventMessage.EXCEPTION.getMessage(),
-                List.of(embed)
+                List.of(summary, detail)
         );
 
         sendExceptionMessageToDiscord(customerServiceMessage);
