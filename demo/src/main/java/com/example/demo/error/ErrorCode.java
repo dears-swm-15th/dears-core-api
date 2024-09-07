@@ -76,7 +76,10 @@ public enum ErrorCode {
     DELETE_ERROR(200, "9999", "Delete Transaction Error Exception"),
 
     // Feign Client Error
-    FEIGN_CLIENT_ERROR(400, "9999", "Feign Client Error Exception");
+    FEIGN_CLIENT_ERROR(400, "G013", "Feign Client Error Exception"),
+
+    // UsernameNotFoundException
+    USERNAME_NOT_FOUND_ERROR(404, "G014", "Username Not Found Exception");
 
     /**
      * ******************************* Error Code Constructor ***************************************
