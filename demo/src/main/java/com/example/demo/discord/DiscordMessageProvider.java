@@ -62,15 +62,7 @@ public class DiscordMessageProvider {
                 List.of(embed)
         );
 
-        sendExceptionMessageToDiscord(customerServiceMessage);
-    }
-
-    private void sendExceptionMessageToDiscord(CustomerServiceMessage customerServiceMessage) {
-        try {
-            discordFeignCustomerService.sendMessage(customerServiceMessage);
-        } catch (FeignException e) {
-            throw new FeignException.BadRequest(e.getMessage(), e.request(), e.request().body(), e.request().headers());
-        }
+        sendMessageToDiscord(customerServiceMessage);
     }
 
     public void sendExceptionMessage(UserInfo userInfo, ErrorResponse response, Exception ex) {
@@ -102,10 +94,18 @@ public class DiscordMessageProvider {
                 List.of(summary, detail)
         );
 
-        sendExceptionMessageToDiscord(customerServiceMessage);
+        sendMessageToDiscord(customerServiceMessage);
     }
 
-    private void sendExceptionMessageToDiscord(ExceptionMessage exceptionMessage) {
+    private void sendMessageToDiscord(CustomerServiceMessage customerServiceMessage) {
+        try {
+            discordFeignCustomerService.sendMessage(customerServiceMessage);
+        } catch (FeignException e) {
+            throw new FeignException.BadRequest(e.getMessage(), e.request(), e.request().body(), e.request().headers());
+        }
+    }
+
+    private void sendMessageToDiscord(ExceptionMessage exceptionMessage) {
         try {
             discordFeignException.sendMessage(exceptionMessage);
         } catch (FeignException e) {
