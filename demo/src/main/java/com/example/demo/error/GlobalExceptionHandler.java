@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
         return new UserInfo(username, UUID, role);
     }
 
-    private ResponseEntity<ErrorResponse> buildEroorReponseAndSendAlert(Exception ex, ErrorCode errorCode, HttpStatus httpStatus) {
+    private ResponseEntity<ErrorResponse> buildErrorResponseAndSendAlert(Exception ex, ErrorCode errorCode, HttpStatus httpStatus) {
         log.error("{}", ex.getMessage(), ex);
         final ErrorResponse response = ErrorResponse.of(errorCode, ex.getMessage());
         UserInfo userInfo = getUserInfo();
@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
             stringBuilder.append(", ");
         }
 
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.NOT_VALID_ERROR, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.NOT_VALID_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -76,7 +76,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MissingRequestHeaderException.class)
     protected ResponseEntity<ErrorResponse> handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.NOT_VALID_HEADER_ERROR, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.NOT_VALID_HEADER_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -88,7 +88,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex) {
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.REQUEST_BODY_MISSING_ERROR, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.REQUEST_BODY_MISSING_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     protected ResponseEntity<ErrorResponse> handleMissingRequestHeaderExceptionException(
             MissingServletRequestParameterException ex) {
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.MISSING_REQUEST_PARAMETER_ERROR, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.MISSING_REQUEST_PARAMETER_ERROR, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -112,7 +112,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpClientErrorException.BadRequest.class)
     protected ResponseEntity<ErrorResponse> handleBadRequestException(HttpClientErrorException ex) {
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.BAD_REQUEST_ERROR, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.BAD_REQUEST_ERROR, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -124,7 +124,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NoHandlerFoundException.class)
     protected ResponseEntity<ErrorResponse> handleNoHandlerFoundExceptionException(NoHandlerFoundException ex) {
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.NOT_VALID_ERROR, HttpStatus.NOT_FOUND);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.NOT_VALID_ERROR, HttpStatus.NOT_FOUND);
     }
 
 
@@ -136,12 +136,12 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NullPointerException.class)
     protected ResponseEntity<ErrorResponse> handleNullPointerException(NullPointerException ex) {
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.NULL_POINT_ERROR, HttpStatus.NOT_FOUND);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.NULL_POINT_ERROR, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     protected ResponseEntity<ErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.USERNAME_NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.USERNAME_NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -152,7 +152,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IOException.class)
     protected ResponseEntity<ErrorResponse> handleIOException(IOException ex) {
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.IO_ERROR, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.IO_ERROR, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -164,7 +164,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(JsonParseException.class)
     protected ResponseEntity<ErrorResponse> handleJsonParseExceptionException(JsonParseException ex) {
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.JSON_PARSE_ERROR, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.JSON_PARSE_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -175,12 +175,12 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(JsonProcessingException.class)
     protected ResponseEntity<ErrorResponse> handleJsonProcessingException(JsonProcessingException ex) {
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.JACKSON_PROCESS_ERROR, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.JACKSON_PROCESS_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(FeignException.BadRequest.class)
     protected ResponseEntity<ErrorResponse> handleFeignClientException(FeignException.FeignClientException ex) {
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.FEIGN_CLIENT_ERROR, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.FEIGN_CLIENT_ERROR, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -194,6 +194,6 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
-        return buildEroorReponseAndSendAlert(ex, ErrorCode.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
