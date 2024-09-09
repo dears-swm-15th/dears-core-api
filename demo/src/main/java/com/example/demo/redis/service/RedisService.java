@@ -73,6 +73,12 @@ public class RedisService {
         return redisTemplate.opsForSet().members(key).toString();
     }
 
+    // set Set value with timeout
+    public void setSetValue(String key, String value, Duration timeout) {
+        redisTemplate.opsForSet().add(key, value);
+        redisTemplate.expire(key, timeout);
+    }
+
     public Long getSetSize(String key) {
         return redisTemplate.opsForSet().size(key);
     }

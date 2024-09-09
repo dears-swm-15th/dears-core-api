@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,6 +51,8 @@ public class ChatRoomService {
 
     private final SimpMessagingTemplate template;
     private final RedisService redisService;
+
+    Duration DAY_TIMEOUT = Duration.ofDays(1);
 
     public ChatRoom getChatRoomById(Long chatRoomId) {
         log.info("Fetching chat room by ID: {}", chatRoomId);
@@ -216,7 +219,7 @@ public class ChatRoomService {
     public ChatRoomDTO.Response getMessagesByChatRoomForCustomer(ChatRoom chatRoom) {
         log.info("Fetching messages by chat room for customer");
         String Uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
-        redisService.setSetValue(chatRoom.getId().toString(), Uuid);
+        redisService.setSetValue(chatRoom.getId().toString(), Uuid, DAY_TIMEOUT);
 
         chatRoomRepository.save(chatRoom);
 
@@ -235,7 +238,7 @@ public class ChatRoomService {
     public ChatRoomDTO.Response getMessagesByChatRoomForWeddingPlanner(ChatRoom chatRoom) {
         log.info("Fetching messages by chat room for wedding planner");
         String Uuid = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().getUUID();
-        redisService.setSetValue(chatRoom.getId().toString(), Uuid);
+        redisService.setSetValue(chatRoom.getId().toString(), Uuid, DAY_TIMEOUT);
 
         chatRoomRepository.save(chatRoom);
 
