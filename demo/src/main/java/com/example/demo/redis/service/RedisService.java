@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -102,8 +103,20 @@ public class RedisService {
     }
 
     // get keys which has value
-    public Set<String> getKeys(String value) {
-        return redisTemplate.keys(value);
+    public Set<String> getKeysByValue(String value) {
+        // Get all keys that match the pattern "*"
+        Set<String> allKeys = redisTemplate.keys("*");
+        Set<String> matchingKeys = new HashSet<>();
+
+        // Iterate over all keys
+        for (String key : allKeys) {
+            // Check if the value exists in the set associated with this key
+            if (redisTemplate.opsForSet().isMember(key, value)) {
+                matchingKeys.add(key);
+            }
+        }
+
+        return matchingKeys;
     }
 
     // get all keys and their corresponding set members
