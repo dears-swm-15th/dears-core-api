@@ -3,10 +3,7 @@ package com.example.demo.chat.service;
 
 import com.example.demo.chat.domain.ChatRoom;
 import com.example.demo.chat.domain.Message;
-import com.example.demo.chat.dto.ChatRoomDTO;
-import com.example.demo.chat.dto.ChatRoomOverviewDTO;
 import com.example.demo.chat.dto.MessageDTO;
-import com.example.demo.chat.mapper.ChatRoomMapper;
 import com.example.demo.chat.mapper.MessageMapper;
 import com.example.demo.chat.repository.ChatRoomRepository;
 import com.example.demo.chat.repository.MessageRepository;
@@ -14,14 +11,12 @@ import com.example.demo.config.StompPreHandler;
 import com.example.demo.enums.member.MemberRole;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
-import com.example.demo.member.repository.CustomerRepository;
+import com.example.demo.redis.service.RedisService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +26,10 @@ public class MessageService {
     private final MessageMapper messageMapper = MessageMapper.INSTANCE;
 
     private final ChatRoomService chatRoomService;
-
-    private final ChatRoomMapper chatRoomMapper = ChatRoomMapper.INSTANCE;
     private final ChatRoomRepository chatRoomRepository;
 
     private final SimpMessagingTemplate template;
-    private final CustomerRepository customerRepository;
+    private final RedisService redisService;
 
 
     @Transactional
@@ -73,7 +66,7 @@ public class MessageService {
 
         template.convertAndSend("/sub/" + messageRequest.getChatRoomId(), messageRequest);
 
-        if (chatRoom.getUserIds().size() == 2) {
+        if (redisService.getSetSize(chatRoom.getId().toString()) == 2) {
             message.setOppositeReadFlag(true);
         } else {
             message.setOppositeReadFlag(false);
@@ -81,8 +74,6 @@ public class MessageService {
 
         messageRepository.save(message);
 
-        // TODO : Redis로 변경
-        chatRoom.addUser(Uuid);
         chatRoom.addMessage(message);
         chatRoom.setLastMessageContent(message.getContent());
         chatRoom.setLastMessageCreatedAt(message.getCreatedAt());
@@ -97,7 +88,7 @@ public class MessageService {
         ChatRoom chatRoom = chatRoomRepository.findById(messageRequest.getChatRoomId())
                 .orElseThrow();
 
-        chatRoom.removeUser(customerUuid);
+        redisService.deleteSetValue(chatRoom.getId().toString(), customerUuid);
         chatRoomRepository.save(chatRoom);
     }
 
@@ -106,7 +97,7 @@ public class MessageService {
         ChatRoom chatRoom = chatRoomRepository.findById(messageRequest.getChatRoomId())
                 .orElseThrow();
 
-        chatRoom.removeUser(weddingPlannerUuid);
+        redisService.deleteSetValue(chatRoom.getId().toString(), weddingPlannerUuid);
         chatRoomRepository.save(chatRoom);
     }
 

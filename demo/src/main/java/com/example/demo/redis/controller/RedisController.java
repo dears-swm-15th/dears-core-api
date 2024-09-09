@@ -81,4 +81,17 @@ public class RedisController {
         log.info("Existence check for key: {} is: {}", key, exists);
         return exists;
     }
+
+    @GetMapping("/getSet")
+    public String getSetValue(@RequestParam String key) {
+        log.info("Getting set value for key: {}", key);
+        String value = redisService.getSetValue(key);
+        return value;
+    }
+
+    @GetMapping("/deleteAllSet")
+    public void deleteAllSetValues() {
+        log.info("Deleting all set values for key");
+        redisService.deleteAllSet();
+    }
 }

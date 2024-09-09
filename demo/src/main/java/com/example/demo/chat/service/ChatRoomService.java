@@ -19,6 +19,7 @@ import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
 import com.example.demo.portfolio.repository.PortfolioRepository;
 import com.example.demo.portfolio.service.PortfolioService;
+import com.example.demo.redis.service.RedisService;
 import com.example.demo.wishlist.service.WishListService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,12 +42,14 @@ public class ChatRoomService {
     private final PortfolioService portfolioService;
     private final PortfolioRepository portfolioRepository;
 
+    private final WishListService wishListService;
+
     private final MessageMapper messageMapper = MessageMapper.INSTANCE;
 
     private final WeddingPlannerRepository weddingPlannerRepository;
 
     private final SimpMessagingTemplate template;
-    private final WishListService wishListService;
+    private final RedisService redisService;
 
     public ChatRoom getChatRoomById(Long chatRoomId) {
         log.info("Fetching chat room by ID: {}", chatRoomId);
@@ -194,12 +197,6 @@ public class ChatRoomService {
                 .collect(Collectors.toList());
     }
 
-    public Long getChatRoomIdByCustomerAndWeddingPlanner(Customer customer, WeddingPlanner weddingPlanner) {
-        log.info("Getting chat room ID for customer ID: {} and wedding planner ID: {}", customer.getId(), weddingPlanner.getId());
-        ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
-        return chatRoom.getId();
-    }
-    
     public ChatRoomDTO.Response getMessagesByChatRoomIdForCustomer(Long chatRoomId) {
         log.info("Fetching messages by chat room ID: {}", chatRoomId);
         ChatRoom chatRoom = getChatRoomById(chatRoomId);
@@ -219,7 +216,7 @@ public class ChatRoomService {
     public ChatRoomDTO.Response getMessagesByChatRoomForCustomer(ChatRoom chatRoom) {
         log.info("Fetching messages by chat room for customer");
         String Uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
-        chatRoom.addUser(Uuid);
+        redisService.setSetValue(chatRoom.getId().toString(), Uuid);
 
         chatRoomRepository.save(chatRoom);
 
@@ -238,7 +235,7 @@ public class ChatRoomService {
     public ChatRoomDTO.Response getMessagesByChatRoomForWeddingPlanner(ChatRoom chatRoom) {
         log.info("Fetching messages by chat room for wedding planner");
         String Uuid = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().getUUID();
-        chatRoom.addUser(Uuid);
+        redisService.setSetValue(chatRoom.getId().toString(), Uuid);
 
         chatRoomRepository.save(chatRoom);
 
