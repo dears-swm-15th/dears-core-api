@@ -122,12 +122,12 @@
     function disconnect() {
         if (stompClient !== null) {
             var chatRoomId = document.getElementById("chatRoomId").value;
-            stompClient.send("/pub/disconnect", {}, JSON.stringify({
-                'messageType': 'DISCONNECT',
-                'chatRoomId': chatRoomId,
-                'senderRole': 'CUSTOMER',
-                'content': 'Disconnected from chat room'
-            }));
+            // stompClient.send("/pub/disconnect", {}, JSON.stringify({
+            //     'messageType': 'DISCONNECT',
+            //     'chatRoomId': chatRoomId,
+            //     'senderRole': 'CUSTOMER',
+            //     'content': 'Disconnected from chat room'
+            // }));
             stompClient.disconnect();
             console.log("Disconnected");
             updateStatusIndicator('Disconnected from chat server.');

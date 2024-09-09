@@ -146,12 +146,12 @@
 
     function enter() {
         var chatRoomId = document.getElementById("chatRoomId").value;
-        stompClient.send("/pub/shared/enter", {}, JSON.stringify({
-            'messageType': 'ENTER',
-            'chatRoomId': chatRoomId,
-            'senderRole': 'WEDDING_PLANNER',
-            'content': 'Entered the chat room'
-        }));
+        // stompClient.send("/pub/shared/enter", {}, JSON.stringify({
+        //     'messageType': 'ENTER',
+        //     'chatRoomId': chatRoomId,
+        //     'senderRole': 'WEDDING_PLANNER',
+        //     'content': 'Entered the chat room'
+        // }));
         updateStatusIndicator('Entered the chat room.');
     }
 
