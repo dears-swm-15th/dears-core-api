@@ -40,6 +40,15 @@ public class GlobalExceptionHandler {
         return new UserInfo(username, UUID, role);
     }
 
+    private ResponseEntity<ErrorResponse> buildErrorResponseAndSendAlert(Exception ex, ErrorCode errorCode, HttpStatus httpStatus) {
+        log.error("{}", ex.getMessage(), ex);
+        final ErrorResponse response = ErrorResponse.of(errorCode, ex.getMessage());
+        UserInfo userInfo = getUserInfo();
+
+        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     /**
      * [Exception] API 호출 시 '객체' 혹은 '파라미터' 데이터 값이 유효하지 않은 경우
      *
@@ -48,7 +57,6 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        log.error("handleMethodArgumentNotValidException", ex);
         BindingResult bindingResult = ex.getBindingResult();
         StringBuilder stringBuilder = new StringBuilder();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
@@ -56,11 +64,8 @@ public class GlobalExceptionHandler {
             stringBuilder.append(fieldError.getDefaultMessage());
             stringBuilder.append(", ");
         }
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_VALID_ERROR, String.valueOf(stringBuilder));
-        UserInfo userInfo = getUserInfo();
 
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.NOT_VALID_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -71,12 +76,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MissingRequestHeaderException.class)
     protected ResponseEntity<ErrorResponse> handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
-        log.error("MissingRequestHeaderException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.REQUEST_BODY_MISSING_ERROR, ex.getMessage());
-        UserInfo userInfo = getUserInfo();
-
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.NOT_VALID_HEADER_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -88,12 +88,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex) {
-        log.error("HttpMessageNotReadableException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.REQUEST_BODY_MISSING_ERROR, ex.getMessage());
-        UserInfo userInfo = getUserInfo();
-
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.REQUEST_BODY_MISSING_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -105,12 +100,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     protected ResponseEntity<ErrorResponse> handleMissingRequestHeaderExceptionException(
             MissingServletRequestParameterException ex) {
-        log.error("handleMissingServletRequestParameterException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.MISSING_REQUEST_PARAMETER_ERROR, ex.getMessage());
-        UserInfo userInfo = getUserInfo();
-
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.MISSING_REQUEST_PARAMETER_ERROR, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -122,12 +112,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpClientErrorException.BadRequest.class)
     protected ResponseEntity<ErrorResponse> handleBadRequestException(HttpClientErrorException ex) {
-        log.error("HttpClientErrorException.BadRequest", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.BAD_REQUEST_ERROR, ex.getMessage());
-        UserInfo userInfo = getUserInfo();
-
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.BAD_REQUEST_ERROR, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -139,12 +124,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NoHandlerFoundException.class)
     protected ResponseEntity<ErrorResponse> handleNoHandlerFoundExceptionException(NoHandlerFoundException ex) {
-        log.error("handleNoHandlerFoundExceptionException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_FOUND_ERROR, ex.getMessage());
-        UserInfo userInfo = getUserInfo();
-
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.NOT_VALID_ERROR, HttpStatus.NOT_FOUND);
     }
 
 
@@ -156,22 +136,12 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NullPointerException.class)
     protected ResponseEntity<ErrorResponse> handleNullPointerException(NullPointerException ex) {
-        log.error("handleNullPointerException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.NULL_POINT_ERROR, ex.getMessage());
-        UserInfo userInfo = getUserInfo();
-
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.NULL_POINT_ERROR, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     protected ResponseEntity<ErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
-        log.error("handleUsernameNotFoundException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.FORBIDDEN_ERROR, ex.getMessage());
-        UserInfo userInfo = getUserInfo();
-
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.USERNAME_NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -182,12 +152,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IOException.class)
     protected ResponseEntity<ErrorResponse> handleIOException(IOException ex) {
-        log.error("handleIOException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.IO_ERROR, ex.getMessage());
-        UserInfo userInfo = getUserInfo();
-
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.IO_ERROR, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -199,12 +164,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(JsonParseException.class)
     protected ResponseEntity<ErrorResponse> handleJsonParseExceptionException(JsonParseException ex) {
-        log.error("handleJsonParseExceptionException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.JSON_PARSE_ERROR, ex.getMessage());
-        UserInfo userInfo = getUserInfo();
-
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.JSON_PARSE_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -215,22 +175,12 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(JsonProcessingException.class)
     protected ResponseEntity<ErrorResponse> handleJsonProcessingException(JsonProcessingException ex) {
-        log.error("handleJsonProcessingException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.REQUEST_BODY_MISSING_ERROR, ex.getMessage());
-        UserInfo userInfo = getUserInfo();
-
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.JACKSON_PROCESS_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(FeignException.BadRequest.class)
     protected ResponseEntity<ErrorResponse> handleFeignClientException(FeignException.FeignClientException ex) {
-        log.error("handleFeignClientException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.FEIGN_CLIENT_ERROR, ex.getMessage());
-        UserInfo userInfo = getUserInfo();
-
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.FEIGN_CLIENT_ERROR, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -244,11 +194,6 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
-        log.error("RuntimeException", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage());
-        UserInfo userInfo = getUserInfo();
-
-        discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

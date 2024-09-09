@@ -11,8 +11,6 @@ import com.example.demo.member.dto.MypageDTO;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.PrintWriter;
@@ -25,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DiscordMessageProvider {
 
-    private static final Logger log = LoggerFactory.getLogger(DiscordMessageProvider.class);
     private final DiscordFeignCustomerService discordFeignCustomerService;
     private final DiscordFeignException discordFeignException;
     private final HttpServletRequest request;
@@ -65,15 +62,7 @@ public class DiscordMessageProvider {
                 List.of(embed)
         );
 
-        sendExceptionMessageToDiscord(customerServiceMessage);
-    }
-
-    private void sendExceptionMessageToDiscord(CustomerServiceMessage customerServiceMessage) {
-        try {
-            discordFeignCustomerService.sendMessage(customerServiceMessage);
-        } catch (FeignException e) {
-            throw new FeignException.BadRequest(e.getMessage(), e.request(), e.request().body(), e.request().headers());
-        }
+        sendMessageToDiscord(customerServiceMessage);
     }
 
     public void sendExceptionMessage(UserInfo userInfo, ErrorResponse response, Exception ex) {
@@ -105,10 +94,18 @@ public class DiscordMessageProvider {
                 List.of(summary, detail)
         );
 
-        sendExceptionMessageToDiscord(customerServiceMessage);
+        sendMessageToDiscord(customerServiceMessage);
     }
 
-    private void sendExceptionMessageToDiscord(ExceptionMessage exceptionMessage) {
+    private void sendMessageToDiscord(CustomerServiceMessage customerServiceMessage) {
+        try {
+            discordFeignCustomerService.sendMessage(customerServiceMessage);
+        } catch (FeignException e) {
+            throw new FeignException.BadRequest(e.getMessage(), e.request(), e.request().body(), e.request().headers());
+        }
+    }
+
+    private void sendMessageToDiscord(ExceptionMessage exceptionMessage) {
         try {
             discordFeignException.sendMessage(exceptionMessage);
         } catch (FeignException e) {
