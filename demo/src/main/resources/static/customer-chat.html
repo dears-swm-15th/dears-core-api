@@ -103,6 +103,7 @@
 
         stompClient.connect(headers, function (frame) {
             console.log('Connected: ' + frame);
+            updateStatusIndicator('Connected to chat server.');
             var chatRoomId = document.getElementById("chatRoomId").value;
             stompClient.subscribe('/sub/' + chatRoomId, function (message) {
                 var messageBody = JSON.parse(message.body);
