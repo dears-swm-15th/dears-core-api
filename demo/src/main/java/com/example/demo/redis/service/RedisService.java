@@ -9,7 +9,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -73,6 +76,12 @@ public class RedisService {
         return redisTemplate.opsForSet().members(key).toString();
     }
 
+    // set Set value with timeout
+    public void setSetValue(String key, String value, Duration timeout) {
+        redisTemplate.opsForSet().add(key, value);
+        redisTemplate.expire(key, timeout);
+    }
+
     public Long getSetSize(String key) {
         return redisTemplate.opsForSet().size(key);
     }
@@ -85,11 +94,59 @@ public class RedisService {
         redisTemplate.opsForSet().remove(key, value);
     }
 
-    public void getAllSetValue(String key) {
+    public void getSetsByKey(String key) {
         redisTemplate.opsForSet().members(key);
     }
 
     public void deleteAllSet() {
         redisTemplate.delete(redisTemplate.keys("*"));
     }
+
+    // get keys which has value
+    public Set<String> getKeysByValue(String value) {
+        // Get all keys that match the pattern "*"
+        Set<String> allKeys = redisTemplate.keys("*");
+        Set<String> matchingKeys = new HashSet<>();
+
+        // Iterate over all keys
+        for (String key : allKeys) {
+            // Check if the value exists in the set associated with this key
+            if (redisTemplate.opsForSet().isMember(key, value)) {
+                matchingKeys.add(key);
+            }
+        }
+
+        return matchingKeys;
+    }
+
+    // delete value from all sets
+    public void deleteValueFromAllSets(String value) {
+        // Get all keys that match the pattern "*"
+        Set<String> allKeys = redisTemplate.keys("*");
+
+        // Iterate over all keys
+        for (String key : allKeys) {
+            // Check if the value exists in the set associated with this key
+            if (redisTemplate.opsForSet().isMember(key, value)) {
+                redisTemplate.opsForSet().remove(key, value);
+            }
+        }
+    }
+
+    // get all keys and their corresponding set members
+    public Map<String, Set<Object>> getAllSetPairs() {
+        Set<String> allKeys = redisTemplate.keys("*");  // get all keys
+        Map<String, Set<Object>> allSetPairs = new HashMap<>();  // create a map to store key-value pairs
+
+        if (allKeys != null) {
+            for (String key : allKeys) {
+                Set<Object> members = redisTemplate.opsForSet().members(key);  // retrieve set members
+                if (members != null && !members.isEmpty()) {
+                    allSetPairs.put(key, members);  // store the key and its members in the map
+                }
+            }
+        }
+        return allSetPairs;
+    }
+
 }
