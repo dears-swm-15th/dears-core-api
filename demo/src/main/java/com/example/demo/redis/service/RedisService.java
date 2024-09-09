@@ -119,6 +119,20 @@ public class RedisService {
         return matchingKeys;
     }
 
+    // delete value from all sets
+    public void deleteValueFromAllSets(String value) {
+        // Get all keys that match the pattern "*"
+        Set<String> allKeys = redisTemplate.keys("*");
+
+        // Iterate over all keys
+        for (String key : allKeys) {
+            // Check if the value exists in the set associated with this key
+            if (redisTemplate.opsForSet().isMember(key, value)) {
+                redisTemplate.opsForSet().remove(key, value);
+            }
+        }
+    }
+
     // get all keys and their corresponding set members
     public Map<String, Set<Object>> getAllSetPairs() {
         Set<String> allKeys = redisTemplate.keys("*");  // get all keys

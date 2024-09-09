@@ -39,29 +39,27 @@ public class StompPreHandler implements ChannelInterceptor {
 
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        log.info("ACCESSOR: {}", accessor);
+//        log.info("ACCESSOR: {}", accessor);
 
         // 메시지의 구독 명령이 CONNECT인 경우에만 실행
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-            log.info("[ STOMP CONNECTED ]");
+            log.info("STOMP CONNECTED");
             List<String> headers = accessor.getNativeHeader(AUTHORIZATION_HEADER);
-
-            log.info("CONNECT | HEADERS: {}", headers);
 
             if (headers != null && !headers.isEmpty()) {
 
                 Map<String, Object> attributes = accessor.getSessionAttributes();
-                String uuid = headers.get(0).toString();
+                String UUID = headers.get(0).toString();
 
-                attributes.put(AUTHORIZATION_HEADER, uuid);
+                attributes.put(AUTHORIZATION_HEADER, UUID);
 
                 String sessionId = accessor.getSessionId();
-                if (uuid != null) {
-                    connectedUsers.put(sessionId, uuid);
+                if (UUID != null) {
+                    connectedUsers.put(sessionId, UUID);
                 }
 
-                log.info("CONNECT | SESSION ID: {}", sessionId);
-                log.info("CONNECT | UUID: {}", uuid);
+                log.info(" ㄴ CONNECT | SESSION ID: {}", sessionId);
+                log.info(" ㄴ CONNECT | UUID: {}", UUID);
 
                 accessor.setSessionAttributes(attributes);
 
@@ -69,37 +67,41 @@ public class StompPreHandler implements ChannelInterceptor {
             } else {
                 return message;
             }
-        }
-
-        if (StompCommand.SEND.equals(accessor.getCommand())) {
-            log.info("[ STOMP SEND ]");
+        } else if (StompCommand.SEND.equals(accessor.getCommand())) {
+            log.info("STOMP SEND");
 
             String authHeader = accessor.getSessionAttributes().get("Authorization").toString();
-
-            log.info("SEND | AUTH HEADER: " + authHeader);
+            log.info(" ㄴ SEND | AUTH HEADER: " + authHeader);
 
             if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
                 String jwt = authHeader.substring(BEARER_PREFIX.length());
                 String username = jwt;
             }
+
+            // TODO : JWT 토큰 검증 로직 추가
+            // TODO : 인증 로직 Filter -> Interceptor로 변경하면 채팅, 인증 동시에 가능
+
         } else if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
-            log.info("[ STOMP SUBSCRIBED ]");
+            log.info("STOMP SUBSCRIBED");
+
             // get simpDestination
             String simpDestination = accessor.getDestination();
-            log.info("SUBSCRIBE | DESTINATION: {}", simpDestination);
+            log.info(" ㄴ SUBSCRIBE | DESTINATION: {}", simpDestination);
 
         } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
-            log.info("[ STOMP DISCONNECTED ]");
+            log.info("STOMP DISCONNECTED");
 
             // get simpDestination
             String simpDestination = accessor.getDestination();
-            log.info("DISCONNECT | DESTINATION: {}", simpDestination);
+            log.info(" ㄴ DISCONNECT | ACCESSOR: {}", accessor);
 
             String sessionId = accessor.getSessionId();
             connectedUsers.remove(sessionId);
 
+            String UUID = accessor.getSessionAttributes().get(AUTHORIZATION_HEADER).toString();
+
             // delete UUID from redis
-//            redisService.getKeys();
+            redisService.deleteValueFromAllSets(UUID);
         }
 
         return message;
