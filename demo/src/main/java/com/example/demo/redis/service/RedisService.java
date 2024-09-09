@@ -9,7 +9,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -91,11 +93,33 @@ public class RedisService {
         redisTemplate.opsForSet().remove(key, value);
     }
 
-    public void getAllSetValue(String key) {
+    public void getSetsByKey(String key) {
         redisTemplate.opsForSet().members(key);
     }
 
     public void deleteAllSet() {
         redisTemplate.delete(redisTemplate.keys("*"));
     }
+
+    // get keys which has value
+    public Set<String> getKeys(String value) {
+        return redisTemplate.keys(value);
+    }
+
+    // get all keys and their corresponding set members
+    public Map<String, Set<Object>> getAllSetPairs() {
+        Set<String> allKeys = redisTemplate.keys("*");  // get all keys
+        Map<String, Set<Object>> allSetPairs = new HashMap<>();  // create a map to store key-value pairs
+
+        if (allKeys != null) {
+            for (String key : allKeys) {
+                Set<Object> members = redisTemplate.opsForSet().members(key);  // retrieve set members
+                if (members != null && !members.isEmpty()) {
+                    allSetPairs.put(key, members);  // store the key and its members in the map
+                }
+            }
+        }
+        return allSetPairs;
+    }
+
 }
