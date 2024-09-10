@@ -2,12 +2,38 @@ server:
   port: 8080
 
 spring:
+  profiles:
+    default: local
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+  cache:
+    type: none
+
+discord:
+  customer-service: discord-customer-service
+  exception: discord-exception
+webhooks:
+  customer-service: ${DISCORD_CUSTOMER_SERVICE}
+  exception: ${DISCORD_EXCEPTION}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/dears?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
     #  url: jdbc:mysql://localhost:8080/everytime?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul?useSSL=false
     username: root
     password: ${LOCAL_DB_PS:dearsPW}
+
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -20,16 +46,14 @@ spring:
         show_sql: false
         format_sql: false
     defer-datasource-initialization: true
+
   sql:
     init:
       mode: always
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  data:
-    redis:
-      port: 6379
-      host: localhost
 
 springdoc:
   api-docs:
@@ -56,9 +80,30 @@ management:
       enabled: true
 
 
-discord:
-  customer-service: discord-customer-service
-  exception: discord-exception
-webhooks:
-  customer-service: ${DISCORD_CUSTOMER_SERVICE}
-  exception: ${DISCORD_EXCEPTION}
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        hbm2ddl:
+          auto: update
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: never
+
