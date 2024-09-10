@@ -67,5 +67,24 @@ public class PortfolioConcurrencyTest {
         assertEquals(updatedPortfolio.getWishListCount(), 100);
     }
 
+    @Test
+    @DisplayName("포트폴리오를 동시에 100개 요청")
+    void appendOneHundredWishListConcurrent() throws InterruptedException {
+        int threadCount = 100;
+        ExecutorService executorService = Executors.newFixedThreadPool(32);
+        CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+        for (int i = 0; i < threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    portfolioService.increaseWishListCount(1L);
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+        countDownLatch.await();
 
+        Portfolio updatedPortfolio = portfolioRepository.findById(portfolio.getId()).orElseThrow();
+        assertEquals(updatedPortfolio.getWishListCount(), 100);
+    }
 }
