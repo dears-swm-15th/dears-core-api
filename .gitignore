@@ -56,3 +56,4 @@ imgs/ModifyInboundSecurityGroupRules _ EC2 _ ap-northeast-2_files
 deploy/
 
 *.sh
+*.env
