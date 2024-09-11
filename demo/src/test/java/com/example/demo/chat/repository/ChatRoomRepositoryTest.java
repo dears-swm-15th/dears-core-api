@@ -65,5 +65,33 @@ class ChatRoomRepositoryTest {
         assertThat(chatRooms.get(1).getCustomer().getId()).isEqualTo(customer.getId());
     }
 
+    @Test
+    @DisplayName("웨딩플래너 ID로 채팅방을 조회한다.")
+    void findByWeddingPlannerId() {
+        // given
+        Customer customer = Customer.builder()
+                .id(1L)
+                .build();
 
+        ChatRoom chatRoom1 = ChatRoom.builder()
+                .customer(customer)
+                .build();
+
+        ChatRoom chatRoom2 = ChatRoom.builder()
+                .customer(customer)
+                .build();
+
+        customerRepository.save(customer);
+        chatRoomRepository.saveAll(List.of(chatRoom1, chatRoom2));
+
+        // when
+        List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerId(customer.getId());
+
+        // then
+        assertThat(chatRooms.size()).isEqualTo(2);
+        assertThat(chatRooms.get(0).getCustomer().getId()).isEqualTo(customer.getId());
+        assertThat(chatRooms.get(1).getCustomer().getId()).isEqualTo(customer.getId());
+    }
+
+   
 }
