@@ -3,9 +3,8 @@ package com.example.demo.chat.repository;
 import com.example.demo.chat.domain.ChatRoom;
 import com.example.demo.config.S3Uploader;
 import com.example.demo.member.domain.Customer;
+import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.repository.CustomerRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +32,6 @@ class ChatRoomRepositoryTest {
 
     @Autowired
     private CustomerRepository customerRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Test
     @DisplayName("고객 ID로 채팅방을 조회한다.")
@@ -91,6 +87,33 @@ class ChatRoomRepositoryTest {
         assertThat(chatRooms.size()).isEqualTo(2);
         assertThat(chatRooms.get(0).getCustomer().getId()).isEqualTo(customer.getId());
         assertThat(chatRooms.get(1).getCustomer().getId()).isEqualTo(customer.getId());
+    }
+
+    @Test
+    @DisplayName("고객 ID와 웨딩플래너 ID로 채팅방을 조회한다.")
+    void findByCustomerIdAndWeddingPlannerId() {
+        // given
+        Customer customer = Customer.builder()
+                .id(1L)
+                .build();
+
+        WeddingPlanner weddingPlanner = WeddingPlanner.builder()
+                .id(1L)
+                .build();
+
+        ChatRoom chatRoom = ChatRoom.builder()
+                .customer(customer)
+                .weddingPlanner(weddingPlanner)
+                .build();
+
+        customerRepository.save(customer);
+        chatRoomRepository.save(chatRoom);
+
+        // when
+        ChatRoom findChatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
+
+        // then
+        assertThat(findChatRoom.getCustomer().getId()).isEqualTo(customer.getId());
     }
 
    
