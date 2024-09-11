@@ -116,5 +116,33 @@ class ChatRoomRepositoryTest {
         assertThat(findChatRoom.getCustomer().getId()).isEqualTo(customer.getId());
     }
 
-   
+    @Test
+    @DisplayName("고객 ID로 마지막 메세지가 생성된 순서로 채팅방을 조회한다.")
+    void findByCustomerIdOrderByLastMessageCreatedAtDesc() {
+        // given
+        Customer customer = Customer.builder()
+                .id(1L)
+                .build();
+
+        ChatRoom chatRoom1 = ChatRoom.builder()
+                .customer(customer)
+                .build();
+
+        ChatRoom chatRoom2 = ChatRoom.builder()
+                .customer(customer)
+                .build();
+
+        customerRepository.save(customer);
+        chatRoomRepository.saveAll(List.of(chatRoom1, chatRoom2));
+
+        // when
+        List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerIdOrderByLastMessageCreatedAtDesc(customer.getId());
+
+        // then
+        assertThat(chatRooms.size()).isEqualTo(2);
+        assertThat(chatRooms.get(0).getCustomer().getId()).isEqualTo(customer.getId());
+        assertThat(chatRooms.get(1).getCustomer().getId()).isEqualTo(customer.getId());
+    }
+
+    
 }
