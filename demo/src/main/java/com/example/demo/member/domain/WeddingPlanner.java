@@ -53,4 +53,11 @@ public class WeddingPlanner {
     @JoinColumn(name = "weddingplanner_id")
     private List<ChatRoom> chatRooms;
 
+    @Column
+    private String refreshToken;
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
 }

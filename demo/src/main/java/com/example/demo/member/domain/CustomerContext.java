@@ -18,4 +18,5 @@ public class CustomerContext extends User { //User implements UserDetails
     public Customer getMember() {
         return customer;
     }
+    
 }
