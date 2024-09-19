@@ -55,6 +55,17 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID_WEB}
+            client-secret: ${GOOGLE_CLIENT_SECRET_WEB}
+            scope:
+              - email
+              - profile
+
 springdoc:
   api-docs:
     enabled: true
@@ -79,7 +90,10 @@ management:
     prometheus:
       enabled: true
 
-
+kakao:
+  client_id: ${KAKAO_CLIENT_ID_WEB}
+  client_secret: ${KAKAO_SECRET_ID_WEB}
+  
 ---
 spring:
   config:
