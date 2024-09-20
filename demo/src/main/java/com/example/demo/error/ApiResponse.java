@@ -1,9 +1,7 @@
 package com.example.demo.error;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 /**
  * [공통] API Response 결과의 반환 값을 관리
@@ -25,6 +23,10 @@ public class ApiResponse<T> {
         this.result = result;
         this.resultCode = resultCode;
         this.resultMsg = resultMsg;
+    }
+
+    public static <T> ApiResponse<T> of(int resultCode, String resultMsg, T result) {
+        return new ApiResponse<>(result, resultCode, resultMsg);
     }
 
 }

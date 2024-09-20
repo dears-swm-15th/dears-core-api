@@ -55,6 +55,17 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID_WEB}
+            client-secret: ${GOOGLE_CLIENT_SECRET_WEB}
+            scope:
+              - email
+              - profile
+
 springdoc:
   api-docs:
     enabled: true
@@ -79,7 +90,16 @@ management:
     prometheus:
       enabled: true
 
+kakao:
+  client_id_web: ${KAKAO_CLIENT_ID_WEB}
+  client_secret_web: ${KAKAO_SECRET_ID_WEB}
+  client_id_native: ${KAKAO_CLIENT_ID_NATIVE}
 
+jwt:
+  header: Authorization
+  #HS512 알고리즘을 사용할 것이기 때문에 512bit,  즉 64byte 이상의 secret key를 사용해야 한다.
+  secret: ${JWT_SECRET}
+  token-validity-in-seconds: 86400 # ttl (초)
 ---
 spring:
   config:

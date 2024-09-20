@@ -21,7 +21,8 @@ public class Customer {
     @Column(name = "customer_id")
     private Long id;
 
-    @Column @Enumerated(EnumType.STRING)
+    @Column
+    @Enumerated(EnumType.STRING)
     private MemberRole role;
 
     @Column
@@ -49,5 +50,12 @@ public class Customer {
     @OneToMany
     @JoinColumn(name = "customer_id")
     private List<ChatRoom> chatRooms;
+
+    @Column
+    private String refreshToken;
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 
 }
