@@ -65,7 +65,7 @@ class MessageRepositoryTest {
         messageRepository.saveAll(List.of(message1, message2, message3, message4));
 
         // when
-        int unreadMessageCount = messageRepository.countUnreadMessages(chatRoom.getId(), CUSTOMER);
+        int unreadMessageCount = chatRoomRepository.countUnreadMessages(chatRoom.getId(), CUSTOMER);
 
         // then
         assertThat(unreadMessageCount).isEqualTo(1);
