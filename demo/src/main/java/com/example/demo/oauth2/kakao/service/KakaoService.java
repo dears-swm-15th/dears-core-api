@@ -106,7 +106,7 @@ public class KakaoService {
                         .with("client_secret", clientSecret)
                         .with("code", code)
                         // TODO : redirect_uri HTTPS 설정 후 도메인 변경
-                        .with("redirect_uri", "http://dears-core-server.ap-northeast-2.elasticbeanstalk.com//login/oauth2/code/kakao"))
+                        .with("redirect_uri", "http://dears-core-server.ap-northeast-2.elasticbeanstalk.com/login/oauth2/code/kakao"))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("KAKAO Invalid Parameter")))
                 .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("500 Internal Server Error")))
