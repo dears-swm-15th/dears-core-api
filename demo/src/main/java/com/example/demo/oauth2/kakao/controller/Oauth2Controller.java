@@ -27,8 +27,8 @@ public class Oauth2Controller {
     @PostMapping("/shared/kakao")
     @Operation(summary = "[공통] 카카오 로그인")
     public ResponseEntity<LoginDTO.Response> kakaoLogin(@RequestBody LoginDTO.Request loginRequest) {
-        String kakaoAccessToken = kakaoService.getAccessTokenFromKakaoDev(loginRequest.getCode());
-        KakaoUserInfoResponseDto userInfo = kakaoService.getUserInfo(kakaoAccessToken);
+//        String kakaoAccessToken = kakaoService.getAccessTokenFromKakaoNativeApp(loginRequest.getCode());
+        KakaoUserInfoResponseDto userInfo = kakaoService.getUserInfo(loginRequest.getKakaoAccessToken());
         String role = loginRequest.getRole();
 
         LoginDTO.Response loginResponse = customUserDetailsService.createKakaoMember(userInfo, role);

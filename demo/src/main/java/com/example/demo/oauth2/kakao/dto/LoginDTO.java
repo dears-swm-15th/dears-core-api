@@ -14,7 +14,7 @@ public class LoginDTO {
     public static class Request {
 
         @Schema(type = "string", example = "asd2221edqsdqwd23e")
-        private String code;
+        private String kakaoAccessToken;
 
         @Schema(type = "string", example = "WEDDING_PLANNER")
         private String role;

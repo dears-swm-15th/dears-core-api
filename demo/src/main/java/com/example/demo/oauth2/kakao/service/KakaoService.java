@@ -20,6 +20,7 @@ public class KakaoService {
 
     private String clientIdTest = "1d91a9b555e1b5d32675dcb7d2192a7c";
     private String clientSecretTest = "HjIvutqsy0OYQQAYqx9XpWPzR211dnd7";
+    private String clientIdNative;
     private String clientId;
     private String clientSecret;
     private final String KAUTH_TOKEN_URL_HOST;
@@ -27,9 +28,11 @@ public class KakaoService {
 
     @Autowired
     public KakaoService(@Value("${kakao.client_id_web}") String clientId,
-                        @Value("${kakao.client_secret_web}") String clientSecret) {
+                        @Value("${kakao.client_secret_web}") String clientSecret,
+                        @Value("${kakao.client_id_native}") String clientIdNative) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        this.clientIdNative = clientIdNative;
         KAUTH_TOKEN_URL_HOST = "https://kauth.kakao.com";
         KAUTH_USER_URL_HOST = "https://kapi.kakao.com";
     }
@@ -37,12 +40,12 @@ public class KakaoService {
     public String getAccessTokenFromKakaoNativeApp(String code) {
         KakaoTokenResponseDto kakaoTokenResponseDto = WebClient.create(KAUTH_TOKEN_URL_HOST).post()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme("http")
                         .path("/oauth/token")
                         .queryParam("grant_type", "authorization_code")
-                        .queryParam("client_id", clientIdTest)
-                        .queryParam("client_secret", clientSecretTest)
+                        .queryParam("client_id", clientIdNative)
                         .queryParam("code", code)
+                        .queryParam("redirect_uri", "kakaocc81508a8ff35b0a6ce8fcfb1df48914://oauth")
                         .build(true))
                 .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
                 .retrieve()
