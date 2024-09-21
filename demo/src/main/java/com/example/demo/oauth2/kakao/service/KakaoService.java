@@ -34,6 +34,42 @@ public class KakaoService {
         KAUTH_USER_URL_HOST = "https://kapi.kakao.com";
     }
 
+    public String getAccessTokenFromKakaoNativeApp(String code) {
+        KakaoTokenResponseDto kakaoTokenResponseDto = WebClient.create(KAUTH_TOKEN_URL_HOST).post()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme("https")
+                        .path("/oauth/token")
+                        .queryParam("grant_type", "authorization_code")
+                        .queryParam("client_id", clientIdTest)
+                        .queryParam("client_secret", clientSecretTest)
+                        .queryParam("code", code)
+                        .build(true))
+                .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
+                    log.error("400 Error: Invalid request parameters: {}", clientResponse.statusCode());
+                    return Mono.error(new RuntimeException("400 Invalid Parameter: " + clientResponse.statusCode()));
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> {
+                    log.error("500 Error: Server encountered an issue: {}", clientResponse.statusCode());
+                    return Mono.error(new RuntimeException("500 Internal Server Error: " + clientResponse.statusCode()));
+                })
+                .bodyToMono(KakaoTokenResponseDto.class)
+                .block();
+
+        if (kakaoTokenResponseDto == null) {
+            log.error("Failed to retrieve Kakao token response");
+            throw new RuntimeException("Failed to retrieve token from Kakao");
+        }
+
+        log.info(" [ Kakao Native App ] Access Token: {}", kakaoTokenResponseDto.getAccessToken());
+        log.info(" [ Kakao Native App ] Refresh Token: {}", kakaoTokenResponseDto.getRefreshToken());
+        log.info(" [ Kakao Native App ] Scope: {}", kakaoTokenResponseDto.getScope());
+
+        return kakaoTokenResponseDto.getAccessToken();
+    }
+
+
     public String getAccessTokenFromKakaoDev(String code) {
         KakaoTokenResponseDto kakaoTokenResponseDto = WebClient.create(KAUTH_TOKEN_URL_HOST).post()
                 .uri(uriBuilder -> uriBuilder
