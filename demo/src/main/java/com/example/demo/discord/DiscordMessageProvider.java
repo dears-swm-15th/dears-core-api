@@ -75,7 +75,7 @@ public class DiscordMessageProvider {
                         new ExceptionMessage.Field("Division Code", response.getDivisionCode(), true),
                         new ExceptionMessage.Field("Request URL", getRequestPath(), true),
                         new ExceptionMessage.Field("Username", userInfo.username(), true),
-                        new ExceptionMessage.Field("Role", userInfo.role().getRoleName(), true),
+//                        new ExceptionMessage.Field("Role", userInfo.role().getRoleName(), true),
                         new ExceptionMessage.Field("UUID", userInfo.UUID(), true)
                 ),
                 new ExceptionMessage.Footer(formattedTimestamp)
