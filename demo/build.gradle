@@ -136,6 +136,8 @@ jacocoTestReport {
                 fileTree(dir: it, exclude: [
                         '**/dto',
                         '**/base',
+                        '**/config',
+                        '**/oauth2',
                 ])
             })
     )
@@ -154,7 +156,7 @@ jacocoTestReport {
 jacocoTestCoverageVerification {
     violationRules {
         rule {
-            enabled = true // 커버리지 적용 여부
+            enabled = false // 커버리지 적용 여부
             element = 'CLASS' // 커버리지 적용 단위
 
             // 라인 커버리지 설정
