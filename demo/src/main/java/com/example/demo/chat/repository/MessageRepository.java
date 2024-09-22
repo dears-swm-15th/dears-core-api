@@ -1,6 +1,5 @@
 package com.example.demo.chat.repository;
 
-import com.example.demo.chat.domain.ChatRoom;
 import com.example.demo.chat.domain.Message;
 import com.example.demo.portfolio.domain.Portfolio;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,12 +10,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
-
-
 
     @Transactional
     @Modifying

@@ -29,7 +29,6 @@ public class S3Uploader {
     private String cloudfrontPath;
 
     private final int PRESIGNED_URL_EXPIRATION = 60 * 1000 * 10; // 10분
-    
 
 
     // Upload file to S3 using presigned url
@@ -45,7 +44,7 @@ public class S3Uploader {
         return url;
     }
 
-    private Date setExpiration(){
+    private Date setExpiration() {
         Date expiration = new Date();
         long expTimeMillis = expiration.getTime();
         expTimeMillis += PRESIGNED_URL_EXPIRATION;
@@ -54,31 +53,31 @@ public class S3Uploader {
     }
 
     public String makeUniqueFileName(String type, Long id, String fileName) {
-        return type + "/" + id +"/" + UUID.randomUUID() + "." + getFileExtension(fileName);
+        return type + "/" + id + "/" + UUID.randomUUID() + "." + getFileExtension(fileName);
     }
 
-    public static String getFileExtension(String fileName) throws RuntimeException{
+    public static String getFileExtension(String fileName) throws RuntimeException {
         if (fileName == null || fileName.lastIndexOf('.') == -1) {
             throw new RuntimeException("파일 확장자가 없습니다.");
         }
         return fileName.substring(fileName.lastIndexOf('.') + 1);
     }
 
-    public void deleteFile(String fileName){
+    public void deleteFile(String fileName) {
         if (fileName == null) {
             return;
         }
-        if (checkFileExists(fileName)){
+        if (checkFileExists(fileName)) {
             s3Config.amazonS3().deleteObject(new DeleteObjectRequest(bucket, fileName));
         }
     }
 
 
-    public String getPresignedUrl(String fileName){
+    public String getPresignedUrl(String fileName) {
         return generatePresignedUrl(fileName).toString();
     }
 
-    public List<String> getPresignedUrls(List<String> fileNameList){
+    public List<String> getPresignedUrls(List<String> fileNameList) {
         List<String> presignedUrlList = new ArrayList<>();
         for (String fileName : fileNameList) {
             presignedUrlList.add(generatePresignedUrl(fileName).toString());

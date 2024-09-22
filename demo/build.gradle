@@ -31,6 +31,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.springframework.boot:spring-boot-devtools'
 
+    //Webflux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 //	runtimeOnly 'com.h2database:h2'
     implementation 'mysql:mysql-connector-java:8.0.28'
@@ -48,6 +50,7 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+
 //  json parsing
     implementation 'com.google.code.gson:gson:2.9.0'
 
@@ -57,14 +60,13 @@ dependencies {
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 
-
 //  security
-//	testImplementation 'org.springframework.security:spring-security-test'
-//	implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     implementation group: 'org.javassist', name: 'javassist', version: '3.15.0-GA'
 
-    //AWS SDK for Java 1.x
+    // AWS SDK for Java 1.x
     implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.529')
     implementation 'com.amazonaws:aws-java-sdk-s3'
 
@@ -72,19 +74,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
-    //jwt & security
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    // security
     implementation("org.springframework.boot:spring-boot-starter-security")
 
-    //TestDB
+    // TestDB
     testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
 
-    //Aws Opensearch
+    // Aws Opensearch
     implementation("org.opensearch.client:opensearch-rest-client:2.11.0")
     implementation("org.opensearch.client:opensearch-java:2.7.0")
     implementation("jakarta.json:jakarta.json-api")
 
-    //swagger
+    // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 
     // log4j2
@@ -101,6 +102,11 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.1'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
+    // oauth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // netty-resolver
+    implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
 }
 
 tasks.named('test') {

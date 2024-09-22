@@ -18,4 +18,5 @@ public class WeddingPlannerContext extends User { //User implements UserDetails
     public WeddingPlanner getMember() {
         return weddingPlanner;
     }
+    
 }
