@@ -52,7 +52,7 @@ public class PortfolioConcurrencyTest {
         ExecutorService executorService = Executors.newFixedThreadPool(32);
         CountDownLatch countDownLatch = new CountDownLatch(threadCount);
         for (int i = 0; i < threadCount; i++) {
-            Thread.sleep(100);
+            Thread.sleep(10);
             executorService.submit(() -> {
                 try {
                     portfolioService.increaseWishListCount(1L);
