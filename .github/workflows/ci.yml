@@ -2,10 +2,19 @@ name: CI
 
 on:
   workflow_dispatch:
-  
+
+
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    env:
+      DISCORD_CUSTOMER_SERVICE: ${{ secrets.DISCORD_CUSTOMER_SERVICE }}
+      DISCORD_EXCEPTION: ${{ secrets.DISCORD_EXCEPTION }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      KAKAO_CLIENT_ID_NATIVE: ${{ secrets.KAKAO_CLIENT_ID_NATIVE }}
+      KAKAO_CLIENT_ID_WEB: ${{ secrets.KAKAO_CLIENT_ID_WEB }}
+      KAKAO_SECRET_ID_WEB: ${{ secrets.KAKAO_SECRET_ID_WEB }}
 
     permissions:
       checks: write
@@ -55,7 +64,7 @@ jobs:
         with:
           files: "**/build/test-results/test/TEST-*.xml"
           github_token: ${{ github.token }}
-          
+
       - name: Publish failure of unit test
         uses: mikepenz/action-junit-report@v3
         if: always()
