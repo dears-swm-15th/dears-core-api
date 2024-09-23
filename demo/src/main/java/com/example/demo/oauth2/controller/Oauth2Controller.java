@@ -34,4 +34,10 @@ public class Oauth2Controller {
         LoginDTO.Response loginResponse = customUserDetailsService.createKakaoMember(userInfo, role);
         return ResponseEntity.status(200).body(loginResponse);
     }
+
+    @PostMapping("/shared/google")
+    @Operation(summary = "[공통] 구글 로그인")
+    public ResponseEntity<LoginDTO.Response> googleLogin(@RequestBody LoginDTO.Request loginRequest) {
+        return ResponseEntity.status(200).body(customUserDetailsService.createGoogleMember(loginRequest.getGoogleAccessToken(), loginRequest.getRole()));
+    }
 }
