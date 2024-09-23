@@ -1,9 +1,9 @@
-package com.example.demo.oauth2.kakao.dto;
+package com.example.demo.oauth2.google.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-public class KakaoLoginDTO {
+public class GoogleLoginDTO {
 
     @Setter
     @Getter
@@ -14,7 +14,7 @@ public class KakaoLoginDTO {
     public static class Request {
 
         @Schema(type = "string", example = "asd2221edqsdqwd23e")
-        private String kakaoAccessToken;
+        private String googleAccessToken;
 
         @Schema(type = "string", example = "WEDDING_PLANNER")
         private String role;
