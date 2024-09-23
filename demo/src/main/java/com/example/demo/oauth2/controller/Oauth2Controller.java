@@ -45,6 +45,8 @@ public class Oauth2Controller {
         GoogleUserInfoResponseDTO userInfo = googleService.getGoogleMemberInfo(loginRequest.getGoogleAccessToken());
         String role = loginRequest.getRole();
 
+        log.info("userInfo : {}", userInfo);
+
         GoogleLoginDTO.Response loginResponse = memberRegistryService.createGoogleMember(userInfo, role);
         return ResponseEntity.status(200).body(loginResponse);
     }
