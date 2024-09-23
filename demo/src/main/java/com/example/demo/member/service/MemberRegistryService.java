@@ -6,8 +6,10 @@ import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.repository.CustomerRepository;
 import com.example.demo.member.repository.WeddingPlannerRepository;
+import com.example.demo.oauth2.google.dto.GoogleLoginDTO;
+import com.example.demo.oauth2.google.dto.GoogleUserInfoResponseDTO;
 import com.example.demo.oauth2.kakao.dto.KakaoLoginDTO;
-import com.example.demo.oauth2.kakao.dto.KakaoUserInfoResponseDto;
+import com.example.demo.oauth2.kakao.dto.KakaoUserInfoResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,9 +28,9 @@ public class MemberRegistryService {
     private final TokenProvider tokenProvider;
 
     @Transactional
-    public KakaoLoginDTO.Response createKakaoMember(KakaoUserInfoResponseDto userInfoResponseDto, String role) {
+    public KakaoLoginDTO.Response createKakaoMember(KakaoUserInfoResponseDTO userInfoResponseDto, String role) {
         String username = userInfoResponseDto.kakaoAccount.profile.nickName;
-        String UUID = generateUUID(userInfoResponseDto.id);
+        String UUID = generateUUID("kakao", userInfoResponseDto.id.toString());
 
         // Generate access and refresh tokens
         String accessToken = tokenProvider.createAccessToken(username, UUID);
@@ -44,12 +46,40 @@ public class MemberRegistryService {
         return buildKakaoLoginResponse(UUID, accessToken, refreshToken);
     }
 
-    private String generateUUID(Long kakaoId) {
-        return "kakao-" + kakaoId;
+    @Transactional
+    public GoogleLoginDTO.Response createGoogleMember(GoogleUserInfoResponseDTO googleUserInfoResponseDto, String role) {
+        String username = googleUserInfoResponseDto.getName();
+        String UUID = generateUUID("google", googleUserInfoResponseDto.getSub());
+
+        // Generate access and refresh tokens
+        String accessToken = tokenProvider.createAccessToken(username, UUID);
+        String refreshToken = tokenProvider.createRefreshToken(username, UUID);
+
+        // Delegate customer or wedding planner handling based on role
+        if (role.equals(MemberRole.CUSTOMER.getRoleName())) {
+            processCustomer(UUID, username, refreshToken);
+        } else if (role.equals(MemberRole.WEDDING_PLANNER.getRoleName())) {
+            processWeddingPlanner(UUID, username, refreshToken);
+        }
+
+        return buildGoogleLoginResponse(UUID, accessToken, refreshToken);
     }
+
+    private String generateUUID(String platform, String id) {
+        return platform + "-" + id;
+    }
+
 
     private KakaoLoginDTO.Response buildKakaoLoginResponse(String UUID, String accessToken, String refreshToken) {
         return KakaoLoginDTO.Response.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .UUID(UUID)
+                .build();
+    }
+
+    private GoogleLoginDTO.Response buildGoogleLoginResponse(String UUID, String accessToken, String refreshToken) {
+        return GoogleLoginDTO.Response.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .UUID(UUID)
@@ -79,10 +109,6 @@ public class MemberRegistryService {
                 .build();
 
         customerRepository.save(newCustomer);
-    }
-
-    private boolean isMemberExist(Optional<Customer> findCustomer, Optional<WeddingPlanner> findWeddingPlanner) {
-        return findCustomer.isPresent() || findWeddingPlanner.isPresent();
     }
 
     public void processWeddingPlanner(String UUID, String name, String refreshToken) {

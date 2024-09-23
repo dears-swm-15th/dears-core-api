@@ -1,8 +1,11 @@
-package com.example.demo.oauth2.kakao.controller;
+package com.example.demo.oauth2.controller;
 
-import com.example.demo.member.service.CustomUserDetailsService;
-import com.example.demo.oauth2.kakao.dto.KakaoUserInfoResponseDto;
-import com.example.demo.oauth2.kakao.dto.LoginDTO;
+import com.example.demo.member.service.MemberRegistryService;
+import com.example.demo.oauth2.google.dto.GoogleLoginDTO;
+import com.example.demo.oauth2.google.dto.GoogleUserInfoResponseDTO;
+import com.example.demo.oauth2.google.service.GoogleService;
+import com.example.demo.oauth2.kakao.dto.KakaoLoginDTO;
+import com.example.demo.oauth2.kakao.dto.KakaoUserInfoResponseDTO;
 import com.example.demo.oauth2.kakao.service.KakaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,22 +25,29 @@ import org.springframework.web.bind.annotation.RestController;
 public class Oauth2Controller {
 
     private final KakaoService kakaoService;
-    private final CustomUserDetailsService customUserDetailsService;
+    private final GoogleService googleService;
+
+    private final MemberRegistryService memberRegistryService;
 
     @PostMapping("/shared/kakao")
     @Operation(summary = "[공통] 카카오 로그인")
-    public ResponseEntity<LoginDTO.Response> kakaoLogin(@RequestBody LoginDTO.Request loginRequest) {
-//        String kakaoAccessToken = kakaoService.getAccessTokenFromKakaoNativeApp(loginRequest.getCode());
-        KakaoUserInfoResponseDto userInfo = kakaoService.getUserInfo(loginRequest.getKakaoAccessToken());
+    public ResponseEntity<KakaoLoginDTO.Response> kakaoLogin(@RequestBody KakaoLoginDTO.Request loginRequest) {
+        KakaoUserInfoResponseDTO userInfo = kakaoService.getUserInfo(loginRequest.getKakaoAccessToken());
         String role = loginRequest.getRole();
 
-        LoginDTO.Response loginResponse = customUserDetailsService.createKakaoMember(userInfo, role);
+        KakaoLoginDTO.Response loginResponse = memberRegistryService.createKakaoMember(userInfo, role);
         return ResponseEntity.status(200).body(loginResponse);
     }
 
     @PostMapping("/shared/google")
     @Operation(summary = "[공통] 구글 로그인")
-    public ResponseEntity<LoginDTO.Response> googleLogin(@RequestBody LoginDTO.Request loginRequest) {
-        return ResponseEntity.status(200).body(customUserDetailsService.createGoogleMember(loginRequest.getGoogleAccessToken(), loginRequest.getRole()));
+    public ResponseEntity<GoogleLoginDTO.Response> googleLogin(@RequestBody GoogleLoginDTO.Request loginRequest) {
+        GoogleUserInfoResponseDTO userInfo = googleService.getGoogleMemberInfo(loginRequest.getGoogleAccessToken());
+        String role = loginRequest.getRole();
+
+        GoogleLoginDTO.Response loginResponse = memberRegistryService.createGoogleMember(userInfo, role);
+        return ResponseEntity.status(200).body(loginResponse);
     }
+
+
 }
