@@ -3,7 +3,7 @@ package com.example.demo.oauth2.google.dto;
 import lombok.Getter;
 
 @Getter
-public class GoogleInfoResponseDTO {
+public class GoogleUserInfoResponseDTO {
     private String iss;
     private String azp;
     private String aud;
