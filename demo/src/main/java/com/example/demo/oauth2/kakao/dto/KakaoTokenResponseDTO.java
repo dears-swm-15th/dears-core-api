@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class KakaoTokenResponseDto {
+public class KakaoTokenResponseDTO {
 
     @JsonProperty("token_type")
     public String tokenType;
@@ -27,7 +27,7 @@ public class KakaoTokenResponseDto {
 
     @JsonProperty("refresh_token_expires_in")
     public Integer refreshTokenExpiresIn;
-    
+
     @JsonProperty("scope")
     public String scope;
 }
