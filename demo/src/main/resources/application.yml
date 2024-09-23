@@ -16,6 +16,7 @@ spring:
 discord:
   customer-service: discord-customer-service
   exception: discord-exception
+
 webhooks:
   customer-service: ${DISCORD_CUSTOMER_SERVICE}
   exception: ${DISCORD_EXCEPTION}
@@ -30,6 +31,10 @@ kakao:
   client_id_web: ${KAKAO_CLIENT_ID_WEB}
   client_secret_web: ${KAKAO_SECRET_ID_WEB}
   client_id_native: ${KAKAO_CLIENT_ID_NATIVE}
+
+google:
+  client-id: ${GOOGLE_CLIENT_ID_WEB}
+  client-secret: ${GOOGLE_CLIENT_SECRET_WEB}
 
 ---
 
@@ -65,17 +70,6 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_CLIENT_ID_WEB}
-            client-secret: ${GOOGLE_CLIENT_SECRET_WEB}
-            scope:
-              - email
-              - profile
 
 springdoc:
   api-docs:

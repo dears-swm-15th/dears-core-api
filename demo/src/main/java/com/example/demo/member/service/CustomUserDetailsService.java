@@ -14,8 +14,6 @@ import com.example.demo.member.mapper.CustomerMapper;
 import com.example.demo.member.mapper.WeddingPlannerMapper;
 import com.example.demo.member.repository.CustomerRepository;
 import com.example.demo.member.repository.WeddingPlannerRepository;
-import com.example.demo.oauth2.kakao.dto.KakaoUserInfoResponseDto;
-import com.example.demo.oauth2.kakao.dto.LoginDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -35,7 +33,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.example.demo.enums.member.MemberRole.CUSTOMER;
 import static com.example.demo.enums.member.MemberRole.WEDDING_PLANNER;
 
 @Service
@@ -102,52 +99,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             log.error("Invalid role type: {}", role);
             throw new IllegalArgumentException("Invalid role type");
         }
-    }
-
-    @Transactional
-    public LoginDTO.Response createKakaoMember(KakaoUserInfoResponseDto userInfoResponseDto, String role) {
-        String username = userInfoResponseDto.kakaoAccount.profile.nickName;
-        String UUID = "kakao-" + userInfoResponseDto.id;
-
-        String accessToken = tokenProvider.createAccessToken(username, UUID);
-        String refreshToken = tokenProvider.createRefreshToken(username, UUID);
-
-        Optional<Customer> findCustomer = customerRepository.findByUUID(UUID);
-        Optional<WeddingPlanner> findWeddingPlanner = weddingPlannerRepository.findByUUID(UUID);
-
-        if (findCustomer.isPresent()) {
-            Customer existCustomer = findCustomer.get();
-            existCustomer.updateRefreshToken(refreshToken);
-        } else if (findWeddingPlanner.isPresent()) {
-            WeddingPlanner existWeddingPlanner = findWeddingPlanner.get();
-            existWeddingPlanner.updateRefreshToken(refreshToken);
-        } else if (role.equals(CUSTOMER.getRoleName())) {
-            Customer customer = Customer.builder()
-                    .role(MemberRole.CUSTOMER)
-                    .name(userInfoResponseDto.kakaoAccount.profile.nickName)
-//                    .email(userInfoResponseDto.kakaoAccount.email)
-                    .UUID(UUID)
-//                    .profileImage(userInfoResponseDto.kakaoAccount.profile.profileImageUrl)
-                    .refreshToken(refreshToken)
-                    .build();
-
-            customerRepository.save(customer);
-        } else if (role.equals(WEDDING_PLANNER.getRoleName())) {
-            WeddingPlanner weddingPlanner = WeddingPlanner.builder()
-                    .role(WEDDING_PLANNER)
-                    .name(userInfoResponseDto.kakaoAccount.profile.nickName)
-                    .UUID(UUID)
-                    .refreshToken(refreshToken)
-                    .build();
-
-            weddingPlannerRepository.save(weddingPlanner);
-        }
-
-        return LoginDTO.Response.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .UUID(UUID)
-                .build();
     }
 
 

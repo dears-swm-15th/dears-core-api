@@ -3,7 +3,7 @@ package com.example.demo.oauth2.kakao.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-public class LoginDTO {
+public class KakaoLoginDTO {
 
     @Setter
     @Getter
