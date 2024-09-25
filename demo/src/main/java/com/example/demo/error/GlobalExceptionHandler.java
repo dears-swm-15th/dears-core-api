@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import javax.security.auth.RefreshFailedException;
 import java.io.IOException;
 
 @Slf4j
@@ -165,6 +166,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(JsonParseException.class)
     protected ResponseEntity<ErrorResponse> handleJsonParseExceptionException(JsonParseException ex) {
         return buildErrorResponseAndSendAlert(ex, ErrorCode.JSON_PARSE_ERROR, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * @param ex RefreshFailedException
+     * @return ResponseEntity<ErrorResponse>
+     */
+    @ExceptionHandler(RefreshFailedException.class)
+    protected ResponseEntity<ErrorResponse> handleRefreshFailedException(RefreshFailedException ex) {
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.REFRESH_TOKEN_EXPIRED_ERROR, HttpStatus.BAD_REQUEST);
     }
 
     /**
