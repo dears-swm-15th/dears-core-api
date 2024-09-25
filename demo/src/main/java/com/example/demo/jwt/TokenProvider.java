@@ -117,11 +117,6 @@ public class TokenProvider implements InitializingBean {
         return claims.getSubject();
     }
 
-//    public Authentication getAuthentication(String token) {
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(getUniqueId(token));
-//        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-//    }
-
     public boolean validateAccessToken(String token) {
         try {
             Jwts.parser().setSigningKey(key).parseClaimsJws(token);
