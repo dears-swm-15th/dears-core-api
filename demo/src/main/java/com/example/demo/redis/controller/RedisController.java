@@ -23,14 +23,14 @@ public class RedisController {
     @GetMapping("/set/all")
     @Operation(summary = "Value가 Set인 모든 데이터 조회")
     public Map<String, Set<Object>> getAllSetValue() {
-        log.info("Getting all set values");
+        log.info("[Redis] Getting all set values");
         return redisService.getAllSetPairs();
     }
 
     @GetMapping("/set/get")
     @Operation(summary = "Value가 Set인 특정 데이터 조회")
     public String getSetValue(@RequestParam String key) {
-        log.info("Getting set value for key: {}", key);
+        log.info("[Redis] Getting set value for key: {}", key);
         String value = redisService.getSetValue(key);
         return value;
     }
@@ -38,21 +38,21 @@ public class RedisController {
     @GetMapping("/set/delete/all")
     @Operation(summary = "Value가 Set인 모든 데이터 삭제")
     public void deleteAllSetValues() {
-        log.info("Deleting all set values for key");
+        log.info("[Redis] Deleting all set values for key");
         redisService.deleteAllSet();
     }
 
     @GetMapping("/every/all")
     @Operation(summary = "모든 데이터 조회")
     public Map<String, Object> getAllData() {
-        log.info("Getting all values");
+        log.info("[Redis] Getting all values");
         return redisService.getAllData();
     }
 
     @GetMapping("/every/delete/all")
     @Operation(summary = "모든 데이터 삭제")
     public void deleteAllData() {
-        log.info("Deleting all values");
+        log.info("[Redis] Deleting all values");
         redisService.deleteAllData();
     }
 
