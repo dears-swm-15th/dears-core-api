@@ -15,10 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.RefreshFailedException;
 
@@ -70,6 +67,23 @@ public class Oauth2Controller {
     public ResponseEntity<ReissueDTO.Response> reissueJwtToken(@RequestBody ReissueDTO.Request request) throws RefreshFailedException, JsonProcessingException {
         ReissueDTO.Response reissueResponse = oauth2Service.reissueJwtToken(request);
 
+<<<<<<< Updated upstream
         return ResponseEntity.status(200).body(reissueResponse);
     }
+=======
+<<<<<<< Updated upstream
+=======
+        return ResponseEntity.status(200).body(reissueResponse);
+    }
+
+    @GetMapping("/shared/logout")
+    @Operation(summary = "[공통] 로그아웃")
+    public ResponseEntity<Void> logout() {
+        oauth2Service.logout();
+        return ResponseEntity.status(200).build();
+    }
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 }
+
+

@@ -9,12 +9,20 @@ import com.example.demo.oauth2.dto.ReissueDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+<<<<<<< Updated upstream
+=======
+import org.springframework.data.redis.core.RedisTemplate;
+>>>>>>> Stashed changes
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.auth.RefreshFailedException;
+<<<<<<< Updated upstream
+=======
+import java.util.concurrent.TimeUnit;
+>>>>>>> Stashed changes
 
 @Slf4j
 @Service
@@ -24,6 +32,11 @@ public class Oauth2Service {
     private final TokenProvider tokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
 
+<<<<<<< Updated upstream
+=======
+    private final RedisTemplate<String, Object> redisTemplateRT;
+
+>>>>>>> Stashed changes
     @Transactional
     public ReissueDTO.Response reissueJwtToken(ReissueDTO.Request request) throws JsonProcessingException, RefreshFailedException {
         String refreshToken = request.getRefreshToken();
@@ -36,7 +49,13 @@ public class Oauth2Service {
 
         long refreshTokenExpiration = tokenProvider.getRefreshTokenExpirationByManual(refreshToken);
 
+<<<<<<< Updated upstream
         if (refreshTokenExpiration <= 0) {
+=======
+
+        String expiredKey = "expired:" + refreshToken;
+        if (refreshTokenExpiration <= 0 || Boolean.TRUE.equals(redisTemplateRT.hasKey(expiredKey))) {
+>>>>>>> Stashed changes
             throw new RefreshFailedException("Refresh token is expired");
         }
 
@@ -67,4 +86,28 @@ public class Oauth2Service {
                 .build();
     }
 
+<<<<<<< Updated upstream
+=======
+    @Transactional
+    public void logout() {
+        MemberRole memberRole = customUserDetailsService.getCurrentAuthenticatedMemberRole();
+
+        String expiredKey = null;
+        String refreshToken = null;
+
+        if (memberRole == MemberRole.CUSTOMER) {
+            Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
+            refreshToken = customer.getRefreshToken();
+            expiredKey = "expired:" + refreshToken;
+            customer.updateRefreshToken(null);
+        } else if (memberRole == MemberRole.WEDDING_PLANNER) {
+            WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
+            refreshToken = weddingPlanner.getRefreshToken();
+            expiredKey = "expired:" + refreshToken;
+            weddingPlanner.updateRefreshToken(null);
+        }
+        
+        redisTemplateRT.opsForValue().set(expiredKey, "blacklisted", tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
+    }
+>>>>>>> Stashed changes
 }
