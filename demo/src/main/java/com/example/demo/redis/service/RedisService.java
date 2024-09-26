@@ -149,4 +149,29 @@ public class RedisService {
         return allSetPairs;
     }
 
+    // retrieve every data in redis
+    public Map<String, Object> getAllData() {
+        Set<String> allKeys = redisTemplate.keys("*");  // get all keys
+        Map<String, Object> allData = new HashMap<>();  // create a map to store key-value pairs
+
+        if (allKeys != null) {
+            for (String key : allKeys) {
+                Object value = redisTemplate.opsForValue().get(key);  // retrieve value
+                if (value != null) {
+                    allData.put(key, value);  // store the key and its value in the map
+                }
+            }
+        }
+        return allData;
+    }
+
+    // delete every data in redis
+    public void deleteAllData() {
+        Set<String> allKeys = redisTemplate.keys("*");  // get all keys
+        if (allKeys != null) {
+            for (String key : allKeys) {
+                redisTemplate.delete(key);  // delete the key
+            }
+        }
+    }
 }

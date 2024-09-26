@@ -1,6 +1,7 @@
 package com.example.demo.redis.controller;
 
 import com.example.demo.redis.service.RedisService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,33 +20,50 @@ public class RedisController {
 
     private final RedisService redisService;
 
-    @GetMapping("/set/get/all")
+    @GetMapping("/set/all")
+    @Operation(summary = "Value가 Set인 모든 데이터 조회")
     public Map<String, Set<Object>> getAllSetValue() {
         log.info("Getting all set values");
         return redisService.getAllSetPairs();
     }
 
-    @GetMapping("/all/exists")
-    public boolean checkExistsValue(@RequestParam String key) {
-        log.info("Checking existence for key: {}", key);
-        boolean exists = redisService.checkExistsValue(redisService.getValue(key));
-        log.info("Existence check for key: {} is: {}", key, exists);
-        return exists;
-    }
-
     @GetMapping("/set/get")
+    @Operation(summary = "Value가 Set인 특정 데이터 조회")
     public String getSetValue(@RequestParam String key) {
         log.info("Getting set value for key: {}", key);
         String value = redisService.getSetValue(key);
         return value;
     }
 
-    @GetMapping("set/delete/all")
+    @GetMapping("/set/delete/all")
+    @Operation(summary = "Value가 Set인 모든 데이터 삭제")
     public void deleteAllSetValues() {
         log.info("Deleting all set values for key");
         redisService.deleteAllSet();
     }
 
+    @GetMapping("/every/all")
+    @Operation(summary = "모든 데이터 조회")
+    public Map<String, Object> getAllData() {
+        log.info("Getting all values");
+        return redisService.getAllData();
+    }
+
+    @GetMapping("/every/delete/all")
+    @Operation(summary = "모든 데이터 삭제")
+    public void deleteAllData() {
+        log.info("Deleting all values");
+        redisService.deleteAllData();
+    }
+
+//     @GetMapping("/all/exists")
+//    public boolean checkExistsValue(@RequestParam String key) {
+//        log.info("Checking existence for key: {}", key);
+//        boolean exists = redisService.checkExistsValue(redisService.getValue(key));
+//        log.info("Existence check for key: {} is: {}", key, exists);
+//        return exists;
+//    }
+//
 //    @PostMapping("/set")
 //    public void setValue(@RequestParam String key, @RequestParam String value) {
 //        log.info("Setting value for key: {}", key);
