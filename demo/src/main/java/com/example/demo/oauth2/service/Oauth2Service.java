@@ -32,6 +32,8 @@ public class Oauth2Service {
             throw new NullPointerException("No refresh token found in request");
         }
 
+        tokenProvider.validateRefreshToken(refreshToken);
+
         long refreshTokenExpiration = tokenProvider.getRefreshTokenExpirationByManual(refreshToken);
 
         if (refreshTokenExpiration <= 0) {
