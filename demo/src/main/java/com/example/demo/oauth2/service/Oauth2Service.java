@@ -41,7 +41,6 @@ public class Oauth2Service {
 
         long refreshTokenExpiration = tokenProvider.getRefreshTokenExpirationByManual(refreshToken);
 
-
         String expiredKey = "expired:" + refreshToken;
         if (refreshTokenExpiration <= 0 || Boolean.TRUE.equals(redisTemplateRT.hasKey(expiredKey))) {
 
