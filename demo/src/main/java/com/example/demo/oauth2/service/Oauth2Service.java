@@ -59,12 +59,16 @@ public class Oauth2Service {
             Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
             accessToken = tokenProvider.createAccessToken(customer.getName(), UUID);
             newRefreshToken = tokenProvider.createRefreshToken(customer.getName(), UUID);
-            customer.updateRefreshToken(newRefreshToken);
+
+            redisTemplateRT.delete(customer.getUUID());
+            redisTemplateRT.opsForValue().set(customer.getUUID(), newRefreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
         } else if (memberRole == MemberRole.WEDDING_PLANNER) {
             WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
             accessToken = tokenProvider.createAccessToken(weddingPlanner.getName(), UUID);
             newRefreshToken = tokenProvider.createRefreshToken(weddingPlanner.getName(), UUID);
-            weddingPlanner.updateRefreshToken(newRefreshToken);
+
+            redisTemplateRT.delete(weddingPlanner.getUUID());
+            redisTemplateRT.opsForValue().set(weddingPlanner.getUUID(), newRefreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
         }
         Authentication authentication = customUserDetailsService.getAuthentication(accessToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -79,22 +83,17 @@ public class Oauth2Service {
     public void logout() {
         MemberRole memberRole = customUserDetailsService.getCurrentAuthenticatedMemberRole();
 
-        String expiredKey = null;
-        String refreshToken = null;
+        String UUID = null;
 
         if (memberRole == MemberRole.CUSTOMER) {
             Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
-            refreshToken = customer.getRefreshToken();
-            expiredKey = "expired:" + refreshToken;
-            customer.updateRefreshToken(null);
+            UUID = customer.getUUID();
         } else if (memberRole == MemberRole.WEDDING_PLANNER) {
             WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
-            refreshToken = weddingPlanner.getRefreshToken();
-            expiredKey = "expired:" + refreshToken;
-            weddingPlanner.updateRefreshToken(null);
+            UUID = weddingPlanner.getUUID();
         }
 
-        redisTemplateRT.opsForValue().set(expiredKey, "blacklisted", tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
+        redisTemplateRT.delete(UUID);
     }
 
 }
