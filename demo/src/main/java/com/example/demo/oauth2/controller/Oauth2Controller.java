@@ -67,12 +67,6 @@ public class Oauth2Controller {
     public ResponseEntity<ReissueDTO.Response> reissueJwtToken(@RequestBody ReissueDTO.Request request) throws RefreshFailedException, JsonProcessingException {
         ReissueDTO.Response reissueResponse = oauth2Service.reissueJwtToken(request);
 
-<<<<<<< Updated upstream
-        return ResponseEntity.status(200).body(reissueResponse);
-    }
-=======
-<<<<<<< Updated upstream
-=======
         return ResponseEntity.status(200).body(reissueResponse);
     }
 
@@ -82,8 +76,6 @@ public class Oauth2Controller {
         oauth2Service.logout();
         return ResponseEntity.status(200).build();
     }
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 }
 
 
