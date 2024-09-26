@@ -12,10 +12,12 @@ import com.example.demo.oauth2.kakao.dto.KakaoLoginDTO;
 import com.example.demo.oauth2.kakao.dto.KakaoUserInfoResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class MemberRegistryService {
     private final WeddingPlannerRepository weddingPlannerRepository;
 
     private final TokenProvider tokenProvider;
+    private final RedisTemplate redisTemplateRT;
 
     @Transactional
     public KakaoLoginDTO.Response createKakaoMember(KakaoUserInfoResponseDTO userInfoResponseDto, String role) {
@@ -127,15 +130,18 @@ public class MemberRegistryService {
     }
 
     private void updateExistingCustomer(Customer customer, String refreshToken) {
-        customer.updateRefreshToken(refreshToken);
+        // replace refresh token by key(uuid)
+        redisTemplateRT.delete(customer.getUUID());
+        redisTemplateRT.opsForValue().set(customer.getUUID(), refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
     }
 
     private void createNewCustomer(String UUID, String name, String refreshToken) {
+        redisTemplateRT.opsForValue().set(UUID, refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
+
         Customer newCustomer = Customer.builder()
                 .role(MemberRole.CUSTOMER)
                 .name(name)
                 .UUID(UUID)
-                .refreshToken(refreshToken)
                 .build();
 
         customerRepository.save(newCustomer);
@@ -152,15 +158,18 @@ public class MemberRegistryService {
     }
 
     private void updateExistingWeddingPlanner(WeddingPlanner weddingPlanner, String refreshToken) {
-        weddingPlanner.updateRefreshToken(refreshToken);
+        // replace refresh token by key(uuid)
+        redisTemplateRT.delete(weddingPlanner.getUUID());
+        redisTemplateRT.opsForValue().set(weddingPlanner.getUUID(), refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
     }
 
     private void createNewWeddingPlanner(String UUID, String name, String refreshToken) {
+        redisTemplateRT.opsForValue().set(UUID, refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
+
         WeddingPlanner newWeddingPlanner = WeddingPlanner.builder()
                 .role(MemberRole.WEDDING_PLANNER)
                 .name(name)
                 .UUID(UUID)
-                .refreshToken(refreshToken)
                 .build();
 
         weddingPlannerRepository.save(newWeddingPlanner);

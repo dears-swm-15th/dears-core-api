@@ -9,12 +9,15 @@ import com.example.demo.oauth2.dto.ReissueDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.auth.RefreshFailedException;
+import java.util.concurrent.TimeUnit;
+
 
 @Slf4j
 @Service
@@ -23,6 +26,8 @@ public class Oauth2Service {
 
     private final TokenProvider tokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
+
+    private final RedisTemplate<String, Object> redisTemplateRT;
 
     @Transactional
     public ReissueDTO.Response reissueJwtToken(ReissueDTO.Request request) throws JsonProcessingException, RefreshFailedException {
@@ -36,7 +41,10 @@ public class Oauth2Service {
 
         long refreshTokenExpiration = tokenProvider.getRefreshTokenExpirationByManual(refreshToken);
 
-        if (refreshTokenExpiration <= 0) {
+
+        String expiredKey = "expired:" + refreshToken;
+        if (refreshTokenExpiration <= 0 || Boolean.TRUE.equals(redisTemplateRT.hasKey(expiredKey))) {
+
             throw new RefreshFailedException("Refresh token is expired");
         }
 
@@ -51,12 +59,16 @@ public class Oauth2Service {
             Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
             accessToken = tokenProvider.createAccessToken(customer.getName(), UUID);
             newRefreshToken = tokenProvider.createRefreshToken(customer.getName(), UUID);
-            customer.updateRefreshToken(newRefreshToken);
+
+            redisTemplateRT.delete(customer.getUUID());
+            redisTemplateRT.opsForValue().set(customer.getUUID(), newRefreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
         } else if (memberRole == MemberRole.WEDDING_PLANNER) {
             WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
             accessToken = tokenProvider.createAccessToken(weddingPlanner.getName(), UUID);
             newRefreshToken = tokenProvider.createRefreshToken(weddingPlanner.getName(), UUID);
-            weddingPlanner.updateRefreshToken(newRefreshToken);
+
+            redisTemplateRT.delete(weddingPlanner.getUUID());
+            redisTemplateRT.opsForValue().set(weddingPlanner.getUUID(), newRefreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
         }
         Authentication authentication = customUserDetailsService.getAuthentication(accessToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -65,6 +77,23 @@ public class Oauth2Service {
                 .accessToken(accessToken)
                 .refreshToken(newRefreshToken)
                 .build();
+    }
+
+    @Transactional
+    public void logout() {
+        MemberRole memberRole = customUserDetailsService.getCurrentAuthenticatedMemberRole();
+
+        String UUID = null;
+
+        if (memberRole == MemberRole.CUSTOMER) {
+            Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
+            UUID = customer.getUUID();
+        } else if (memberRole == MemberRole.WEDDING_PLANNER) {
+            WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
+            UUID = weddingPlanner.getUUID();
+        }
+
+        redisTemplateRT.delete(UUID);
     }
 
 }
