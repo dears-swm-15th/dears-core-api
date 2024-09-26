@@ -75,6 +75,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         throw new UsernameNotFoundException("User with the given UUID could not be found");
     }
 
+    public UserDetails loadUserByAccessToken(String accessToken) throws UsernameNotFoundException {
+        log.info("Loading user by Access Token: {}", accessToken);
+        String UUID = tokenProvider.getUniqueId(accessToken);
+        return loadUserByUsername(UUID);
+    }
+
     @Transactional
     public AuthDTO.Response join(String role) {
         log.info("Joining new member with role: {}", role);
