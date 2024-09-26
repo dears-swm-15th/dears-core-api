@@ -240,18 +240,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     public Customer getCustomerByUuid(String uuid) {
         log.info("Getting customer by UUID: {}", uuid);
-        Customer customer = customerRepository.findByUUID(uuid)
+        return customerRepository.findByUUID(uuid)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
-        log.info("Found customer with UUID: {}", uuid);
-        return customer;
     }
 
     public WeddingPlanner getWeddingPlannerByUuid(String uuid) {
         log.info("Getting wedding planner by UUID: {}", uuid);
-        WeddingPlanner weddingPlanner = weddingPlannerRepository.findByUUID(uuid)
+        return weddingPlannerRepository.findByUUID(uuid)
                 .orElseThrow(() -> new RuntimeException("WeddingPlanner not found"));
-        log.info("Found wedding planner with UUID: {}", uuid);
-        return weddingPlanner;
     }
 
     public MypageDTO.CustomerServiceResponse createCustomerService(MypageDTO.CustomerServiceRequest customerServiceRequest) {

@@ -30,6 +30,7 @@ public class MemberRegistryService {
     @Transactional
     public KakaoLoginDTO.Response createKakaoMember(KakaoUserInfoResponseDTO userInfoResponseDto, String role) {
         String username = userInfoResponseDto.kakaoAccount.profile.nickName;
+
         String UUID = generateUUID("kakao", userInfoResponseDto.id.toString());
 
         // Generate access and refresh tokens
@@ -45,6 +46,35 @@ public class MemberRegistryService {
 
         return buildKakaoLoginResponse(UUID, accessToken, refreshToken);
     }
+
+    @Transactional
+    public KakaoLoginDTO.Response createTestMember(KakaoUserInfoResponseDTO userInfoResponseDto, String role) {
+        String username;
+        Long id;
+        if (userInfoResponseDto == null) {
+            username = "test";
+            id = 1L;
+        } else {
+            username = userInfoResponseDto.kakaoAccount.profile.nickName;
+            id = userInfoResponseDto.id;
+        }
+
+        String UUID = "51fc7d6b-7f86-43cf-b5c7-de4c46046d71";
+
+        // Generate access and refresh tokens
+        String accessToken = tokenProvider.createAccessToken(username, UUID);
+        String refreshToken = tokenProvider.createRefreshToken(username, UUID);
+
+        // Delegate customer or wedding planner handling based on role
+        if (role.equals(MemberRole.CUSTOMER.getRoleName())) {
+            processCustomer(UUID, username, refreshToken);
+        } else if (role.equals(MemberRole.WEDDING_PLANNER.getRoleName())) {
+            processWeddingPlanner(UUID, username, refreshToken);
+        }
+
+        return buildKakaoLoginResponse(UUID, accessToken, refreshToken);
+    }
+
 
     @Transactional
     public GoogleLoginDTO.Response createGoogleMember(GoogleUserInfoResponseDTO googleUserInfoResponseDto, String role) {

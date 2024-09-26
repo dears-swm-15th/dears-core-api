@@ -117,14 +117,25 @@ public class TokenProvider implements InitializingBean {
         return claims.getSubject();
     }
 
-//    public Authentication getAuthentication(String token) {
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(getUniqueId(token));
-//        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-//    }
-
-    public boolean validateAccessToken(String token) {
+    public boolean validateAccessToken(String accessToken) {
         try {
-            Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(key).parseClaimsJws(accessToken);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            logger.info("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            logger.info("만료된 JWT 토큰입니다.");
+        } catch (UnsupportedJwtException e) {
+            logger.info("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            logger.info("JWT 토큰이 잘못되었습니다.");
+        }
+        return false;
+    }
+
+    public boolean validateRefreshToken(String refreshToken) {
+        try {
+            Jwts.parser().setSigningKey(key).parseClaimsJws(refreshToken);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             logger.info("잘못된 JWT 서명입니다.");
