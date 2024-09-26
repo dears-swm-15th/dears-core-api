@@ -6,6 +6,7 @@ import com.example.demo.member.service.CustomUserDetailsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonParseException;
 import feign.FeignException;
+import io.jsonwebtoken.MalformedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,10 @@ public class GlobalExceptionHandler {
         String username = customUserDetailsService.getCurrentAuthenticatedMemberName();
         String UUID = customUserDetailsService.getCurrentAuthenticatedMemberUUID();
         MemberRole role = customUserDetailsService.getCurrentAuthenticatedMemberRole();
+
+        if (username == null || UUID == null || role == null) {
+            return new UserInfo("Unknown", "Unknown", MemberRole.UNKNOWN);
+        }
         return new UserInfo(username, UUID, role);
     }
 
@@ -47,7 +52,7 @@ public class GlobalExceptionHandler {
         UserInfo userInfo = getUserInfo();
 
         discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, httpStatus);
     }
 
     /**
@@ -193,6 +198,15 @@ public class GlobalExceptionHandler {
         return buildErrorResponseAndSendAlert(ex, ErrorCode.FEIGN_CLIENT_ERROR, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(MalformedJwtException.class)
+    protected ResponseEntity<ErrorResponse> handleMalformedJwtException(MalformedJwtException ex) {
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.UNAUTHORIZED_ERROR, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.UNAUTHORIZED_ERROR, HttpStatus.UNAUTHORIZED);
+    }
 
     // ==================================================================================================================
 
