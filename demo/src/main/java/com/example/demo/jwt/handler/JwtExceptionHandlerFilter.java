@@ -32,7 +32,7 @@ public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
     private static final List<String> WHITELIST = Arrays.asList(
-            "/api/v1/member/reissue"
+            "/api/v1/oauth2/shared/reissue"
     );
 
     @Override
