@@ -35,12 +35,12 @@ public class RedisController {
         return value;
     }
 
-    @GetMapping("/set/delete/all")
-    @Operation(summary = "Value가 Set인 모든 데이터 삭제")
-    public void deleteAllSetValues() {
-        log.info("[Redis] Deleting all set values for key");
-        redisService.deleteAllSet();
-    }
+//    @GetMapping("/set/delete/all")
+//    @Operation(summary = "Value가 Set인 모든 데이터 삭제")
+//    public void deleteAllSetValues() {
+//        log.info("[Redis] Deleting all set values for key");
+//        redisService.deleteAllSet();
+//    }
 
     @GetMapping("/every/all")
     @Operation(summary = "모든 데이터 조회")
