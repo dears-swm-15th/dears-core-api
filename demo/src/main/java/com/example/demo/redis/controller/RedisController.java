@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -27,20 +26,20 @@ public class RedisController {
         return redisService.getAllSetPairs();
     }
 
-    @GetMapping("/set/get")
-    @Operation(summary = "Value가 Set인 특정 데이터 조회")
-    public String getSetValue(@RequestParam String key) {
-        log.info("[Redis] Getting set value for key: {}", key);
-        String value = redisService.getSetValue(key);
-        return value;
-    }
-
-//    @GetMapping("/set/delete/all")
-//    @Operation(summary = "Value가 Set인 모든 데이터 삭제")
-//    public void deleteAllSetValues() {
-//        log.info("[Redis] Deleting all set values for key");
-//        redisService.deleteAllSet();
+//    @GetMapping("/set/get")
+//    @Operation(summary = "Value가 Set인 특정 데이터 조회")
+//    public String getSetValue(@RequestParam String key) {
+//        log.info("[Redis] Getting set value for key: {}", key);
+//        String value = redisService.getSetValue(key);
+//        return value;
 //    }
+
+    @GetMapping("/set/delete/all")
+    @Operation(summary = "Value가 Set인 모든 데이터 삭제")
+    public void deleteAllSetValues() {
+        log.info("[Redis] Deleting all set values for key");
+        redisService.deleteAllSet();
+    }
 
     @GetMapping("/every/all")
     @Operation(summary = "모든 데이터 조회")

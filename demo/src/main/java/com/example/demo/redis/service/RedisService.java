@@ -2,6 +2,7 @@ package com.example.demo.redis.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -151,22 +152,40 @@ public class RedisService {
 
     // retrieve every data in redis
     public Map<String, Object> getAllData() {
-        Set<String> allKeys = redisTemplate.keys("*");  // get all keys
-        Map<String, Object> allData = new HashMap<>();  // create a map to store key-value pairs
+        Set<String> allKeys = redisTemplate.keys("*");  // Get all keys
+        Map<String, Object> allData = new HashMap<>();  // Create a map to store key-value pairs
+
+        log.info("allKeys: {}", allKeys);
 
         if (allKeys != null) {
             for (String key : allKeys) {
-                if (redisTemplate.opsForValue().get(key) != null) {
-                    allData.put(key, redisTemplate.opsForValue().get(key));
-                } else if (redisTemplate.opsForHash().entries(key) != null) {
-                    allData.put(key, redisTemplate.opsForHash().entries(key));
-                } else if (redisTemplate.opsForSet().members(key) != null) {
-                    allData.put(key, redisTemplate.opsForSet().members(key));
+                DataType keyType = redisTemplate.type(key);  // Get the type of the key
+
+                switch (keyType.code()) {
+                    case "string":
+                        Object stringValue = redisTemplate.opsForValue().get(key);
+                        log.info("string value: {}", stringValue);
+                        allData.put(key, stringValue);
+                        break;
+                    case "hash":
+                        Map<Object, Object> hashEntries = redisTemplate.opsForHash().entries(key);
+                        log.info("hash entries: {}", hashEntries);
+                        allData.put(key, hashEntries);
+                        break;
+                    case "set":
+                        Set<Object> setMembers = redisTemplate.opsForSet().members(key);
+                        log.info("set members: {}", setMembers);
+                        allData.put(key, setMembers);
+                        break;
+                    // Add more cases for list, zset, etc. if necessary
+                    default:
+                        log.warn("Unhandled key type for key: {}", key);
                 }
             }
         }
         return allData;
     }
+
 
     // delete every data in redis
     public void deleteAllData() {
