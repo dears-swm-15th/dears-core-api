@@ -51,6 +51,32 @@ public class MemberRegistryService {
     }
 
     @Transactional
+    public KakaoLoginDTO.Response createAdminCustomer(String username) {
+        String UUID = generateUUID("admin", "customer");
+
+        // Generate access and refresh tokens
+        String accessToken = tokenProvider.createdAdminJwtToken(username, UUID);
+        String refreshToken = tokenProvider.createRefreshToken(username, UUID);
+
+        processCustomer(UUID, username, refreshToken);
+
+        return buildKakaoLoginResponse(UUID, accessToken, refreshToken);
+    }
+
+    @Transactional
+    public KakaoLoginDTO.Response createAdminWeddingPlanner(String username) {
+        String UUID = generateUUID("admin", "weddingplanner");
+
+        // Generate access and refresh tokens
+        String accessToken = tokenProvider.createdAdminJwtToken(username, UUID);
+        String refreshToken = tokenProvider.createRefreshToken(username, UUID);
+
+        processWeddingPlanner(UUID, username, refreshToken);
+
+        return buildKakaoLoginResponse(UUID, accessToken, refreshToken);
+    }
+
+    @Transactional
     public KakaoLoginDTO.Response createTestMember(KakaoUserInfoResponseDTO userInfoResponseDto, String role) {
         String username;
         Long id;

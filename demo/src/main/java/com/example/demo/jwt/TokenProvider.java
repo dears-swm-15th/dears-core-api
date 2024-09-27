@@ -168,4 +168,20 @@ public class TokenProvider implements InitializingBean {
         long expirationTime = claimsNode.get("exp").asLong() * 1000;
         return expirationTime - System.currentTimeMillis();
     }
+
+    public String createdAdminJwtToken(String username, String uniqueId) {
+        // Setting expiration to a future date (e.g., 10 years)
+        long expirationTime = 1000L * 60 * 60 * 24 * 365 * 10;  // 10 years in milliseconds
+
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + expirationTime);
+
+        // Creating JWT token
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("uniqueId", uniqueId) // 커스텀 클레임으로 uniqueId 추가
+                .signWith(key, SignatureAlgorithm.HS512)
+                .setExpiration(validity)
+                .compact();
+    }
 }

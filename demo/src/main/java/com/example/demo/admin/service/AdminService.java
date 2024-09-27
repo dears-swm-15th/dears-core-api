@@ -2,6 +2,7 @@ package com.example.demo.admin.service;
 
 import com.example.demo.admin.dto.AdminDTO;
 import com.example.demo.enums.member.MemberRole;
+import com.example.demo.jwt.TokenProvider;
 import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.repository.CustomerRepository;
@@ -21,6 +22,8 @@ public class AdminService {
 
     private final CustomerRepository customerRepository;
     private final WeddingPlannerRepository weddingPlannerRepository;
+
+    private final TokenProvider tokenProvider;
 
     public List<AdminDTO.MemberResponse> getAllMembers() {
         List<Customer> customers = customerRepository.findAll();
@@ -53,5 +56,6 @@ public class AdminService {
 
         return allMembers;
     }
+    
 }
 
