@@ -6,6 +6,7 @@ import com.example.demo.member.service.CustomUserDetailsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonParseException;
 import feign.FeignException;
+import io.jsonwebtoken.MalformedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import javax.security.auth.RefreshFailedException;
 import java.io.IOException;
 
 @Slf4j
@@ -37,6 +39,10 @@ public class GlobalExceptionHandler {
         String username = customUserDetailsService.getCurrentAuthenticatedMemberName();
         String UUID = customUserDetailsService.getCurrentAuthenticatedMemberUUID();
         MemberRole role = customUserDetailsService.getCurrentAuthenticatedMemberRole();
+
+        if (username == null || UUID == null || role == null) {
+            return new UserInfo("Unknown", "Unknown", MemberRole.UNKNOWN);
+        }
         return new UserInfo(username, UUID, role);
     }
 
@@ -46,7 +52,7 @@ public class GlobalExceptionHandler {
         UserInfo userInfo = getUserInfo();
 
         discordMessageProvider.sendExceptionMessage(userInfo, response, ex);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, httpStatus);
     }
 
     /**
@@ -168,6 +174,15 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * @param ex RefreshFailedException
+     * @return ResponseEntity<ErrorResponse>
+     */
+    @ExceptionHandler(RefreshFailedException.class)
+    protected ResponseEntity<ErrorResponse> handleRefreshFailedException(RefreshFailedException ex) {
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.REFRESH_TOKEN_EXPIRED_ERROR, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
      * com.fasterxml.jackson.core 내에 Exception 발생하는 경우
      *
      * @param ex JsonProcessingException
@@ -183,6 +198,15 @@ public class GlobalExceptionHandler {
         return buildErrorResponseAndSendAlert(ex, ErrorCode.FEIGN_CLIENT_ERROR, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(MalformedJwtException.class)
+    protected ResponseEntity<ErrorResponse> handleMalformedJwtException(MalformedJwtException ex) {
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.UNAUTHORIZED_ERROR, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.UNAUTHORIZED_ERROR, HttpStatus.UNAUTHORIZED);
+    }
 
     // ==================================================================================================================
 

@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -75,6 +76,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         throw new UsernameNotFoundException("User with the given UUID could not be found");
     }
 
+    public UserDetails loadUserByAccessToken(String accessToken) throws UsernameNotFoundException {
+        log.info("Loading user by Access Token: {}", accessToken);
+        String UUID = tokenProvider.getUniqueId(accessToken);
+        return loadUserByUsername(UUID);
+    }
+
     @Transactional
     public AuthDTO.Response join(String role) {
         log.info("Joining new member with role: {}", role);
@@ -119,7 +126,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         throw new UsernameNotFoundException("Authenticated customer not found");
     }
 
-    public WeddingPlanner getCurrentAuthenticatedWeddingPlanner() throws UsernameNotFoundException {
+    public WeddingPlanner getCurrentAuthenticatedWeddingPlanner() throws AuthenticationException {
         log.info("Getting current authenticated wedding planner");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
@@ -130,7 +137,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             return weddingPlanner;
         }
         log.error("Authenticated wedding planner not found");
-        throw new UsernameNotFoundException("Authenticated wedding planner not found");
+        throw new AuthenticationException("JWT Token is not valid") {
+        };
     }
 
     public MemberRole getCurrentAuthenticatedMemberRole() {
@@ -240,18 +248,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     public Customer getCustomerByUuid(String uuid) {
         log.info("Getting customer by UUID: {}", uuid);
-        Customer customer = customerRepository.findByUUID(uuid)
+        return customerRepository.findByUUID(uuid)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
-        log.info("Found customer with UUID: {}", uuid);
-        return customer;
     }
 
     public WeddingPlanner getWeddingPlannerByUuid(String uuid) {
         log.info("Getting wedding planner by UUID: {}", uuid);
-        WeddingPlanner weddingPlanner = weddingPlannerRepository.findByUUID(uuid)
+        return weddingPlannerRepository.findByUUID(uuid)
                 .orElseThrow(() -> new RuntimeException("WeddingPlanner not found"));
-        log.info("Found wedding planner with UUID: {}", uuid);
-        return weddingPlanner;
     }
 
     public MypageDTO.CustomerServiceResponse createCustomerService(MypageDTO.CustomerServiceRequest customerServiceRequest) {

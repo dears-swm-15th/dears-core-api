@@ -12,10 +12,12 @@ import com.example.demo.oauth2.kakao.dto.KakaoLoginDTO;
 import com.example.demo.oauth2.kakao.dto.KakaoUserInfoResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -26,10 +28,12 @@ public class MemberRegistryService {
     private final WeddingPlannerRepository weddingPlannerRepository;
 
     private final TokenProvider tokenProvider;
+    private final RedisTemplate redisTemplateRT;
 
     @Transactional
     public KakaoLoginDTO.Response createKakaoMember(KakaoUserInfoResponseDTO userInfoResponseDto, String role) {
         String username = userInfoResponseDto.kakaoAccount.profile.nickName;
+
         String UUID = generateUUID("kakao", userInfoResponseDto.id.toString());
 
         // Generate access and refresh tokens
@@ -45,6 +49,35 @@ public class MemberRegistryService {
 
         return buildKakaoLoginResponse(UUID, accessToken, refreshToken);
     }
+
+    @Transactional
+    public KakaoLoginDTO.Response createTestMember(KakaoUserInfoResponseDTO userInfoResponseDto, String role) {
+        String username;
+        Long id;
+        if (userInfoResponseDto == null) {
+            username = "test";
+            id = 1L;
+        } else {
+            username = userInfoResponseDto.kakaoAccount.profile.nickName;
+            id = userInfoResponseDto.id;
+        }
+
+        String UUID = "51fc7d6b-7f86-43cf-b5c7-de4c46046d71";
+
+        // Generate access and refresh tokens
+        String accessToken = tokenProvider.createAccessToken(username, UUID);
+        String refreshToken = tokenProvider.createRefreshToken(username, UUID);
+
+        // Delegate customer or wedding planner handling based on role
+        if (role.equals(MemberRole.CUSTOMER.getRoleName())) {
+            processCustomer(UUID, username, refreshToken);
+        } else if (role.equals(MemberRole.WEDDING_PLANNER.getRoleName())) {
+            processWeddingPlanner(UUID, username, refreshToken);
+        }
+
+        return buildKakaoLoginResponse(UUID, accessToken, refreshToken);
+    }
+
 
     @Transactional
     public GoogleLoginDTO.Response createGoogleMember(GoogleUserInfoResponseDTO googleUserInfoResponseDto, String role) {
@@ -97,15 +130,18 @@ public class MemberRegistryService {
     }
 
     private void updateExistingCustomer(Customer customer, String refreshToken) {
-        customer.updateRefreshToken(refreshToken);
+        // replace refresh token by key(uuid)
+        redisTemplateRT.delete(customer.getUUID());
+        redisTemplateRT.opsForValue().set(customer.getUUID(), refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
     }
 
     private void createNewCustomer(String UUID, String name, String refreshToken) {
+        redisTemplateRT.opsForValue().set(UUID, refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
+
         Customer newCustomer = Customer.builder()
                 .role(MemberRole.CUSTOMER)
                 .name(name)
                 .UUID(UUID)
-                .refreshToken(refreshToken)
                 .build();
 
         customerRepository.save(newCustomer);
@@ -122,15 +158,18 @@ public class MemberRegistryService {
     }
 
     private void updateExistingWeddingPlanner(WeddingPlanner weddingPlanner, String refreshToken) {
-        weddingPlanner.updateRefreshToken(refreshToken);
+        // replace refresh token by key(uuid)
+        redisTemplateRT.delete(weddingPlanner.getUUID());
+        redisTemplateRT.opsForValue().set(weddingPlanner.getUUID(), refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
     }
 
     private void createNewWeddingPlanner(String UUID, String name, String refreshToken) {
+        redisTemplateRT.opsForValue().set(UUID, refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
+
         WeddingPlanner newWeddingPlanner = WeddingPlanner.builder()
                 .role(MemberRole.WEDDING_PLANNER)
                 .name(name)
                 .UUID(UUID)
-                .refreshToken(refreshToken)
                 .build();
 
         weddingPlannerRepository.save(newWeddingPlanner);

@@ -46,8 +46,6 @@ public class DiscordMessageProvider {
                 request.getTitle(),          // title
                 request.getContent(),        // description
                 4886754,                     // color (Cyan)
-//                new DiscordMessage.Image("https://example.com/image.png"),
-//                new DiscordMessage.Thumbnail("https://example.com/thumbnail.png"),
                 new CustomerServiceMessage.Author(username),
                 List.of(
                         new CustomerServiceMessage.Field("Role", role.getRoleName(), true),
@@ -75,7 +73,7 @@ public class DiscordMessageProvider {
                         new ExceptionMessage.Field("Division Code", response.getDivisionCode(), true),
                         new ExceptionMessage.Field("Request URL", getRequestPath(), true),
                         new ExceptionMessage.Field("Username", userInfo.username(), true),
-//                        new ExceptionMessage.Field("Role", userInfo.role().getRoleName(), true),
+                        new ExceptionMessage.Field("Role", userInfo.role().getRoleName(), true),
                         new ExceptionMessage.Field("UUID", userInfo.UUID(), true)
                 ),
                 new ExceptionMessage.Footer(formattedTimestamp)

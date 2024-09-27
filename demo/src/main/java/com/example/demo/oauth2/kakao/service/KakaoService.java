@@ -7,11 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -50,11 +52,9 @@ public class KakaoService {
                 .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-                    log.error("400 Error: Invalid request parameters: {}", clientResponse.statusCode());
                     return Mono.error(new RuntimeException("400 Invalid Parameter: " + clientResponse.statusCode()));
                 })
                 .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> {
-                    log.error("500 Error: Server encountered an issue: {}", clientResponse.statusCode());
                     return Mono.error(new RuntimeException("500 Internal Server Error: " + clientResponse.statusCode()));
                 })
                 .bodyToMono(KakaoTokenResponseDTO.class)
@@ -134,12 +134,12 @@ public class KakaoService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // access token 인가
                 .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
                 .retrieve()
-
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "KAKAO Invalid Parameter")))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new ResponseStatusException(clientResponse.statusCode(), "500 Internal Server Error")))
                 .bodyToMono(KakaoUserInfoResponseDTO.class)
                 .block();
 
+        log.info("userInfo ---> {} ", userInfo);
         log.info(" [ Kakao Service ] Auth ID ---> {} ", userInfo.getId());
         log.info(" [ Kakao Service ] NickName ---> {} ", userInfo.getKakaoAccount().getProfile().getNickName());
         log.info(" [ Kakao Service ] ProfileImageUrl ---> {} ", userInfo.getKakaoAccount().getProfile().getProfileImageUrl());

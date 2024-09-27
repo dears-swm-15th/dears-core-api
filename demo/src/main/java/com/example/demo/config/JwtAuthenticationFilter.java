@@ -29,10 +29,12 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String UUID = resolveToken(request);
-        if (StringUtils.hasText(UUID)) {
+        String accessToken = resolveToken(request);
+
+        if (StringUtils.hasText(accessToken)) {
             try {
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(UUID);
+                // load user by JWT access token
+                UserDetails userDetails = customUserDetailsService.loadUserByAccessToken(accessToken);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
