@@ -82,7 +82,10 @@ public enum ErrorCode {
     USERNAME_NOT_FOUND_ERROR(404, "G014", "Username Not Found Exception"),
 
     // token expired
-    REFRESH_TOKEN_EXPIRED_ERROR(401, "G015", "Refresh Token Expired Exception");
+    REFRESH_TOKEN_EXPIRED_ERROR(401, "G015", "Refresh Token Expired Exception"),
+
+    // unauthorized
+    UNAUTHORIZED_ERROR(401, "G016", "Unauthorized Exception");
 
     /**
      * ******************************* Error Code Constructor ***************************************

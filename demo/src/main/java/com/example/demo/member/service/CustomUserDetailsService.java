@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -125,7 +126,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         throw new UsernameNotFoundException("Authenticated customer not found");
     }
 
-    public WeddingPlanner getCurrentAuthenticatedWeddingPlanner() throws UsernameNotFoundException {
+    public WeddingPlanner getCurrentAuthenticatedWeddingPlanner() throws AuthenticationException {
         log.info("Getting current authenticated wedding planner");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
@@ -136,7 +137,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             return weddingPlanner;
         }
         log.error("Authenticated wedding planner not found");
-        throw new UsernameNotFoundException("Authenticated wedding planner not found");
+        throw new AuthenticationException("JWT Token is not valid") {
+        };
     }
 
     public MemberRole getCurrentAuthenticatedMemberRole() {
