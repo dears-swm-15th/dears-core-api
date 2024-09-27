@@ -156,9 +156,12 @@ public class RedisService {
 
         if (allKeys != null) {
             for (String key : allKeys) {
-                Object value = redisTemplate.opsForValue().get(key);  // retrieve value
-                if (value != null) {
-                    allData.put(key, value);  // store the key and its value in the map
+                if (redisTemplate.opsForValue().get(key) != null) {
+                    allData.put(key, redisTemplate.opsForValue().get(key));
+                } else if (redisTemplate.opsForHash().entries(key) != null) {
+                    allData.put(key, redisTemplate.opsForHash().entries(key));
+                } else if (redisTemplate.opsForSet().members(key) != null) {
+                    allData.put(key, redisTemplate.opsForSet().members(key));
                 }
             }
         }
