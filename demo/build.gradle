@@ -16,6 +16,7 @@ java {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
@@ -107,6 +108,13 @@ dependencies {
 
     // netty-resolver
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
+
+    // httpclient
+    implementation("org.apache.httpcomponents:httpclient")
+
+    //spring ai - openai
+    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter:1.0.0-SNAPSHOT'
+
 }
 
 tasks.named('test') {
