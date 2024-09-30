@@ -13,6 +13,14 @@ spring:
   cache:
     type: none
 
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-3.5-turbo
+          temperature: 0.5
+
 discord:
   customer-service: discord-customer-service
   exception: discord-exception
