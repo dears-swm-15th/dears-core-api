@@ -15,7 +15,7 @@ public interface PortfolioMapper {
     Portfolio requestToEntity(PortfolioDTO.Request portfolioRequest);
 
     PortfolioDTO.Response entityToResponse(Portfolio portfolio);
-    
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     Portfolio updateFromRequest(PortfolioDTO.Request portfolioRequest, @MappingTarget Portfolio portfolio);
@@ -26,5 +26,5 @@ public interface PortfolioMapper {
 
     PortfolioSearchDTO.Response requestToSearchResponse(PortfolioSearchDTO.Request request);
 
-
+    PortfolioSearchDTO.Response entityToSearchResponse(Portfolio portfolio);
 }
