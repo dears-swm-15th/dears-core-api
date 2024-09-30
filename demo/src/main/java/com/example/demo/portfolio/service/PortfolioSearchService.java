@@ -31,10 +31,9 @@ public class PortfolioSearchService {
             log.info("Searching documents with keyword: {}", keyword);
 
             List<Portfolio> portfolios = portfolioRepository.searchByKeyword(keyword);
-            
+
             for (Portfolio portfolio : portfolios) {
-                PortfolioSearchDTO.Request request = portfolioMapper.entityToSearchRequest(portfolio);
-                PortfolioSearchDTO.Response response = portfolioMapper.requestToSearchResponse(request);
+                PortfolioSearchDTO.Response response = portfolioMapper.entityToSearchResponse(portfolio);
                 response.setIsWishListed(isWishListed(portfolio.getId()));
                 resultList.add(response);
             }
