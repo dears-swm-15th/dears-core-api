@@ -36,4 +36,11 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     void increaseViewCount(@Param("id") Long id);
 
     List<Portfolio> findTop5ByOrderByViewCountDesc();
+
+    @Query(value = "SELECT DISTINCT p.* FROM portfolio p JOIN portfolio_services ps ON p.portfolio_id = ps.portfolio_id " +
+            "WHERE ps.service_value LIKE %:keyword% OR p.planner_name LIKE %:keyword% OR " +
+            "p.organization LIKE %:keyword% OR p.introduction LIKE %:keyword%",
+            nativeQuery = true)
+    List<Portfolio> searchByKeyword(@Param("keyword") String keyword);
+    
 }
