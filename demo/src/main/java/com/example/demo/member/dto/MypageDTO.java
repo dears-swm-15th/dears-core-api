@@ -15,6 +15,7 @@ public class MypageDTO {
 
         @Schema(type = "string", example = "84f6cd04-9985-4da6-94b5-e79fffd88e61")
         private String name;
+
         @Schema(type = "string", example = "https://s3.ap-northeast-2.amazonaws.com/sopt-27th/profile/84f6cd04-9985-4da6-94b5-e79fffd88e61")
         private String profileImageUrl;
 
@@ -30,12 +31,11 @@ public class MypageDTO {
 
         @Schema(type = "string", example = "84f6cd04-9985-4da6-94b5-e79fffd88e61")
         private String name;
+
         @Schema(type = "string", example = "https://s3.ap-northeast-2.amazonaws.com/sopt-27th/profile/84f6cd04-9985-4da6-94b5-e79fffd88e61")
         private String profileImageUrl;
 
     }
-
-
 
 
     @Setter
@@ -63,6 +63,10 @@ public class MypageDTO {
 
         @Schema(type = "string", example = "84f6cd04-9985-4da6-94b5-e79fffd88e61")
         private String name;
+
+        @Schema(type = "string", example = "행복한 호랑이 123")
+        private String nickname;
+
         @Schema(type = "string", example = "https://s3.ap-northeast-2.amazonaws.com/sopt-27th/profile/84f6cd04-9985-4da6-94b5-e79fffd88e61")
         private String profileImageUrl;
     }
@@ -77,8 +81,13 @@ public class MypageDTO {
 
         @Schema(type = "string", example = "84f6cd04-9985-4da6-94b5-e79fffd88e61")
         private String name;
+
+        @Schema(type = "string", example = "행복한 호랑이 123")
+        private String nickname;
+
         @Schema(type = "string", example = "https://s3.ap-northeast-2.amazonaws.com/sopt-27th/profile/84f6cd04-9985-4da6-94b5-e79fffd88e61")
         private String profileImageUrl;
+
         @Schema(type = "string", example = "presignedurl")
         private String profileImagePresignedUrl;
     }
