@@ -34,6 +34,9 @@ public class WeddingPlanner {
     private String name;
 
     @Column
+    private String nickname;
+
+    @Column
     private String UUID;
 
 

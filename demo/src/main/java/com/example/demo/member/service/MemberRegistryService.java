@@ -29,6 +29,7 @@ public class MemberRegistryService {
 
     private final TokenProvider tokenProvider;
     private final RedisTemplate redisTemplateRT;
+    private final NicknameService nicknameService;
 
     @Transactional
     public KakaoLoginDTO.Response createKakaoMember(KakaoUserInfoResponseDTO userInfoResponseDto, String role) {
@@ -164,9 +165,12 @@ public class MemberRegistryService {
     private void createNewCustomer(String UUID, String name, String refreshToken) {
         redisTemplateRT.opsForValue().set(UUID, refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
 
+        String nickname = nicknameService.generateRandomNickname();
+
         Customer newCustomer = Customer.builder()
                 .role(MemberRole.CUSTOMER)
                 .name(name)
+                .nickname(nickname)
                 .UUID(UUID)
                 .build();
 
@@ -192,9 +196,12 @@ public class MemberRegistryService {
     private void createNewWeddingPlanner(String UUID, String name, String refreshToken) {
         redisTemplateRT.opsForValue().set(UUID, refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
 
+        String nickname = nicknameService.generateRandomNickname();
+
         WeddingPlanner newWeddingPlanner = WeddingPlanner.builder()
                 .role(MemberRole.WEDDING_PLANNER)
                 .name(name)
+                .nickname(nickname)
                 .UUID(UUID)
                 .build();
 
