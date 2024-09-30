@@ -29,6 +29,9 @@ public class Customer {
     private String name;
 
     @Column
+    private String nickname;
+
+    @Column
     private String UUID;
 
     @Column
@@ -50,5 +53,5 @@ public class Customer {
     @OneToMany
     @JoinColumn(name = "customer_id")
     private List<ChatRoom> chatRooms;
-    
+
 }
