@@ -45,7 +45,7 @@ public class PortfolioDTO {
         private String description;
 
         @Schema(type = "string", example = "ACCOMPANY")
-        private String AccountType;
+        private String accompanyType;
 
         @Schema(type = "float", example = "3.723123")
         private Float ratingSum;
@@ -109,8 +109,8 @@ public class PortfolioDTO {
         private String description;
 
         @Schema(type = "string", example = "ACCOMPANY")
-        private String AccountType;
-        
+        private String accompanyType;
+
         @Schema(type = "integer", example = "30000")
         private Integer consultingFee;
 
