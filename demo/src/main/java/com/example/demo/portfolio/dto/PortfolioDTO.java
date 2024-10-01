@@ -1,9 +1,9 @@
 package com.example.demo.portfolio.dto;
 
+import com.example.demo.enums.review.RadarKey;
 import com.example.demo.member.dto.WeddingPlannerPortfolioDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import com.example.demo.enums.review.RadarKey;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,6 +43,9 @@ public class PortfolioDTO {
 
         @Schema(type = "string", example = "웨딩 준비 도와드릴게요.")
         private String description;
+
+        @Schema(type = "string", example = "ACCOMPANY")
+        private String AccountType;
 
         @Schema(type = "float", example = "3.723123")
         private Float ratingSum;
@@ -105,6 +108,9 @@ public class PortfolioDTO {
         @Schema(type = "string", example = "웨딩 준비 도와드릴게요.")
         private String description;
 
+        @Schema(type = "string", example = "ACCOMPANY")
+        private String AccountType;
+        
         @Schema(type = "integer", example = "30000")
         private Integer consultingFee;
 
