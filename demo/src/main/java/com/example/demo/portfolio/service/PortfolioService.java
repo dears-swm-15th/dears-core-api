@@ -4,6 +4,7 @@ import com.example.demo.config.S3Uploader;
 import com.example.demo.enums.review.RadarKey;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.mapper.WeddingPlannerMapper;
+import com.example.demo.member.repository.WeddingPlannerRepository;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.example.demo.portfolio.domain.Portfolio;
 import com.example.demo.portfolio.dto.PortfolioDTO;
@@ -35,6 +36,7 @@ public class PortfolioService {
     private final ReviewRepository reviewRepository;
     private final S3Uploader s3Uploader;
     private final CustomUserDetailsService customUserDetailsService;
+    private final WeddingPlannerRepository weddingPlannerRepository;
 
     public List<PortfolioDTO.Response> getAllPortfolios() {
         log.info("Starting getAllPortfolios method");
@@ -78,6 +80,7 @@ public class PortfolioService {
         if (weddingPlanner.getPortfolio() != null) {
             throw new RuntimeException("Portfolio already exists");
         }
+
         //일단 id를 가져오기 위한 save
         Portfolio portfolio = portfolioRepository.save(portfolioMapper.requestToEntity(portfolioRequest));
 
@@ -98,6 +101,10 @@ public class PortfolioService {
 
         Portfolio savedPortfolio = portfolioRepository.save(portfolio);
         PortfolioDTO.Response response = portfolioMapper.entityToResponse(savedPortfolio);
+
+        weddingPlanner.setPortfolio(savedPortfolio);
+        weddingPlannerRepository.save(weddingPlanner);
+
 
         response.setPresignedProfileImageUrl(profileImagePresignedUrl);
         response.setPresignedWeddingPhotoUrls(weddingPhotoPresignedUrlList);
@@ -151,6 +158,10 @@ public class PortfolioService {
         Portfolio savedPortfolio = portfolioRepository.save(existingPortfolio);
         PortfolioDTO.Response response = portfolioMapper.entityToResponse(savedPortfolio);
 
+        WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
+        weddingPlanner.setPortfolio(savedPortfolio);
+        weddingPlannerRepository.save(weddingPlanner);
+
         if (profileImagePresigendUrl != null) {
             response.setPresignedProfileImageUrl(profileImagePresigendUrl);
         }
@@ -164,22 +175,21 @@ public class PortfolioService {
     public void deletePortfolio(Long portfolioId) {
         log.info("Starting deletePortfolio method for portfolio ID: {}", portfolioId);
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
-        Portfolio portfolio = portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        Portfolio portfolio = weddingPlanner.getPortfolio();
 
         deletePortfolioImages(portfolio);
         weddingPlanner.setPortfolio(null);
-        portfolioRepository.softDeleteById(portfolioId);
+        portfolioRepository.delete(portfolio);
 
         log.info("Deleted portfolio with ID: {}", portfolioId);
     }
 
-    public List<PortfolioOverviewDTO.Response> getAllSoftDeletedPortfolios() {
-        log.info("Starting getAllSoftDeletedPortfolios method");
-        return portfolioRepository.findSoftDeletedPortfolios().stream()
-                .map(portfolioMapper::entityToOverviewResponse)
-                .collect(Collectors.toList());
-    }
+//    public List<PortfolioOverviewDTO.Response> getAllSoftDeletedPortfolios() {
+//        log.info("Starting getAllSoftDeletedPortfolios method");
+//        return portfolioRepository.findSoftDeletedPortfolios().stream()
+//                .map(portfolioMapper::entityToOverviewResponse)
+//                .collect(Collectors.toList());
+//    }
 
     @Transactional
     public Portfolio increaseWishListCount(Long portfolioId) {

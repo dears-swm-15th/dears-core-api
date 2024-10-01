@@ -82,14 +82,14 @@ public class PortfolioController {
         log.info("Deleted portfolio with ID: {}", portfolioId);
         return ResponseEntity.ok().build();
     }
-
-    @GetMapping("/shared/soft-deleted")
-    @Operation(summary = "[공통] soft-deleted가 된 포트폴리오 조회")
-    public ResponseEntity<List<PortfolioOverviewDTO.Response>> getAllSoftDeleted() {
-        List<PortfolioOverviewDTO.Response> softDeletedPortfolios = portfolioService.getAllSoftDeletedPortfolios();
-        log.info("Fetched all soft-deleted portfolios");
-        return ResponseEntity.ok(softDeletedPortfolios);
-    }
+//
+//    @GetMapping("/shared/soft-deleted")
+//    @Operation(summary = "[공통] soft-deleted가 된 포트폴리오 조회")
+//    public ResponseEntity<List<PortfolioOverviewDTO.Response>> getAllSoftDeleted() {
+//        List<PortfolioOverviewDTO.Response> softDeletedPortfolios = portfolioService.getAllSoftDeletedPortfolios();
+//        log.info("Fetched all soft-deleted portfolios");
+//        return ResponseEntity.ok(softDeletedPortfolios);
+//    }
 
     @GetMapping("/shared/all")
     @Operation(summary = "[공통] soft-deleted 를 포함한 전체 포트폴리오 조회")

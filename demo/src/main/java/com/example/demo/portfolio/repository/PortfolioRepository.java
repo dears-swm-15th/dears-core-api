@@ -22,13 +22,13 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     @Query("select p from Portfolio p where p.id = :id")
     Optional<Portfolio> findPortfolioByIdWithPessimisticLock(Long id);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE Portfolio p SET p.isDeleted = true WHERE p.id = :id")
-    void softDeleteById(@Param("id") Long id);
+//    @Transactional
+//    @Modifying
+//    @Query("UPDATE Portfolio p SET p.isDeleted = true WHERE p.id = :id")
+//    void softDeleteById(@Param("id") Long id);
 
-    @Query(value = "SELECT p from Portfolio p WHERE p.isDeleted = true")
-    List<Portfolio> findSoftDeletedPortfolios();
+//    @Query(value = "SELECT p from Portfolio p WHERE p.isDeleted = true")
+//    List<Portfolio> findSoftDeletedPortfolios();
 
     @Transactional
     @Modifying
