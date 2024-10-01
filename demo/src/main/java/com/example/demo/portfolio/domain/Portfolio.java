@@ -9,7 +9,6 @@ import com.example.demo.review.domain.Review;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Where(clause = "is_deleted = false")
+//@Where(clause = "is_deleted = false")
 public class Portfolio extends BaseTimeEntity {
 
     @Id
@@ -30,8 +29,8 @@ public class Portfolio extends BaseTimeEntity {
     @Column(name = "portfolio_id")
     private Long id;
 
-    @Builder.Default
-    private boolean isDeleted = Boolean.FALSE;
+//    @Builder.Default
+//    private boolean isDeleted = Boolean.FALSE;
 
     // Static fields set by planner
     private String plannerName;

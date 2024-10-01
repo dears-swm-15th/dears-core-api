@@ -26,7 +26,7 @@ public class PortfolioDTO {
         @Schema(type = "string", example = "김지수")
         private String plannerName;
 
-        @Schema(type = "string", example = "GANGNAM")
+        @Schema(type = "string", example = "SEOUL")
         private String region;
 
         @Schema(type = "string", example = "안녕하세요.")
@@ -35,7 +35,7 @@ public class PortfolioDTO {
         @Schema(type = "string", example = "010-1234-5678")
         private String contactInfo;
 
-        @Schema(type = "string", example = "src/wedding_planner/imgs")
+        @Schema(type = "string", example = "src/wedding_planner/imgs/img.jpg")
         private String profileImageUrl;
 
         @Schema(type = "integer", example = "30000")
@@ -93,7 +93,7 @@ public class PortfolioDTO {
         @Schema(type = "string", example = "김지수")
         private String plannerName;
 
-        @Schema(type = "string", example = "GANGNAM")
+        @Schema(type = "string", example = "SEOUL")
         private String region;
 
         @Schema(type = "string", example = "안녕하세요.")
@@ -102,7 +102,7 @@ public class PortfolioDTO {
         @Schema(type = "string", example = "010-1234-5678")
         private String contactInfo;
 
-        @Schema(type = "string", example = "sdlkfjw3gee", description = "uuid로 반환됩니다. 이후 {cloudfrontURL}/{sdlkfjw3gee}로 이미지 접근 가능합니다.")
+        @Schema(type = "string", example = "src/wedding_planner/imgs/img.jpg")
         private String profileImageUrl;
 
         @Schema(type = "string", example = "웨딩 준비 도와드릴게요.")
