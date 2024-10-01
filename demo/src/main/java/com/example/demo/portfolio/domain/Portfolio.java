@@ -1,8 +1,9 @@
 package com.example.demo.portfolio.domain;
 
 import com.example.demo.base.BaseTimeEntity;
-import com.example.demo.enums.review.RadarKey;
+import com.example.demo.enums.portfolio.AccompanyType;
 import com.example.demo.enums.portfolio.Region;
+import com.example.demo.enums.review.RadarKey;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.review.domain.Review;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -11,7 +12,6 @@ import lombok.*;
 import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +21,7 @@ import java.util.Map;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@JsonIgnoreProperties (ignoreUnknown=true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Where(clause = "is_deleted = false")
 public class Portfolio extends BaseTimeEntity {
 
@@ -42,6 +42,7 @@ public class Portfolio extends BaseTimeEntity {
     private String profileImageUrl;
     private Integer consultingFee;
     private String description;
+    private AccompanyType accompanyType;
 
     @OneToOne
     @JoinColumn(name = "weddingplanner_id")
@@ -90,9 +91,9 @@ public class Portfolio extends BaseTimeEntity {
     public void decreaseWishListCount() {
         if (this.wishListCount == null) {
             this.wishListCount = 0;
-        }else if (this.wishListCount > 0){
+        } else if (this.wishListCount > 0) {
             this.wishListCount--;
-        }else {
+        } else {
             this.wishListCount = 0;
         }
     }
