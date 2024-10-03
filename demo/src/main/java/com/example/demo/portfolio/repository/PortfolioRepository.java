@@ -22,14 +22,6 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     @Query("select p from Portfolio p where p.id = :id")
     Optional<Portfolio> findPortfolioByIdWithPessimisticLock(Long id);
 
-//    @Transactional
-//    @Modifying
-//    @Query("UPDATE Portfolio p SET p.isDeleted = true WHERE p.id = :id")
-//    void softDeleteById(@Param("id") Long id);
-
-//    @Query(value = "SELECT p from Portfolio p WHERE p.isDeleted = true")
-//    List<Portfolio> findSoftDeletedPortfolios();
-
     @Transactional
     @Modifying
     @Query("UPDATE Portfolio p SET p.viewCount = p.viewCount + 1 WHERE p.id = :id")
@@ -42,5 +34,9 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
             "p.organization LIKE %:keyword% OR p.introduction LIKE %:keyword%",
             nativeQuery = true)
     List<Portfolio> searchByKeyword(@Param("keyword") String keyword);
+
+
+    @Query(value = "SELECT * FROM portfolio ORDER BY RAND() LIMIT 20", nativeQuery = true)
+    List<Portfolio> findRandom20Portfolios();
 
 }

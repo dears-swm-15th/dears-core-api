@@ -351,5 +351,13 @@ public class PortfolioService {
         PortfolioDTO.Response portfolioResponse = portfolioMapper.entityToResponse(portfolio);
         return portfolioResponse;
     }
+
+    public List<PortfolioOverviewDTO.Response> getRecommendPortfolios() {
+        // return random 20 portfolios
+        return portfolioRepository.findRandom20Portfolios().stream()
+                .map(portfolioMapper::entityToOverviewResponse)
+                .collect(Collectors.toList());
+    }
 }
+
 
