@@ -2,6 +2,7 @@ package com.example.demo.error;
 
 import com.example.demo.discord.DiscordMessageProvider;
 import com.example.demo.enums.member.MemberRole;
+import com.example.demo.error.custom.PortfolioNotFoundException;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonParseException;
@@ -206,6 +207,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     protected ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         return buildErrorResponseAndSendAlert(ex, ErrorCode.UNAUTHORIZED_ERROR, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(PortfolioNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> handlePortfolioNotFoundException(PortfolioNotFoundException ex) {
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.PORTFOLIO_NOT_FOUND_ERROR, HttpStatus.CONFLICT);
     }
 
     // ==================================================================================================================

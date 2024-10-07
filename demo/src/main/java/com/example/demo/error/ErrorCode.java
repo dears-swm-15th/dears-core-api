@@ -85,7 +85,10 @@ public enum ErrorCode {
     REFRESH_TOKEN_EXPIRED_ERROR(401, "G015", "Refresh Token Expired Exception"),
 
     // unauthorized
-    UNAUTHORIZED_ERROR(401, "G016", "Unauthorized Exception");
+    UNAUTHORIZED_ERROR(401, "G016", "Unauthorized Exception"),
+
+    // portfolio not found
+    PORTFOLIO_NOT_FOUND_ERROR(409, "G017", "Portfolio Not Found Exception");
 
     /**
      * ******************************* Error Code Constructor ***************************************
