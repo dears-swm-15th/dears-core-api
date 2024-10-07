@@ -2,6 +2,7 @@ package com.example.demo.portfolio.service;
 
 import com.example.demo.config.S3Uploader;
 import com.example.demo.enums.review.RadarKey;
+import com.example.demo.error.custom.PortfolioNotFoundException;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.mapper.WeddingPlannerMapper;
 import com.example.demo.member.repository.WeddingPlannerRepository;
@@ -346,7 +347,7 @@ public class PortfolioService {
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
         Portfolio portfolio = weddingPlanner.getPortfolio();
         if (portfolio == null) {
-            throw new RuntimeException("Portfolio not found");
+            throw new PortfolioNotFoundException("Portfolio not found");
         }
         PortfolioDTO.Response portfolioResponse = portfolioMapper.entityToResponse(portfolio);
         return portfolioResponse;
