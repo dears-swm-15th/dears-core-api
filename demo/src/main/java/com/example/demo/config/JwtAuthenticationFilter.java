@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import com.example.demo.error.custom.InvalidJwtAuthenticationException;
 import com.example.demo.jwt.JwtValidator;
 import com.example.demo.member.service.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
@@ -8,6 +9,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final CustomUserDetailsService customUserDetailsService;
@@ -37,12 +41,17 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String accessToken = resolveToken(request);
 
-        // validate JWT token
-        if (accessToken != null && jwtValidator.isValidToken(accessToken)) {
-            Authentication authentication = getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        try {
+            // validate JWT token
+            if (accessToken != null && jwtValidator.isValidToken(accessToken)) {
+                Authentication authentication = getAuthentication(accessToken);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (InvalidJwtAuthenticationException e) {
+            log.error("Invalid JWT token: {}", e.getMessage());
+            SecurityContextHolder.clearContext();
+
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid JWT signature");
             return;
         }
 
