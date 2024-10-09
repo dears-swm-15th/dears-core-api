@@ -29,21 +29,17 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                                .requestMatchers("/**").permitAll() // wildcard
-                                .requestMatchers("/api/v1/auth/shared/create").permitAll()
-                                .requestMatchers("/", "/index.html", "/weddingplanner-chat.html", "/customer-chat.html", "/swagger-ui/*", "/swagger-resources/**", "/v3/api-docs/**", "/actuator/**", "/metrics/**").permitAll()
-                                .requestMatchers("/api/v1/*/shared/**").hasAnyRole("CUSTOMER", "WEDDING_PLANNER")
-                                .requestMatchers("/api/v1/*/weddingplanner/**").hasRole("WEDDING_PLANNER")
-                                .requestMatchers("/api/v1/*/customer/**").hasRole("CUSTOMER")
-                                .requestMatchers("/stomp/**").permitAll()
-                                .requestMatchers("/kakao.html", "/login.html").permitAll()
-                                .anyRequest().authenticated()
-//                )
-//                .oauth2Login(ouath2 -> ouath2
-//                        .loginPage("/kakao")
-//                        .defaultSuccessUrl("/home", true)
-//                        .failureUrl("/login?error=true")
-//                        .permitAll()
+                        .requestMatchers("/**").permitAll() // wildcard
+                        .requestMatchers("/stomp/**").permitAll()
+                        .requestMatchers("/api/v1/auth/shared/create").permitAll()
+                        .requestMatchers("/", "/index.html", "/weddingplanner-chat.html", "/customer-chat.html", "/swagger-ui/*", "/swagger-resources/**", "/v3/api-docs/**", "/actuator/**", "/metrics/**").permitAll()
+                        .requestMatchers("/api/v1/oauth2/**").permitAll()
+                        .requestMatchers("/api/v1/*/shared/**").hasAnyRole("CUSTOMER", "WEDDING_PLANNER")
+                        .requestMatchers("/api/v1/*/weddingplanner/**").hasRole("WEDDING_PLANNER")
+                        .requestMatchers("/api/v1/*/customer/**").hasRole("CUSTOMER")
+                        .requestMatchers("/stomp/**").permitAll()
+                        .requestMatchers("/kakao.html", "/login.html").permitAll()
+                        .anyRequest().authenticated()
                 );
         return http.build();
     }
