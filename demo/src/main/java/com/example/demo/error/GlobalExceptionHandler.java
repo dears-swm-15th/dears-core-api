@@ -2,6 +2,7 @@ package com.example.demo.error;
 
 import com.example.demo.discord.DiscordMessageProvider;
 import com.example.demo.enums.member.MemberRole;
+import com.example.demo.error.custom.InvalidJwtAuthenticationException;
 import com.example.demo.error.custom.PortfolioNotFoundException;
 import com.example.demo.member.service.CustomUserDetailsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.security.auth.RefreshFailedException;
 import java.io.IOException;
+import java.security.SignatureException;
 
 @Slf4j
 @RestControllerAdvice
@@ -213,6 +215,17 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handlePortfolioNotFoundException(PortfolioNotFoundException ex) {
         return buildErrorResponseAndSendAlert(ex, ErrorCode.PORTFOLIO_NOT_FOUND_ERROR, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(SignatureException.class)
+    protected ResponseEntity<ErrorResponse> handleSignatureException(SignatureException ex) {
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.UNAUTHORIZED_ERROR, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(InvalidJwtAuthenticationException.class)
+    protected ResponseEntity<ErrorResponse> handleInvalidJwtAuthentication(InvalidJwtAuthenticationException ex) {
+        return buildErrorResponseAndSendAlert(ex, ErrorCode.UNAUTHORIZED_ERROR, HttpStatus.UNAUTHORIZED);
+    }
+
 
     // ==================================================================================================================
 
