@@ -201,6 +201,12 @@ public class GlobalExceptionHandler {
         return buildErrorResponseAndSendAlert(ex, ErrorCode.FEIGN_CLIENT_ERROR, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * [Exception] JWT 토큰이 유효하지 않은 경우
+     *
+     * @param ex MalformedJwtException
+     * @return ResponseEntity<ErrorResponse>
+     */
     @ExceptionHandler(MalformedJwtException.class)
     protected ResponseEntity<ErrorResponse> handleMalformedJwtException(MalformedJwtException ex) {
         return buildErrorResponseAndSendAlert(ex, ErrorCode.UNAUTHORIZED_ERROR, HttpStatus.UNAUTHORIZED);

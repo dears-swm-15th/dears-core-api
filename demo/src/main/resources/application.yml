@@ -20,7 +20,7 @@ spring:
         options:
           model: gpt-3.5-turbo
           temperature: 0.5
-
+        
 discord:
   customer-service: discord-customer-service
   exception: discord-exception
@@ -43,6 +43,14 @@ kakao:
 google:
   client-id-android: ${GOOGLE_CLIENT_ID_ANDROID}}
   client-id-ios: ${GOOGLE_CLIENT_ID_IOS}
+
+apple:
+  issuer: https://appleid.apple.com
+  client-id: ${APPLE_CLIENT_ID}
+  team-id: ZLC7FQLLD8
+  private-key: ${APPLE_PRIVATE_KEY}
+  app-id: com.dears.dears
+  kid: ${APPLE_KID}
 
 ---
 
