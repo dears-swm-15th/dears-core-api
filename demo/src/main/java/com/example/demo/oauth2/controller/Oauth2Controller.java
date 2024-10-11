@@ -2,6 +2,7 @@ package com.example.demo.oauth2.controller;
 
 import com.example.demo.member.service.MemberRegistryService;
 import com.example.demo.oauth2.apple.dto.AppleLoginDTO;
+import com.example.demo.oauth2.apple.dto.AppleRevokeDTO;
 import com.example.demo.oauth2.apple.dto.AppleUserInfoResponseDTO;
 import com.example.demo.oauth2.apple.service.AppleService;
 import com.example.demo.oauth2.dto.ReissueDTO;
@@ -71,12 +72,12 @@ public class Oauth2Controller {
         return ResponseEntity.status(200).body(loginResponse);
     }
 
-//    @GetMapping("/shared/apple/logout")
-//    @Operation(summary = "[공통] 애플 로그아웃")
-//    public ResponseEntity<Void> appleLogout() {
-//        appleService.logout();
-//        return ResponseEntity.status(200).build();
-//    }
+    @GetMapping("/shared/apple/revoke")
+    @Operation(summary = "[공통] 애플 탈퇴")
+    public ResponseEntity<Void> appleLogout(@RequestBody AppleRevokeDTO revokeRequest) throws IOException {
+        memberRegistryService.logout(revokeRequest);
+        return ResponseEntity.status(200).build();
+    }
 
     @PostMapping("/shared/reissue")
     @Operation(summary = "[공통] 리프레시 토큰(RT)을 통한 AT,RT 재발급")
