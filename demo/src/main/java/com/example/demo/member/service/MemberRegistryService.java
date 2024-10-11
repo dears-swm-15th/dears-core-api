@@ -6,6 +6,12 @@ import com.example.demo.member.domain.Customer;
 import com.example.demo.member.domain.WeddingPlanner;
 import com.example.demo.member.repository.CustomerRepository;
 import com.example.demo.member.repository.WeddingPlannerRepository;
+import com.example.demo.oauth2.apple.domain.AppleRefreshToken;
+import com.example.demo.oauth2.apple.dto.AppleLoginDTO;
+import com.example.demo.oauth2.apple.dto.AppleRevokeDTO;
+import com.example.demo.oauth2.apple.dto.AppleUserInfoResponseDTO;
+import com.example.demo.oauth2.apple.repository.AppleRefreshTokenRepository;
+import com.example.demo.oauth2.apple.service.AppleService;
 import com.example.demo.oauth2.google.dto.GoogleLoginDTO;
 import com.example.demo.oauth2.google.dto.GoogleUserInfoResponseDTO;
 import com.example.demo.oauth2.kakao.dto.KakaoLoginDTO;
@@ -16,6 +22,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +37,9 @@ public class MemberRegistryService {
     private final TokenProvider tokenProvider;
     private final RedisTemplate redisTemplateRT;
     private final NicknameService nicknameService;
+
+    private final AppleRefreshTokenRepository appleRefreshTokenRepository;
+    private final AppleService appleService;
 
     @Transactional
     public KakaoLoginDTO.Response createKakaoMember(KakaoUserInfoResponseDTO userInfoResponseDto, String role) {
@@ -208,4 +218,64 @@ public class MemberRegistryService {
         weddingPlannerRepository.save(newWeddingPlanner);
     }
 
+    private void registerAppleRefreshToken(Long userId, String authorizationCode, String role) throws IOException {
+        String refreshToken = appleService.getAppleRefreshToken(authorizationCode);
+
+        appleRefreshTokenRepository.save(
+                AppleRefreshToken.builder()
+                        .userId(userId)
+                        .memberRole(role)
+                        .refreshToken(refreshToken)
+                        .build()
+        );
+    }
+
+    @Transactional
+    public AppleLoginDTO.Response createAppleMember(AppleUserInfoResponseDTO userInfoResponseDTO, String role) {
+        String username = userInfoResponseDTO.getAud(); // TODO
+        String UUID = generateUUID("apple", userInfoResponseDTO.getSub());
+
+        // Generate access and refresh tokens
+        String accessToken = tokenProvider.createAccessToken(username, UUID);
+        String refreshToken = tokenProvider.createRefreshToken(username, UUID);
+
+        // Delegate customer or wedding planner handling based on role
+        if (role.equals(MemberRole.CUSTOMER.getRoleName())) {
+            processCustomer(UUID, username, refreshToken);
+        } else if (role.equals(MemberRole.WEDDING_PLANNER.getRoleName())) {
+            processWeddingPlanner(UUID, username, refreshToken);
+        }
+
+        // find user id by UUID
+        Long userId = customerRepository.findByUUID(UUID)
+                .map(Customer::getId)
+                .orElseGet(() -> weddingPlannerRepository.findByUUID(UUID)
+                        .map(WeddingPlanner::getId)
+                        .orElseThrow(() -> new RuntimeException("User not found")));
+
+        // register apple refresh token
+        try {
+            log.info("Registering apple refresh token for userId: [{}]", userId);
+            registerAppleRefreshToken(userId, userInfoResponseDTO.getAuthorizationCode(), role);
+        } catch (IOException e) {
+            log.error("Failed to register apple refresh token", e);
+            throw new RuntimeException("Failed to register apple refresh token");
+        }
+
+        return AppleLoginDTO.Response.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .UUID(UUID)
+                .build();
+    }
+
+    @Transactional
+    public void logout(AppleRevokeDTO revokeRequest) throws IOException {
+        String refreshToken = appleRefreshTokenRepository.findByUserIdAndMemberRole(revokeRequest.getUserId(), revokeRequest.getMemberRole())
+                .map(AppleRefreshToken::getRefreshToken)
+                .orElseThrow(() -> new RuntimeException("Apple refresh token not found"));
+
+        appleService.revokeToken(refreshToken);
+
+    }
 }

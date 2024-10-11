@@ -19,6 +19,8 @@ public class AppleRefreshToken extends BaseTimeEntity {
 
     private Long userId;
 
+    private String memberRole;
+
     private String refreshToken;
 
 }
