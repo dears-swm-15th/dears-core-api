@@ -1,6 +1,9 @@
 package com.example.demo.oauth2.controller;
 
 import com.example.demo.member.service.MemberRegistryService;
+import com.example.demo.oauth2.apple.dto.AppleLoginDTO;
+import com.example.demo.oauth2.apple.dto.AppleUserInfoResponseDTO;
+import com.example.demo.oauth2.apple.service.AppleService;
 import com.example.demo.oauth2.dto.ReissueDTO;
 import com.example.demo.oauth2.google.dto.GoogleLoginDTO;
 import com.example.demo.oauth2.google.dto.GoogleUserInfoResponseDTO;
@@ -14,10 +17,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.auth.AuthenticationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.RefreshFailedException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -28,6 +35,7 @@ public class Oauth2Controller {
 
     private final KakaoService kakaoService;
     private final GoogleService googleService;
+    private final AppleService appleService;
     private final Oauth2Service oauth2Service;
 
     private final MemberRegistryService memberRegistryService;
@@ -42,16 +50,6 @@ public class Oauth2Controller {
         return ResponseEntity.status(200).body(loginResponse);
     }
 
-    @PostMapping("/shared/login-test")
-    @Operation(summary = "[공통] 로그인 테스트")
-    public ResponseEntity<KakaoLoginDTO.Response> loginTest(@RequestBody KakaoLoginDTO.Request loginRequest) {
-        KakaoUserInfoResponseDTO userInfo = null;
-        String role = loginRequest.getRole();
-
-        KakaoLoginDTO.Response loginResponse = memberRegistryService.createTestMember(userInfo, role);
-        return ResponseEntity.status(200).body(loginResponse);
-    }
-
     @PostMapping("/shared/google")
     @Operation(summary = "[공통] 구글 로그인")
     public ResponseEntity<GoogleLoginDTO.Response> googleLogin(@RequestBody GoogleLoginDTO.Request loginRequest) {
@@ -61,6 +59,24 @@ public class Oauth2Controller {
         GoogleLoginDTO.Response loginResponse = memberRegistryService.createGoogleMember(userInfo, role);
         return ResponseEntity.status(200).body(loginResponse);
     }
+
+    @PostMapping("/shared/apple")
+    @Operation(summary = "[공통] 애플 로그인")
+    public ResponseEntity<AppleLoginDTO.Response> appleLogin(@RequestBody AppleLoginDTO.Request loginRequest) throws AuthenticationException, IOException, NoSuchAlgorithmException, InvalidKeySpecException, InterruptedException {
+        AppleUserInfoResponseDTO userInfo = appleService.getAppleUserInfo(loginRequest.getAppleIdToken());
+        String role = loginRequest.getRole();
+
+        userInfo.setAuthorizationCode(loginRequest.getAuthorizationCode());
+        AppleLoginDTO.Response loginResponse = memberRegistryService.createAppleMember(userInfo, role);
+        return ResponseEntity.status(200).body(loginResponse);
+    }
+
+//    @GetMapping("/shared/apple/logout")
+//    @Operation(summary = "[공통] 애플 로그아웃")
+//    public ResponseEntity<Void> appleLogout() {
+//        appleService.logout();
+//        return ResponseEntity.status(200).build();
+//    }
 
     @PostMapping("/shared/reissue")
     @Operation(summary = "[공통] 리프레시 토큰(RT)을 통한 AT,RT 재발급")
