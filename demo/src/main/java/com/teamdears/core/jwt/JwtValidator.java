@@ -1,8 +1,8 @@
 package com.teamdears.core.jwt;
 
-import com.teamdears.core.error.custom.InvalidJwtAuthenticationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.teamdears.core.error.custom.InvalidJwtAuthenticationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtValidator {
-
     private final ObjectMapper objectMapper;
 
     @Value("${jwt.secret}")
@@ -36,10 +35,9 @@ public class JwtValidator {
         return new String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8);
     }
 
-    // 기존 비밀 키 기반의 getTokenClaims 메서드는 그대로 유지
     public Claims getTokenClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8)) // 비밀 키 사용
+                .setSigningKey(secretKey) // 비밀 키 사용
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -54,13 +52,13 @@ public class JwtValidator {
                 .getBody();
     }
 
-    public boolean validateSignature(String token, PublicKey publicKey) {
+    public boolean validateSignature(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(publicKey) // 공개 키 사용
+                    .setSigningKey(secretKey)  // afterPropertiesSet()에서 설정된 key 사용
                     .build()
-                    .parseClaimsJws(token);
-            return true; // 시그니처 검증 성공
+                    .parseClaimsJws(token); // 서명 검증 및 페이로드 파싱
+            return true;  // 서명이 유효한 경우 true 반환
         } catch (io.jsonwebtoken.security.SignatureException e) {
             log.warn("Invalid JWT signature");
             throw new InvalidJwtAuthenticationException("Invalid JWT signature");
@@ -70,9 +68,11 @@ public class JwtValidator {
         }
     }
 
+
     public boolean validatePayload(String token) {
         try {
             Claims claims = getTokenClaims(token);
+            // 페이로드 유효성 검증 로직 추가 (예: 만료 시간 확인)
             Date expiration = claims.getExpiration();
             return expiration != null && expiration.after(new Date()); // 만료 시간 검증
         } catch (Exception e) {
@@ -80,7 +80,7 @@ public class JwtValidator {
         }
     }
 
-    public boolean isValidToken(String token, PublicKey publicKey) {
-        return validateSignature(token, publicKey) && validatePayload(token);
+    public boolean isValidToken(String token) {
+        return validateSignature(token) && validatePayload(token);
     }
 }
