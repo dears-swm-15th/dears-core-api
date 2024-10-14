@@ -51,7 +51,7 @@ public enum ErrorCode {
     NOT_FOUND_ERROR(404, "G009", "Not Found Exception"),
 
     // NULL Point Exception 발생
-    NULL_POINT_ERROR(404, "G010", "Null Point Exception"),
+    NULL_POINT_ERROR(404, "G010", "Null Pointer Exception"),
 
     // @RequestBody 및 @RequestParam, @PathVariable 값이 유효하지 않음
     NOT_VALID_ERROR(404, "G011", "handle Validation Exception"),
