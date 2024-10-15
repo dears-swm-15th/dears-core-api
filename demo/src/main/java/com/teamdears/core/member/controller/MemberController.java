@@ -1,6 +1,5 @@
 package com.teamdears.core.member.controller;
 
-import com.teamdears.core.member.dto.AuthDTO;
 import com.teamdears.core.member.dto.MypageDTO;
 import com.teamdears.core.member.service.CustomUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,14 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final CustomUserDetailsService customUserDetailsService;
-    
-    @PostMapping("/auth/shared/create")
-    @Operation(summary = "[공통] 토큰이 없을 때 유저 생성", description = "CUSTOMER 또는 WEDDING_PLANNER로 권한을 요청합니다.")
-    public ResponseEntity<AuthDTO.Response> createMember(@RequestBody AuthDTO.Request customerAuthRequest) {
-        AuthDTO.Response createdMember = customUserDetailsService.join(customerAuthRequest.getRole());
-        log.info("Created new member with role: {}", customerAuthRequest.getRole());
-        return ResponseEntity.status(201).body(createdMember);
-    }
 
     @GetMapping("/mypage/customer/me")
     @Operation(summary = "[신랑신부] 마이페이지 조회", description = "토큰을 통해 마이페이지 정보를 조회합니다.")

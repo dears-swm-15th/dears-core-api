@@ -8,7 +8,6 @@ import com.teamdears.core.member.domain.Customer;
 import com.teamdears.core.member.domain.CustomerContext;
 import com.teamdears.core.member.domain.WeddingPlanner;
 import com.teamdears.core.member.domain.WeddingPlannerContext;
-import com.teamdears.core.member.dto.AuthDTO;
 import com.teamdears.core.member.dto.MypageDTO;
 import com.teamdears.core.member.mapper.CustomerMapper;
 import com.teamdears.core.member.mapper.WeddingPlannerMapper;
@@ -27,14 +26,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
-import static com.teamdears.core.enums.member.MemberRole.WEDDING_PLANNER;
 
 @Service
 @RequiredArgsConstructor
@@ -82,33 +77,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         return loadUserByUsername(UUID);
     }
 
-    @Transactional
-    public AuthDTO.Response join(String role) {
-        log.info("Joining new member with role: {}", role);
-
-        if (role.equals(WEDDING_PLANNER.getRoleName())) {
-            WeddingPlanner weddingPlanner = WeddingPlanner.builder()
-                    .role(WEDDING_PLANNER)
-                    .UUID(UUID.randomUUID().toString()).build();
-
-            weddingPlannerRepository.save(weddingPlanner);
-            log.info("Created new wedding planner with UUID: {}", weddingPlanner.getUUID());
-            return weddingPlannerMapper.entityToAuthDTOResponse(weddingPlanner);
-        } else if (role.equals(MemberRole.CUSTOMER.getRoleName())) {
-            Customer customer = Customer.builder()
-                    .role(MemberRole.CUSTOMER)
-                    .UUID(UUID.randomUUID().toString()).build();
-
-            customerRepository.save(customer);
-            log.info("Created new customer with UUID: {}", customer.getUUID());
-            return customerMapper.entityToAuthDTOResponse(customer);
-        } else {
-            log.error("Invalid role type: {}", role);
-            throw new IllegalArgumentException("Invalid role type");
-        }
-    }
-
-
     public Customer getCurrentAuthenticatedCustomer() throws UsernameNotFoundException {
         log.info("Getting current authenticated customer");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -142,7 +110,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     public MemberRole getCurrentAuthenticatedMemberRole() {
+        log.info("Getting current authenticated member role");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        log.info("AUTHENTICATION PLEASE: {}", authentication);
+
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             return getMemberRole(authentication);
         }
@@ -151,6 +123,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     public String getCurrentAuthenticatedMemberName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("AUTHENTICATION PLEASE: {}", authentication);
+
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             if (getCurrentAuthenticatedMemberRole() == MemberRole.CUSTOMER) {
                 return getCurrentAuthenticatedCustomer().getName();
