@@ -2,11 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dears</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .landing-container {
+            position: relative;
+            text-align: center;
+        }
+
+        .landing-image {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .store-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .store-buttons a {
+            margin: 0 10px;
+        }
+
+        .store-buttons img {
+            width: 150px;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
-<p>
-    dears-test
-</p>
+<div class="landing-container">
+    <!-- 랜딩 이미지 -->
+    <img src="../imgs/landing-page.png" alt="Landing Image" class="landing-image">
+
+    <!-- 구글 플레이, 앱스토어 버튼 -->
+    <div class="store-buttons">
+        <a href="https://play.google.com/store" target="_blank">
+            <img src="google-play-button.png" alt="Google Play">
+        </a>
+        <a href="https://apps.apple.com/" target="_blank">
+            <img src="app-store-button.png" alt="App Store">
+        </a>
+    </div>
+</div>
 </body>
 </html>
