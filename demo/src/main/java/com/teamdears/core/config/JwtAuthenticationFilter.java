@@ -37,6 +37,12 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // pass if websocket handshake request
+        if (isWebSocketRequest(request)) {
+            filterChain.doFilter(request, response); // 필터 통과
+            return;
+        }
+
         String accessToken = resolveToken(request);
 
         try {
@@ -87,6 +93,13 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = claims.getSubject();
         // 권한 또는 사용자 정보 설정
         return new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+    }
+
+
+    // check websocket handshake request
+    private boolean isWebSocketRequest(HttpServletRequest request) {
+        String upgradeHeader = request.getHeader("Upgrade");
+        return "websocket".equalsIgnoreCase(upgradeHeader);
     }
 
 //    private ApplePublicKeyResponse getAppleAuthPublicKey() throws IOException, InterruptedException {
