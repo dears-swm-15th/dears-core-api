@@ -23,10 +23,10 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Slf4j
 public class TokenProvider implements InitializingBean {
-    private static final long ACCESS_TOKEN_VALIDITY_SECONDS_TEST = 60; // 테스트용 AT는 1분
-    private static final long REFRESH_TOKEN_VALIDITY_SECONDS_TEST = 10; // 테스트용 RT는 1분
-    private static final long ACCESS_TOKEN_VALIDITY_SECONDS = 24 * 60 * 60; // access token은 24시간
+    private static final long ACCESS_TOKEN_VALIDITY_SECONDS = 2 * 60 * 60; // access token은 2시간
     private static final long REFRESH_TOKEN_VALIDITY_SECONDS = 24 * 60 * 60 * 14; // refresh token은 2주일
+
+    private static final long TEST_ACCESS_TOKEN_VALIDITY_SECONDS = 60; // access token은 1분
 
     private Key key;
 
@@ -100,7 +100,7 @@ public class TokenProvider implements InitializingBean {
 
     public String createAccessToken(String username, String uniqueId) {
         long now = (new Date()).getTime();
-        Date validity = new Date(now + ACCESS_TOKEN_VALIDITY_SECONDS * 1000);
+        Date validity = new Date(now + TEST_ACCESS_TOKEN_VALIDITY_SECONDS * 1000);
 
         return Jwts.builder()
                 .setSubject(username)
