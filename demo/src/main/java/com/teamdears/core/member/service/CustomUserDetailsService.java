@@ -13,6 +13,9 @@ import com.teamdears.core.member.mapper.CustomerMapper;
 import com.teamdears.core.member.mapper.WeddingPlannerMapper;
 import com.teamdears.core.member.repository.CustomerRepository;
 import com.teamdears.core.member.repository.WeddingPlannerRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -26,10 +29,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -83,7 +82,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         log.info("AUTHENTICATION PLEASE: {}", authentication);
 
-        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
             String memberName = authentication.getName();
             Customer customer = customerRepository.findByUUID(memberName)
                     .orElseThrow(() -> new UsernameNotFoundException("Authenticated customer not found"));
@@ -97,7 +97,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     public WeddingPlanner getCurrentAuthenticatedWeddingPlanner() throws AuthenticationException {
         log.info("Getting current authenticated wedding planner");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
             String memberName = authentication.getName();
             WeddingPlanner weddingPlanner = weddingPlannerRepository.findByUUID(memberName)
                     .orElseThrow(() -> new UsernameNotFoundException("Authenticated wedding planner not found"));
@@ -115,17 +116,38 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         log.info("AUTHENTICATION PLEASE: {}", authentication);
 
-        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
             return getMemberRole(authentication);
         }
         return null;
+    }
+
+    // find memberRole by uuid
+    public MemberRole getMemberRoleByUUID(String UUID) {
+        log.info("Getting member role by UUID: {}", UUID);
+        Optional<Customer> customer = customerRepository.findByUUID(UUID);
+
+        if (customer.isPresent()) {
+            return MemberRole.CUSTOMER;
+        }
+
+        Optional<WeddingPlanner> planner = weddingPlannerRepository.findByUUID(UUID);
+
+        if (planner.isPresent()) {
+            return MemberRole.WEDDING_PLANNER;
+        }
+
+        log.error("User with UUID: {} not found", UUID);
+        throw new UsernameNotFoundException("User with the given UUID could not be found");
     }
 
     public String getCurrentAuthenticatedMemberName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("AUTHENTICATION PLEASE: {}", authentication);
 
-        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
             if (getCurrentAuthenticatedMemberRole() == MemberRole.CUSTOMER) {
                 return getCurrentAuthenticatedCustomer().getName();
             } else {
@@ -137,7 +159,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     public String getCurrentAuthenticatedMemberUUID() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
             return authentication.getName();
         }
         return null;
@@ -188,7 +211,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         String profileImagePresignedUrl = "";
         if (customerRequest.getProfileImageUrl() != null && !customerRequest.getProfileImageUrl().isEmpty()) {
 
-            customer.setProfileImageUrl(s3Uploader.makeUniqueFileName("mypage", customer.getId(), customerRequest.getProfileImageUrl()));
+            customer.setProfileImageUrl(
+                    s3Uploader.makeUniqueFileName("mypage", customer.getId(), customerRequest.getProfileImageUrl()));
             profileImagePresignedUrl = s3Uploader.getPresignedUrl(customer.getProfileImageUrl());
         }
 
@@ -200,15 +224,18 @@ public class CustomUserDetailsService implements UserDetailsService {
         return response;
     }
 
-    public MypageDTO.MyPageUpdateResponse updateWeddingPlannerMyPage(MypageDTO.WeddingPlannerRequest weddingPlannerRequest) {
+    public MypageDTO.MyPageUpdateResponse updateWeddingPlannerMyPage(
+            MypageDTO.WeddingPlannerRequest weddingPlannerRequest) {
         WeddingPlanner weddingPlanner = getCurrentAuthenticatedWeddingPlanner();
 
         if (!weddingPlannerRequest.getName().isEmpty()) {
             weddingPlanner.setName(weddingPlannerRequest.getName());
         }
         String profileImagePresignedUrl = "";
-        if (weddingPlannerRequest.getProfileImageUrl() != null && !weddingPlannerRequest.getProfileImageUrl().isEmpty()) {
-            weddingPlanner.setProfileImageUrl(s3Uploader.makeUniqueFileName("mypage", weddingPlanner.getId(), weddingPlannerRequest.getProfileImageUrl()));
+        if (weddingPlannerRequest.getProfileImageUrl() != null && !weddingPlannerRequest.getProfileImageUrl()
+                .isEmpty()) {
+            weddingPlanner.setProfileImageUrl(s3Uploader.makeUniqueFileName("mypage", weddingPlanner.getId(),
+                    weddingPlannerRequest.getProfileImageUrl()));
             profileImagePresignedUrl = s3Uploader.getPresignedUrl(weddingPlanner.getProfileImageUrl());
         }
 
@@ -232,7 +259,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new RuntimeException("WeddingPlanner not found"));
     }
 
-    public MypageDTO.CustomerServiceResponse createCustomerService(MypageDTO.CustomerServiceRequest customerServiceRequest) {
+    public MypageDTO.CustomerServiceResponse createCustomerService(
+            MypageDTO.CustomerServiceRequest customerServiceRequest) {
         String username = getCurrentAuthenticatedMemberName();
         MemberRole role = getCurrentAuthenticatedMemberRole();
         String UUID = getCurrentAuthenticatedMemberUUID();
@@ -251,5 +279,19 @@ public class CustomUserDetailsService implements UserDetailsService {
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = loadUserByUsername(tokenProvider.getUniqueId(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    // get Customer by UUID
+    public Customer getCustomerByUUID(String UUID) {
+        log.info("Getting customer by UUID: {}", UUID);
+        return customerRepository.findByUUID(UUID)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+    }
+
+    // get WeddingPlanner by UUID
+    public WeddingPlanner getWeddingPlannerByUUID(String UUID) {
+        log.info("Getting wedding planner by UUID: {}", UUID);
+        return weddingPlannerRepository.findByUUID(UUID)
+                .orElseThrow(() -> new RuntimeException("WeddingPlanner not found"));
     }
 }
