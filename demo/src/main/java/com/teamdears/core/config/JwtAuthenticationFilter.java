@@ -8,6 +8,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,9 +21,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor
@@ -36,9 +35,17 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String BEARER_PREFIX = "Bearer ";
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
         // pass if websocket handshake request
         if (isWebSocketRequest(request)) {
+            filterChain.doFilter(request, response); // 필터 통과
+            return;
+        }
+
+        // pass if reissue token request
+        if (shouldSkipFilter(request)) {
             filterChain.doFilter(request, response); // 필터 통과
             return;
         }
@@ -98,8 +105,15 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // check websocket handshake request
     private boolean isWebSocketRequest(HttpServletRequest request) {
+        log.info("request.getRequestURI(): {}", request.getRequestURI());
         String upgradeHeader = request.getHeader("Upgrade");
         return "websocket".equalsIgnoreCase(upgradeHeader);
+    }
+
+    // Skip filtering for specific URLs
+    private boolean shouldSkipFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.contains("/oauth2/shared/reissue");
     }
 
 //    private ApplePublicKeyResponse getAppleAuthPublicKey() throws IOException, InterruptedException {
