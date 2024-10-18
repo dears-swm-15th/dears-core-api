@@ -3,6 +3,7 @@ package com.teamdears.core.oauth2.apple.service;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AppleKeyGenerator {
@@ -66,10 +68,15 @@ public class AppleKeyGenerator {
      */
     private PrivateKey getPrivateKey() throws IOException {
         try {
+            log.info("pemReader: {}", privateKey.replace("\\n", "\n"));
+
             Reader pemReader = new StringReader(privateKey.replace("\\n", "\n"));
             PEMParser pemParser = new PEMParser(pemReader);
             JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
             PrivateKeyInfo object = (PrivateKeyInfo) pemParser.readObject();
+
+            log.info("object: {}", object);
+
             return converter.getPrivateKey(object);
         } catch (IOException e) {
             throw new IOException("Failed to read private key", e);

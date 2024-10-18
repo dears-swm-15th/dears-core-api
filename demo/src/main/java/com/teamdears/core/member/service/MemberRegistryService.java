@@ -221,6 +221,10 @@ public class MemberRegistryService {
     private void registerAppleRefreshToken(Long userId, String authorizationCode, String role) throws IOException {
         String refreshToken = appleService.getAppleRefreshToken(authorizationCode);
 
+        log.info(" [1] refreshToken: {}", refreshToken);
+        log.info(" [2] userId: {}", userId);
+        log.info(" [3] role: {}", role);
+
         appleRefreshTokenRepository.save(
                 AppleRefreshToken.builder()
                         .userId(userId)
