@@ -11,6 +11,7 @@ import com.teamdears.core.portfolio.service.PortfolioService;
 import com.teamdears.core.review.service.ReviewService;
 import com.teamdears.core.wishlist.domain.WishList;
 import com.teamdears.core.wishlist.repository.WishListRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,8 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +48,7 @@ public class WishListService {
                     PortfolioDTO.Response portfolioResponse = portfolioMapper.entityToResponse(portfolio);
 
                     portfolioOverview.setAvgRating(calculateAvgRating(portfolioResponse));
-                    portfolioOverview.setIsWishiListed(true);
+                    portfolioOverview.setIsWishListed(true);
 
                     //get review count from repository count at certain portfolio overview
                     Integer reviewCount = reviewService.getReviewCountById(portfolioResponse.getId());
@@ -93,7 +92,8 @@ public class WishListService {
         }
         Portfolio portfolio = portfolioService.decreaseWishListCount(portfolioId);
         wishListRepository.deleteByCustomerIdAndPortfolioId(customer.getId(), portfolio.getId());
-        log.info("Successfully deleted portfolio ID: {} from wishlist for customer ID: {}", portfolioId, customer.getId());
+        log.info("Successfully deleted portfolio ID: {} from wishlist for customer ID: {}", portfolioId,
+                customer.getId());
     }
 
     public boolean isWishListed(Long portfolioId) {
