@@ -2,12 +2,12 @@ package com.teamdears.core.portfolio.controller;
 
 import com.teamdears.core.member.service.CustomUserDetailsService;
 import com.teamdears.core.portfolio.dto.PortfolioOverviewDTO;
-import com.teamdears.core.portfolio.dto.PortfolioSearchDTO;
 import com.teamdears.core.portfolio.service.PortfolioSearchService;
 import com.teamdears.core.portfolio.service.PortfolioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,10 +37,10 @@ public class DiscoveryController {
 
     @GetMapping("/shared/search")
     @Operation(summary = "[공통] 포트폴리오 검색하여 조회")
-    public ResponseEntity<List<PortfolioSearchDTO.Response>> getSearchPortfolio(
+    public ResponseEntity<List<PortfolioOverviewDTO.Response>> getSearchPortfolio(
             @Parameter(description = "검색 키워드")
             @RequestParam String content) {
-        List<PortfolioSearchDTO.Response> searchResult = portfolioSearchService.search(content);
+        List<PortfolioOverviewDTO.Response> searchResult = portfolioSearchService.search(content);
         log.info("Searched portfolios with content: {}", content);
         return ResponseEntity.ok(searchResult);
     }
