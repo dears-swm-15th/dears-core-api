@@ -3,8 +3,11 @@ package com.teamdears.core.portfolio.mapper;
 import com.teamdears.core.portfolio.domain.Portfolio;
 import com.teamdears.core.portfolio.dto.PortfolioDTO;
 import com.teamdears.core.portfolio.dto.PortfolioOverviewDTO;
-import com.teamdears.core.portfolio.dto.PortfolioSearchDTO;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
@@ -21,10 +24,4 @@ public interface PortfolioMapper {
     Portfolio updateFromRequest(PortfolioDTO.Request portfolioRequest, @MappingTarget Portfolio portfolio);
 
     PortfolioOverviewDTO.Response entityToOverviewResponse(Portfolio portfolio);
-
-    PortfolioSearchDTO.Request entityToSearchRequest(Portfolio portfolio);
-
-    PortfolioSearchDTO.Response requestToSearchResponse(PortfolioSearchDTO.Request request);
-
-    PortfolioSearchDTO.Response entityToSearchResponse(Portfolio portfolio);
 }
