@@ -21,15 +21,14 @@ import com.teamdears.core.portfolio.repository.PortfolioRepository;
 import com.teamdears.core.portfolio.service.PortfolioService;
 import com.teamdears.core.redis.service.RedisService;
 import com.teamdears.core.wishlist.service.WishListService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -99,21 +98,23 @@ public class ChatRoomService {
 
         WeddingPlanner weddingPlanner = portfolio.getWeddingPlanner();
 
-
         if (!isChatRoomExist(customer, weddingPlanner)) {
-            log.info("Chat room does not exist for customer ID: {} and wedding planner ID: {}", customer.getId(), weddingPlanner.getId());
+            log.info("Chat room does not exist for customer ID: {} and wedding planner ID: {}", customer.getId(),
+                    weddingPlanner.getId());
             ChatRoomDTO.Response createdChatRoomResponse = createChatRoomByPortfolioId(customer, weddingPlanner);
 
             sendNewChatRoomTrigger(portfolioId, createdChatRoomResponse.getChatRoomId());
         }
 
-        ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
+        ChatRoom chatRoom = chatRoomRepository.findByCustomerIdAndWeddingPlannerId(customer.getId(),
+                weddingPlanner.getId());
 
         return getMessagesByChatRoomForCustomer(chatRoom);
     }
 
     public ChatRoomDTO.Response createChatRoomByPortfolioId(Customer customer, WeddingPlanner weddingPlanner) {
-        log.info("Creating chat room for customer ID: {} and wedding planner ID: {}", customer.getId(), weddingPlanner.getId());
+        log.info("Creating chat room for customer ID: {} and wedding planner ID: {}", customer.getId(),
+                weddingPlanner.getId());
         ChatRoom chatRoom = ChatRoom.builder().build();
 
         chatRoom.setCustomer(customer);
@@ -156,12 +157,18 @@ public class ChatRoomService {
 
     public List<ChatRoomOverviewDTO.Response> getCustomersAllChatRoom() {
         log.info("Fetching all chat rooms for customer");
+
+        // get rid of from redis
+        String Uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
+        redisService.deleteValueFromAllSets(Uuid);
+
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
         List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerIdOrderByLastMessageCreatedAtDesc(customer.getId());
 
         return chatRooms.stream()
                 .map(chatRoom -> {
-                    Portfolio portfolio = portfolioService.getPortfolioByWeddingPlannerId(chatRoom.getWeddingPlanner().getId());
+                    Portfolio portfolio = portfolioService.getPortfolioByWeddingPlannerId(
+                            chatRoom.getWeddingPlanner().getId());
                     PortfolioDTO.Response portfolioResponse = portfolioService.getPortfolioById(portfolio.getId());
 
                     return ChatRoomOverviewDTO.Response.builder()
@@ -181,8 +188,14 @@ public class ChatRoomService {
 
     public List<ChatRoomOverviewDTO.Response> getWeddingPlannersAllChatRoom() {
         log.info("Fetching all chat rooms for wedding planner");
+
+        // get rid of from redis
+        String Uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
+        redisService.deleteValueFromAllSets(Uuid);
+        
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
-        List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerIdOrderByLastMessageCreatedAtDesc(weddingPlanner.getId());
+        List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerIdOrderByLastMessageCreatedAtDesc(
+                weddingPlanner.getId());
 
         return chatRooms.stream()
                 .map(chatRoom -> {
@@ -278,7 +291,8 @@ public class ChatRoomService {
     }
 
     public boolean isChatRoomExist(Customer customer, WeddingPlanner weddingPlanner) {
-        log.info("Checking if chat room exists for customer ID: {} and wedding planner ID: {}", customer.getId(), weddingPlanner.getId());
+        log.info("Checking if chat room exists for customer ID: {} and wedding planner ID: {}", customer.getId(),
+                weddingPlanner.getId());
         return chatRoomRepository.existsByCustomerIdAndWeddingPlannerId(customer.getId(), weddingPlanner.getId());
     }
 }
