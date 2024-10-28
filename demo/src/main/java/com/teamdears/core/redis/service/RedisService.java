@@ -1,5 +1,11 @@
 package com.teamdears.core.redis.service;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.DataType;
@@ -8,13 +14,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -57,7 +56,8 @@ public class RedisService {
     @Transactional(readOnly = true)
     public String getHashOps(String key, String hashKey) {
         HashOperations<String, Object, Object> values = redisTemplate.opsForHash();
-        return Boolean.TRUE.equals(values.hasKey(key, hashKey)) ? (String) redisTemplate.opsForHash().get(key, hashKey) : "";
+        return Boolean.TRUE.equals(values.hasKey(key, hashKey)) ? (String) redisTemplate.opsForHash().get(key, hashKey)
+                : "";
     }
 
     public void deleteHashOps(String key, String hashKey) {
@@ -156,9 +156,11 @@ public class RedisService {
 
         if (allKeys != null) {
             for (String key : allKeys) {
-                Set<Object> members = redisTemplate.opsForSet().members(key);  // retrieve set members
-                if (members != null && !members.isEmpty()) {
-                    allSetPairs.put(key, members);  // store the key and its members in the map
+                if (redisTemplate.type(key) == DataType.SET) {  // check if the key is of type SET
+                    Set<Object> members = redisTemplate.opsForSet().members(key);  // retrieve set members
+                    if (members != null && !members.isEmpty()) {
+                        allSetPairs.put(key, members);  // store the key and its members in the map
+                    }
                 }
             }
         }
