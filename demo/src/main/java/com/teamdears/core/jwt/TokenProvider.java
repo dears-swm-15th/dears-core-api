@@ -3,21 +3,26 @@ package com.teamdears.core.jwt;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
@@ -100,7 +105,7 @@ public class TokenProvider implements InitializingBean {
 
     public String createAccessToken(String username, String uniqueId) {
         long now = (new Date()).getTime();
-        Date validity = new Date(now + TEST_ACCESS_TOKEN_VALIDITY_SECONDS * 1000);
+        Date validity = new Date(now + ACCESS_TOKEN_VALIDITY_SECONDS * 1000);
 
         return Jwts.builder()
                 .setSubject(username)
