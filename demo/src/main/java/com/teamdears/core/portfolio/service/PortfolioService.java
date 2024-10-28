@@ -15,16 +15,15 @@ import com.teamdears.core.portfolio.repository.PortfolioRepository;
 import com.teamdears.core.review.domain.Review;
 import com.teamdears.core.review.dto.ReviewDTO;
 import com.teamdears.core.review.repository.ReviewRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -89,7 +88,8 @@ public class PortfolioService {
         portfolio.setWeddingPlanner(weddingPlanner);
 
         //portfolio/{id}/uuid 형식으로 이미지명 생성
-        portfolio.setProfileImageUrl(s3Uploader.makeUniqueFileName("portfolio", portfolio.getId(), portfolioRequest.getProfileImageUrl()));
+        portfolio.setProfileImageUrl(
+                s3Uploader.makeUniqueFileName("portfolio", portfolio.getId(), portfolioRequest.getProfileImageUrl()));
         portfolio.setWeddingPhotoUrls(
                 portfolioRequest.getWeddingPhotoUrls().stream()
                         .map(url -> s3Uploader.makeUniqueFileName("portfolio", portfolio.getId(), url))
@@ -106,7 +106,6 @@ public class PortfolioService {
         weddingPlanner.setPortfolio(savedPortfolio);
         weddingPlannerRepository.save(weddingPlanner);
 
-
         response.setPresignedProfileImageUrl(profileImagePresignedUrl);
         response.setPresignedWeddingPhotoUrls(weddingPhotoPresignedUrlList);
 
@@ -119,12 +118,13 @@ public class PortfolioService {
         Portfolio existingPortfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
-
         String profileImagePresigendUrl = "";
-        if (portfolioRequest.getProfileImageUrl() != null && !portfolioRequest.getProfileImageUrl().equals(existingPortfolio.getProfileImageUrl())) {
+        if (portfolioRequest.getProfileImageUrl() != null && !portfolioRequest.getProfileImageUrl()
+                .equals(existingPortfolio.getProfileImageUrl())) {
             //Delete existing image from s3 and upload new image
             s3Uploader.deleteFile(existingPortfolio.getProfileImageUrl());
-            existingPortfolio.setProfileImageUrl(s3Uploader.makeUniqueFileName("portfolio", portfolioId, portfolioRequest.getProfileImageUrl()));
+            existingPortfolio.setProfileImageUrl(
+                    s3Uploader.makeUniqueFileName("portfolio", portfolioId, portfolioRequest.getProfileImageUrl()));
             profileImagePresigendUrl = s3Uploader.getPresignedUrl(existingPortfolio.getProfileImageUrl());
         }
 
@@ -229,7 +229,8 @@ public class PortfolioService {
 
     @Transactional
     public Portfolio reflectModifiedReview(ReviewDTO.Request reviewRequest, Review existingReview) {
-        log.info("Starting reflectModifiedReview method for review with portfolio ID: {}", reviewRequest.getPortfolioId());
+        log.info("Starting reflectModifiedReview method for review with portfolio ID: {}",
+                reviewRequest.getPortfolioId());
         Portfolio portfolio = getPortfolioWithLock(reviewRequest.getPortfolioId());
 
         updatePortfolioWithModifiedReview(portfolio, reviewRequest, existingReview);
@@ -274,7 +275,8 @@ public class PortfolioService {
         portfolio.increaseRadarCount(reviewRequest.getRadar());
     }
 
-    private void updatePortfolioWithModifiedReview(Portfolio portfolio, ReviewDTO.Request reviewRequest, Review existingReview) {
+    private void updatePortfolioWithModifiedReview(Portfolio portfolio, ReviewDTO.Request reviewRequest,
+                                                   Review existingReview) {
         portfolio.reduceRatingSum(existingReview.getRating());
         portfolio.reduceEstimateSum(existingReview.getEstimate());
         portfolio.reduceRadarSum(existingReview.getRadar());
@@ -287,7 +289,6 @@ public class PortfolioService {
     private ReviewDTO.Response mapToReviewResponse(Review review) {
         return ReviewDTO.Response.builder()
                 .id(review.getId())
-                .reviewerName(review.getReviewerName())
                 .portfolioId(review.getPortfolio().getId())
                 .rating(review.getRating())
                 .estimate(review.getEstimate())
@@ -296,7 +297,11 @@ public class PortfolioService {
                 .createdAt(review.getCreatedAt())
                 .updatedAt(review.getUpdatedAt())
                 .weddingPhotoUrls(review.getWeddingPhotoUrls())
+                .reviewerNickname(review.getReviewerNickname())
+                .isProvided(review.getIsProvided())
+                .tags(review.getTags())
                 .build();
+
     }
 
     public float calculateAvgRating(PortfolioDTO.Response portfolioResponse) {
@@ -306,7 +311,8 @@ public class PortfolioService {
 
     private Integer calculateAvgEstimate(PortfolioDTO.Response portfolioResponse) {
         int estimateCount = portfolioResponse.getEstimateCount() != null ? portfolioResponse.getEstimateCount() : 0;
-        return estimateCount != 0 ? Math.round((float) portfolioResponse.getEstimateSum() / estimateCount / 1000) * 1000 : 0;
+        return estimateCount != 0 ? Math.round((float) portfolioResponse.getEstimateSum() / estimateCount / 1000) * 1000
+                : 0;
     }
 
     private Map<RadarKey, Float> calculateAvgRadar(PortfolioDTO.Response portfolioResponse) {
@@ -323,7 +329,8 @@ public class PortfolioService {
 
         Map<RadarKey, Float> radarSum = portfolioResponse.getRadarSum();
         return radarSum.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> Math.round(entry.getValue() / radarCount * 10) / 10f));
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> Math.round(entry.getValue() / radarCount * 10) / 10f));
     }
 
     @Transactional
