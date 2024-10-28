@@ -33,11 +33,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
 //                        .requestMatchers("/**").permitAll() // wildcard
                                 .requestMatchers("/api/v1/admin/**").permitAll()
+                                .requestMatchers("/api/v1/discovery/**").permitAll()
                                 .requestMatchers("/api/v1/oauth2/**").permitAll()
                                 .requestMatchers("/api/v1/oauth2/shared/reissue").permitAll()
                                 .requestMatchers("/stomp/**").permitAll()
                                 .requestMatchers("/api/v1/auth/shared/create").permitAll()
-                                .requestMatchers("/", "/index.html", "/weddingplanner-chat.html", "/customer-chat.html", "/swagger-ui/*", "/swagger-resources/**", "/v3/api-docs/**", "/actuator/**", "/metrics/**").permitAll()
+                                .requestMatchers("/", "/index.html", "/weddingplanner-chat.html", "/customer-chat.html",
+                                        "/swagger-ui/*", "/swagger-resources/**", "/v3/api-docs/**", "/actuator/**",
+                                        "/metrics/**").permitAll()
                                 .requestMatchers("/api/v1/*/shared/**").hasAnyRole("CUSTOMER", "WEDDING_PLANNER")
                                 .requestMatchers("/api/v1/*/weddingplanner/**").hasRole("WEDDING_PLANNER")
                                 .requestMatchers("/api/v1/*/customer/**").hasRole("CUSTOMER")
@@ -50,7 +53,6 @@ public class SecurityConfig {
                             response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
                         })
                 );
-
 
         return http.build();
     }
