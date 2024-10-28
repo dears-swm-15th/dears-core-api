@@ -10,16 +10,15 @@ import com.teamdears.core.review.domain.Review;
 import com.teamdears.core.review.dto.ReviewDTO;
 import com.teamdears.core.review.mapper.ReviewMapper;
 import com.teamdears.core.review.repository.ReviewRepository;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -104,6 +103,7 @@ public class ReviewService {
         review.setPortfolio(portfolio);
         review.setReviewerId(customer.getId());
         review.setIsProvided(false);
+        review.setReviewerNickname(customer.getNickname());
 
         reviewRepository.save(review);
 
@@ -159,7 +159,6 @@ public class ReviewService {
         response.setPortfolioId(portfolio.getId());
         response.setPresignedWeddingPhotoUrls(weddingPhotosPresignedUrlList);
 
-
         log.info("Successfully modified review for wedding planner with ID: {}", reviewId);
         return response;
     }
@@ -192,7 +191,6 @@ public class ReviewService {
                 }
             }
 
-
             //새로 추가해야 하는 이미지 s3에 업로드
             newWeddingPhotoUrls.forEach(newUrl -> {
                 if (!existingWeddingPhotoUrls.contains(newUrl)) {
@@ -210,7 +208,6 @@ public class ReviewService {
         ReviewDTO.Response response = reviewMapper.entityToResponse(updatedReview);
         response.setPortfolioId(portfolio.getId());
         response.setPresignedWeddingPhotoUrls(weddingPhotosPresignedUrlList);
-
 
         log.info("Successfully modified review for customer with ID: {}", reviewId);
         return response;
