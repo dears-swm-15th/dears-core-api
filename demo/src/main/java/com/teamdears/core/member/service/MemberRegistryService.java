@@ -16,15 +16,14 @@ import com.teamdears.core.oauth2.google.dto.GoogleLoginDTO;
 import com.teamdears.core.oauth2.google.dto.GoogleUserInfoResponseDTO;
 import com.teamdears.core.oauth2.kakao.dto.KakaoLoginDTO;
 import com.teamdears.core.oauth2.kakao.dto.KakaoUserInfoResponseDTO;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +44,15 @@ public class MemberRegistryService {
     public KakaoLoginDTO.Response createKakaoMember(KakaoUserInfoResponseDTO userInfoResponseDto, String role) {
         String username = userInfoResponseDto.kakaoAccount.profile.nickName;
 
-        String UUID = generateUUID("kakao", userInfoResponseDto.id.toString());
+        String UUID;
+
+        if (role.equals(MemberRole.CUSTOMER.getRoleName())) {
+            UUID = generateCustomerUUID("kakao", userInfoResponseDto.id.toString());
+        } else if (role.equals(MemberRole.WEDDING_PLANNER.getRoleName())) {
+            UUID = generateWeddingPlannerUUID("kakao", userInfoResponseDto.id.toString());
+        } else {
+            throw new RuntimeException("Invalid role");
+        }
 
         // Generate access and refresh tokens
         String accessToken = tokenProvider.createAccessToken(username, UUID);
@@ -63,7 +70,7 @@ public class MemberRegistryService {
 
     @Transactional
     public KakaoLoginDTO.Response createAdminCustomer(String username) {
-        String UUID = generateUUID("admin", "customer");
+        String UUID = generateCustomerUUID("admin", "customer");
 
         // Generate access and refresh tokens
         String accessToken = tokenProvider.createdAdminJwtToken(username, UUID);
@@ -76,7 +83,7 @@ public class MemberRegistryService {
 
     @Transactional
     public KakaoLoginDTO.Response createAdminWeddingPlanner(String username) {
-        String UUID = generateUUID("admin", "weddingplanner");
+        String UUID = generateWeddingPlannerUUID("admin", "weddingplanner");
 
         // Generate access and refresh tokens
         String accessToken = tokenProvider.createdAdminJwtToken(username, UUID);
@@ -117,9 +124,18 @@ public class MemberRegistryService {
 
 
     @Transactional
-    public GoogleLoginDTO.Response createGoogleMember(GoogleUserInfoResponseDTO googleUserInfoResponseDto, String role) {
+    public GoogleLoginDTO.Response createGoogleMember(GoogleUserInfoResponseDTO googleUserInfoResponseDto,
+                                                      String role) {
         String username = googleUserInfoResponseDto.getName();
-        String UUID = generateUUID("google", googleUserInfoResponseDto.getSub());
+        String UUID;
+
+        if (role.equals(MemberRole.CUSTOMER.getRoleName())) {
+            UUID = generateCustomerUUID("google", googleUserInfoResponseDto.getSub());
+        } else if (role.equals(MemberRole.WEDDING_PLANNER.getRoleName())) {
+            UUID = generateWeddingPlannerUUID("google", googleUserInfoResponseDto.getSub());
+        } else {
+            throw new RuntimeException("Invalid role");
+        }
 
         // Generate access and refresh tokens
         String accessToken = tokenProvider.createAccessToken(username, UUID);
@@ -135,10 +151,13 @@ public class MemberRegistryService {
         return buildGoogleLoginResponse(UUID, accessToken, refreshToken);
     }
 
-    private String generateUUID(String platform, String id) {
-        return platform + "-" + id;
+    private String generateCustomerUUID(String platform, String id) {
+        return platform + "-" + id + "-c";
     }
 
+    private String generateWeddingPlannerUUID(String platform, String id) {
+        return platform + "-" + id + "-w";
+    }
 
     private KakaoLoginDTO.Response buildKakaoLoginResponse(String UUID, String accessToken, String refreshToken) {
         return KakaoLoginDTO.Response.builder()
@@ -169,11 +188,14 @@ public class MemberRegistryService {
     private void updateExistingCustomer(Customer customer, String refreshToken) {
         // replace refresh token by key(uuid)
         redisTemplateRT.delete(customer.getUUID());
-        redisTemplateRT.opsForValue().set(customer.getUUID(), refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
+        redisTemplateRT.opsForValue()
+                .set(customer.getUUID(), refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken),
+                        TimeUnit.MILLISECONDS);
     }
 
     private void createNewCustomer(String UUID, String name, String refreshToken) {
-        redisTemplateRT.opsForValue().set(UUID, refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
+        redisTemplateRT.opsForValue()
+                .set(UUID, refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
 
         String nickname = nicknameService.generateRandomNickname();
 
@@ -200,11 +222,14 @@ public class MemberRegistryService {
     private void updateExistingWeddingPlanner(WeddingPlanner weddingPlanner, String refreshToken) {
         // replace refresh token by key(uuid)
         redisTemplateRT.delete(weddingPlanner.getUUID());
-        redisTemplateRT.opsForValue().set(weddingPlanner.getUUID(), refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
+        redisTemplateRT.opsForValue()
+                .set(weddingPlanner.getUUID(), refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken),
+                        TimeUnit.MILLISECONDS);
     }
 
     private void createNewWeddingPlanner(String UUID, String name, String refreshToken) {
-        redisTemplateRT.opsForValue().set(UUID, refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
+        redisTemplateRT.opsForValue()
+                .set(UUID, refreshToken, tokenProvider.getRefreshTokenExpiration(refreshToken), TimeUnit.MILLISECONDS);
 
         String nickname = nicknameService.generateRandomNickname();
 
@@ -237,7 +262,15 @@ public class MemberRegistryService {
     @Transactional
     public AppleLoginDTO.Response createAppleMember(AppleUserInfoResponseDTO userInfoResponseDTO, String role) {
         String username = userInfoResponseDTO.getAud(); // TODO
-        String UUID = generateUUID("apple", userInfoResponseDTO.getSub());
+        String UUID;
+
+        if (role.equals(MemberRole.CUSTOMER.getRoleName())) {
+            UUID = generateCustomerUUID("apple", userInfoResponseDTO.getSub());
+        } else if (role.equals(MemberRole.WEDDING_PLANNER.getRoleName())) {
+            UUID = generateWeddingPlannerUUID("apple", userInfoResponseDTO.getSub());
+        } else {
+            throw new RuntimeException("Invalid role");
+        }
 
         // Generate access and refresh tokens
         String accessToken = tokenProvider.createAccessToken(username, UUID);
@@ -275,7 +308,8 @@ public class MemberRegistryService {
 
     @Transactional
     public void logout(AppleRevokeDTO revokeRequest) throws IOException {
-        String refreshToken = appleRefreshTokenRepository.findByUserIdAndMemberRole(revokeRequest.getUserId(), revokeRequest.getMemberRole())
+        String refreshToken = appleRefreshTokenRepository.findByUserIdAndMemberRole(revokeRequest.getUserId(),
+                        revokeRequest.getMemberRole())
                 .map(AppleRefreshToken::getRefreshToken)
                 .orElseThrow(() -> new RuntimeException("Apple refresh token not found"));
 
