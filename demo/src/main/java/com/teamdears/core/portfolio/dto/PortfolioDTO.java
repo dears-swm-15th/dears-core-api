@@ -3,12 +3,16 @@ package com.teamdears.core.portfolio.dto;
 import com.teamdears.core.enums.review.RadarKey;
 import com.teamdears.core.member.dto.WeddingPlannerPortfolioDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 public class PortfolioDTO {
 
@@ -47,33 +51,11 @@ public class PortfolioDTO {
         @Schema(type = "string", example = "ACCOMPANY")
         private String accompanyType;
 
-        @Schema(type = "float", example = "3.723123")
-        private Float ratingSum;
-
-        @Schema(type = "integer", example = "42")
-        private Integer ratingCount;
-
-        @Schema(type = "integer", example = "40000")
-        private Integer avgEstimate;
-
-        @Schema(type = "integer", example = "62")
-        private Integer estimateSum;
-
-        @Schema(type = "integer", example = "20000")
-        private Integer minEstimate;
-
         @Schema(type = "array", example = "[\"퍼스널 컬러 체크\", \"웨딩드레스 시착 1회 무료\"]")
         private List<String> services;
 
         @Schema(type = "array", example = "[\"src/portfolio/img1.jpg\", \"src/portfolio/img2.jpg\"]")
         private List<String> weddingPhotoUrls;
-
-        @Schema(type = "object", example = "{\"COMMUNICATION\": 4.5, \"BUDGET_COMPLIANCE\": 3.8, \"PERSONAL_CUSTOMIZATION\": 4.7, \"PRICE_RATIONALITY\": 4.0, \"SCHEDULE_COMPLIANCE\": 4.6}")
-        private Map<RadarKey, Float> avgRadar;
-
-        @Schema(type = "integer", example = "62")
-        private Integer radarCount;
-
     }
 
     @Setter

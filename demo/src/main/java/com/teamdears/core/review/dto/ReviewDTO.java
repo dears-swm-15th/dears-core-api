@@ -2,12 +2,16 @@ package com.teamdears.core.review.dto;
 
 import com.teamdears.core.enums.review.RadarKey;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 public class ReviewDTO {
 
@@ -22,18 +26,12 @@ public class ReviewDTO {
         @Schema(type = "string", example = "name1")
         private String content;
 
-        @Schema(type = "boolean", example = "true")
-        private Boolean isProvided;
-
         @Schema(type = "float", example = "4.5")
         private Float rating;
 
         @Schema(type = "integer", example = "1500000")
         private Integer estimate;
-
-        @Schema(type = "integer", example = "1000000")
-        private Integer minEstimate;
-
+        
         @Schema(type = "array", example = "[\"비동행\", \"신혼여행\"]")
         private List<String> tags;
 
@@ -64,6 +62,9 @@ public class ReviewDTO {
 
         @Schema(type = "string", example = "결혼하고 싶어요123")
         private String reviewerName;
+
+        @Schema(type = "string", example = "용감한 독수리 123")
+        private String reviewerNickname;
 
         @Schema(type = "string", example = "최고의 웨딩플래너!")
         private String content;

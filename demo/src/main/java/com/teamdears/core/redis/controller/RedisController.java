@@ -2,19 +2,20 @@ package com.teamdears.core.redis.controller;
 
 import com.teamdears.core.redis.service.RedisService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-import java.util.Set;
-
 @Slf4j
 @RestController
-@RequestMapping("/redis")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/redis")
+@Tag(name = "redis", description = "레디스 API")
 public class RedisController {
 
     private final RedisService redisService;
