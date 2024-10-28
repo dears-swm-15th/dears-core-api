@@ -1,6 +1,5 @@
 package com.teamdears.core.portfolio.controller;
 
-import com.teamdears.core.member.service.CustomUserDetailsService;
 import com.teamdears.core.portfolio.dto.PortfolioOverviewDTO;
 import com.teamdears.core.portfolio.service.PortfolioSearchService;
 import com.teamdears.core.portfolio.service.PortfolioService;
@@ -25,8 +24,6 @@ public class DiscoveryController {
     private final PortfolioService portfolioService;
 
     private final PortfolioSearchService portfolioSearchService;
-
-    private final CustomUserDetailsService customUserDetailsService;
 
     @GetMapping("/shared/top5")
     @Operation(summary = "[공통] 조회수 상위 5개 포트폴리오 조회")
