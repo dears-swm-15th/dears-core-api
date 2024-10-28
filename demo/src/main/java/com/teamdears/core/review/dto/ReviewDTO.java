@@ -26,18 +26,12 @@ public class ReviewDTO {
         @Schema(type = "string", example = "name1")
         private String content;
 
-        @Schema(type = "boolean", example = "true")
-        private Boolean isProvided;
-
         @Schema(type = "float", example = "4.5")
         private Float rating;
 
         @Schema(type = "integer", example = "1500000")
         private Integer estimate;
-
-        @Schema(type = "integer", example = "1000000")
-        private Integer minEstimate;
-
+        
         @Schema(type = "array", example = "[\"비동행\", \"신혼여행\"]")
         private List<String> tags;
 

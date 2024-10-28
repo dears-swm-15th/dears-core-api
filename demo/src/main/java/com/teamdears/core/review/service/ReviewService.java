@@ -99,7 +99,6 @@ public class ReviewService {
         List<String> presignedUrlList = s3Uploader.getPresignedUrls(review.getWeddingPhotoUrls());
 
         Portfolio portfolio = portfolioService.reflectNewReview(reviewRequest);
-        review.setReviewerName(customer.getName());
         review.setPortfolio(portfolio);
         review.setReviewerId(customer.getId());
         review.setIsProvided(false);
