@@ -104,14 +104,11 @@ public class DataLoader implements CommandLineRunner {
         List<String> reviewTags5 = Arrays.asList("웨딩드레스", "분위기 좋은");
 
 // Create Review Photos
-        List<String> reviewPhotos1 = Arrays.asList(
-                "review/3/d55ac892-e175-4c57-bdd1-250fea3b4364.jpg",
-                "review/3/1ae54357-e7e4-4948-beca-3bac9b72b8f7.jpg",
-                "review/3/571ba189-6b86-4cd1-89a7-92eb947b8c4e.jpg");
-        List<String> reviewPhotos2 = Arrays.asList("review2_1.jpg", "review2_2.jpg");
-        List<String> reviewPhotos3 = Arrays.asList("review3_1.jpg", "review3_2.jpg", "review3_3.jpg");
-        List<String> reviewPhotos4 = Arrays.asList("review4_1.jpg");
-        List<String> reviewPhotos5 = Arrays.asList("review5_1.jpg", "review5_2.jpg");
+        List<String> reviewPhotos1 = Arrays.asList();
+        List<String> reviewPhotos2 = Arrays.asList();
+        List<String> reviewPhotos3 = Arrays.asList();
+        List<String> reviewPhotos4 = Arrays.asList();
+        List<String> reviewPhotos5 = Arrays.asList();
 
 // Create Review Radar
         Map<RadarKey, Float> reviewRadar1 = new HashMap<>();
@@ -203,7 +200,7 @@ public class DataLoader implements CommandLineRunner {
                 .content("웨딩 플래너님의 세심한 배려 덕분에 신혼여행 준비가 편하게 끝났습니다.")
                 .isProvided(false)
                 .reviewerId(1L)
-                .reviewerName("용감한 호랑이 123")
+                .reviewerNickname("용감한 호랑이 123")
                 .rating(4.5f)
                 .estimate(350)
                 .tags(reviewTags1)
@@ -216,7 +213,7 @@ public class DataLoader implements CommandLineRunner {
                 .content("예산 내에서 최고의 서비스를 제공받았습니다. 친구들에게도 추천하고 싶어요!")
                 .isProvided(true)
                 .reviewerId(2L)
-                .reviewerName("멋진 돌고래 152")
+                .reviewerNickname("멋진 돌고래 152")
                 .rating(4.6f)
                 .estimate(400)
                 .tags(reviewTags2)
@@ -229,7 +226,7 @@ public class DataLoader implements CommandLineRunner {
                 .content("결혼 준비로 바쁜데 플래너님이 잘 챙겨주셔서 부담을 덜었어요.")
                 .isProvided(true)
                 .reviewerId(3L)
-                .reviewerName("날쎈 다람쥐 102")
+                .reviewerNickname("날쎈 다람쥐 102")
                 .rating(4.7f)
                 .estimate(500)
                 .tags(reviewTags3)
@@ -242,7 +239,7 @@ public class DataLoader implements CommandLineRunner {
                 .content("세심하게 맞춤형 상담을 해주셔서 만족스러운 결혼식을 준비할 수 있었습니다.")
                 .isProvided(false)
                 .reviewerId(4L)
-                .reviewerName("훌륭한 코끼리 012")
+                .reviewerNickname("훌륭한 코끼리 012")
                 .rating(4.8f)
                 .estimate(550)
                 .tags(reviewTags4)
@@ -255,7 +252,7 @@ public class DataLoader implements CommandLineRunner {
                 .content("웨딩드레스와 장소까지 완벽하게 추천해 주셔서 감동했습니다.")
                 .isProvided(true)
                 .reviewerId(5L)
-                .reviewerName("느린 하마 812")
+                .reviewerNickname("느린 하마 812")
                 .rating(4.4f)
                 .estimate(300)
                 .tags(reviewTags5)
