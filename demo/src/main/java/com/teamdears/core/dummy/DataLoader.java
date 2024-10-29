@@ -264,15 +264,18 @@ public class DataLoader implements CommandLineRunner {
                 .portfolio(portfolios.get(0))
                 .build();
 
-        Portfolio portfolio1 = portfolios.get(0);
-        portfolio1.setReviews(Arrays.asList(review1, review2, review3, review4, review5));
-        portfolioRepository.save(portfolio1);
-
         // Map each portfolio to corresponding planner and save
-        for (int i = 1; i < planners.size(); i++) {
+        for (int i = 0; i < planners.size(); i++) {
             portfolios.get(i).setWeddingPlanner(planners.get(i));
+            portfolios.get(i).setReviews(Arrays.asList(review1, review2, review3, review4, review5));
             portfolioRepository.save(portfolios.get(i));
         }
+
+        reviewRepository.save(review1);
+        reviewRepository.save(review2);
+        reviewRepository.save(review3);
+        reviewRepository.save(review4);
+        reviewRepository.save(review5);
 
         Customer customer1 = Customer.builder()
                 .name("Clara")
