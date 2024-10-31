@@ -262,6 +262,7 @@ public class ChatRoomService {
 
         ChatRoomDTO.Response response = chatRoomMapper.entityToResponse(chatRoom);
         response.setMessages(messageResponses);
+        response.setChatRoomId(chatRoom.getId());
 
         return response;
     }
