@@ -190,7 +190,7 @@ public class ChatRoomService {
         log.info("Fetching all chat rooms for wedding planner");
 
         // get rid of from redis
-        String Uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
+        String Uuid = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().getUUID();
 //        redisService.deleteValueFromAllSets(Uuid);
 
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
