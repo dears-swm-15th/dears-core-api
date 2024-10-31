@@ -1,1 +1,1 @@
-# dears-be
+# dears-core-api
