@@ -13,6 +13,7 @@ import com.teamdears.core.member.mapper.CustomerMapper;
 import com.teamdears.core.member.mapper.WeddingPlannerMapper;
 import com.teamdears.core.member.repository.CustomerRepository;
 import com.teamdears.core.member.repository.WeddingPlannerRepository;
+import com.teamdears.core.portfolio.domain.Portfolio;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -189,7 +190,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     public MypageDTO.WeddingPlannerResponse getWeddingPlannerMyPage() {
         log.info("Getting wedding planner my page");
         WeddingPlanner weddingPlanner = getCurrentAuthenticatedWeddingPlanner();
+        Portfolio portfolio = weddingPlanner.getPortfolio();
         MypageDTO.WeddingPlannerResponse response = weddingPlannerMapper.entityToMypageDTOResponse(weddingPlanner);
+        response.setProfileImageUrl(portfolio.getProfileImageUrl());
         log.info("Fetched wedding planner my page for UUID: {}", weddingPlanner.getUUID());
         return response;
     }
