@@ -204,7 +204,7 @@ public class ChatRoomService {
                     return ChatRoomOverviewDTO.Response.builder()
                             .chatRoomId(chatRoom.getId())
                             .othersProfileImageUrl(customer.getProfileImageUrl())
-                            .othersName(customer.getName())
+                            .othersName(customer.getNickname())
                             .lastMessage(chatRoom.getLastMessageContent())
                             .lastMessageCreatedAt(chatRoom.getLastMessageCreatedAt())
                             .unreadMessageCount(getWeddingPlannersUnreadCount(weddingPlanner.getUUID()))
