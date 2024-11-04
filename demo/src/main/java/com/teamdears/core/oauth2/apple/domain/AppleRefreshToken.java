@@ -1,8 +1,17 @@
 package com.teamdears.core.oauth2.apple.domain;
 
 import com.teamdears.core.base.BaseTimeEntity;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -17,7 +26,7 @@ public class AppleRefreshToken extends BaseTimeEntity {
     @Column(name = "apple_refresh_token_id")
     private Long id;
 
-    private Long userId;
+    private String UUID;
 
     private String memberRole;
 
