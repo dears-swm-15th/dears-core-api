@@ -244,16 +244,16 @@ public class MemberRegistryService {
         weddingPlannerRepository.save(newWeddingPlanner);
     }
 
-    private void registerAppleRefreshToken(Long userId, String authorizationCode, String role) throws IOException {
+    private void registerAppleRefreshToken(String UUID, String authorizationCode, String role) throws IOException {
         String refreshToken = appleService.getAppleRefreshToken(authorizationCode);
 
         log.info(" [1] refreshToken: {}", refreshToken);
-        log.info(" [2] userId: {}", userId);
+        log.info(" [2] UUID: {}", UUID);
         log.info(" [3] role: {}", role);
 
         appleRefreshTokenRepository.save(
                 AppleRefreshToken.builder()
-                        .userId(userId)
+                        .UUID(UUID)
                         .memberRole(role)
                         .refreshToken(refreshToken)
                         .build()
@@ -284,17 +284,10 @@ public class MemberRegistryService {
             processWeddingPlanner(UUID, username, refreshToken);
         }
 
-        // find user id by UUID
-        Long userId = customerRepository.findByUUID(UUID)
-                .map(Customer::getId)
-                .orElseGet(() -> weddingPlannerRepository.findByUUID(UUID)
-                        .map(WeddingPlanner::getId)
-                        .orElseThrow(() -> new RuntimeException("User not found")));
-
         // register apple refresh token
         try {
-            log.info("Registering apple refresh token for userId: [{}]", userId);
-            registerAppleRefreshToken(userId, userInfoResponseDTO.getAuthorizationCode(), role);
+            log.info("Registering apple refresh token for UUID: [{}]", UUID);
+            registerAppleRefreshToken(UUID, userInfoResponseDTO.getAuthorizationCode(), role);
         } catch (IOException e) {
             log.error("Failed to register apple refresh token", e);
             throw new RuntimeException("Failed to register apple refresh token");
@@ -309,8 +302,7 @@ public class MemberRegistryService {
 
     @Transactional
     public void logout(AppleRevokeDTO revokeRequest) throws IOException {
-        String refreshToken = appleRefreshTokenRepository.findByUserIdAndMemberRole(revokeRequest.getUserId(),
-                        revokeRequest.getMemberRole())
+        String refreshToken = appleRefreshTokenRepository.findByUUID(revokeRequest.getUUID())
                 .map(AppleRefreshToken::getRefreshToken)
                 .orElseThrow(() -> new RuntimeException("Apple refresh token not found"));
 
