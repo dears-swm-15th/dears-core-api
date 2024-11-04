@@ -12,6 +12,7 @@ import com.teamdears.core.oauth2.apple.dto.AppleRevokeDTO;
 import com.teamdears.core.oauth2.apple.dto.AppleUserInfoResponseDTO;
 import com.teamdears.core.oauth2.apple.repository.AppleRefreshTokenRepository;
 import com.teamdears.core.oauth2.apple.service.AppleService;
+import com.teamdears.core.oauth2.dto.WithdrawDTO;
 import com.teamdears.core.oauth2.google.dto.GoogleLoginDTO;
 import com.teamdears.core.oauth2.google.dto.GoogleUserInfoResponseDTO;
 import com.teamdears.core.oauth2.kakao.dto.KakaoLoginDTO;
@@ -315,5 +316,27 @@ public class MemberRegistryService {
 
         appleService.revokeToken(refreshToken);
 
+    }
+
+    @Transactional
+    public void withdraw(WithdrawDTO.Request withdrawRequest) {
+        String UUID = withdrawRequest.getUUID();
+
+        // check user role and delete user by UUID
+        if (withdrawRequest.getRole().equals(MemberRole.CUSTOMER.getRoleName())) {
+            customerRepository.findByUUID(UUID)
+                    .ifPresent(customer -> {
+                        customerRepository.delete(customer);
+                        redisTemplateRT.delete(UUID);
+                    });
+        } else if (withdrawRequest.getRole().equals(MemberRole.WEDDING_PLANNER.getRoleName())) {
+            weddingPlannerRepository.findByUUID(UUID)
+                    .ifPresent(weddingPlanner -> {
+                        weddingPlannerRepository.delete(weddingPlanner);
+                        redisTemplateRT.delete(UUID);
+                    });
+        } else {
+            throw new RuntimeException("Invalid role");
+        }
     }
 }

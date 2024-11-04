@@ -1,11 +1,13 @@
 package com.teamdears.core.oauth2.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.teamdears.core.member.service.MemberRegistryService;
 import com.teamdears.core.oauth2.apple.dto.AppleLoginDTO;
 import com.teamdears.core.oauth2.apple.dto.AppleRevokeDTO;
 import com.teamdears.core.oauth2.apple.dto.AppleUserInfoResponseDTO;
 import com.teamdears.core.oauth2.apple.service.AppleService;
 import com.teamdears.core.oauth2.dto.ReissueDTO;
+import com.teamdears.core.oauth2.dto.WithdrawDTO;
 import com.teamdears.core.oauth2.google.dto.GoogleLoginDTO;
 import com.teamdears.core.oauth2.google.dto.GoogleUserInfoResponseDTO;
 import com.teamdears.core.oauth2.google.service.GoogleService;
@@ -13,19 +15,21 @@ import com.teamdears.core.oauth2.kakao.dto.KakaoLoginDTO;
 import com.teamdears.core.oauth2.kakao.dto.KakaoUserInfoResponseDTO;
 import com.teamdears.core.oauth2.kakao.service.KakaoService;
 import com.teamdears.core.oauth2.service.Oauth2Service;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import javax.security.auth.RefreshFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.auth.AuthenticationException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.security.auth.RefreshFailedException;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -63,7 +67,8 @@ public class Oauth2Controller {
 
     @PostMapping("/shared/apple")
     @Operation(summary = "[공통] 애플 로그인")
-    public ResponseEntity<AppleLoginDTO.Response> appleLogin(@RequestBody AppleLoginDTO.Request loginRequest) throws AuthenticationException, IOException, NoSuchAlgorithmException, InvalidKeySpecException, InterruptedException {
+    public ResponseEntity<AppleLoginDTO.Response> appleLogin(@RequestBody AppleLoginDTO.Request loginRequest)
+            throws AuthenticationException, IOException, NoSuchAlgorithmException, InvalidKeySpecException, InterruptedException {
         AppleUserInfoResponseDTO userInfo = appleService.getAppleUserInfo(loginRequest.getAppleIdToken());
         String role = loginRequest.getRole();
 
@@ -79,9 +84,17 @@ public class Oauth2Controller {
         return ResponseEntity.status(200).build();
     }
 
+    @PostMapping("/shared/withdraw")
+    @Operation(summary = "[공통] 회원 탈퇴")
+    public ResponseEntity<Void> withdraw(WithdrawDTO.Request request) {
+        memberRegistryService.withdraw(request);
+        return ResponseEntity.status(200).build();
+    }
+
     @PostMapping("/shared/reissue")
     @Operation(summary = "[공통] 리프레시 토큰(RT)을 통한 AT,RT 재발급")
-    public ResponseEntity<ReissueDTO.Response> reissueJwtToken(@RequestBody ReissueDTO.Request request) throws RefreshFailedException, JsonProcessingException {
+    public ResponseEntity<ReissueDTO.Response> reissueJwtToken(@RequestBody ReissueDTO.Request request)
+            throws RefreshFailedException, JsonProcessingException {
         ReissueDTO.Response reissueResponse = oauth2Service.reissueJwtToken(request);
 
         return ResponseEntity.status(200).body(reissueResponse);
