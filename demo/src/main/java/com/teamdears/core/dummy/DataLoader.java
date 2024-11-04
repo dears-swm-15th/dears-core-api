@@ -67,17 +67,7 @@ public class DataLoader implements CommandLineRunner {
                 WeddingPlanner.builder().name("박현진").nickname("parkh").UUID("uuid-4")
                         .profileImageUrl("http://example.com/image4.jpg").role(WEDDING_PLANNER).build(),
                 WeddingPlanner.builder().name("최진우").nickname("choij").UUID("uuid-5")
-                        .profileImageUrl("http://example.com/image5.jpg").role(WEDDING_PLANNER).build(),
-                WeddingPlanner.builder().name("김민수").nickname("kimms").UUID("uuid-6")
-                        .profileImageUrl("http://example.com/image6.jpg").role(WEDDING_PLANNER).build(),
-                WeddingPlanner.builder().name("이서준").nickname("leesj").UUID("uuid-7")
-                        .profileImageUrl("http://example.com/image7.jpg").role(WEDDING_PLANNER).build(),
-                WeddingPlanner.builder().name("박지민").nickname("parkjm").UUID("uuid-8")
-                        .profileImageUrl("http://example.com/image8.jpg").role(WEDDING_PLANNER).build(),
-                WeddingPlanner.builder().name("윤하준").nickname("yoonhj").UUID("uuid-9")
-                        .profileImageUrl("http://example.com/image9.jpg").role(WEDDING_PLANNER).build(),
-                WeddingPlanner.builder().name("정유진").nickname("jungyj").UUID("uuid-10")
-                        .profileImageUrl("http://example.com/image10.jpg").role(WEDDING_PLANNER).build()
+                        .profileImageUrl("http://example.com/image5.jpg").role(WEDDING_PLANNER).build()
         );
 
         planners.forEach(weddingPlannerRepository::save);
@@ -148,8 +138,8 @@ public class DataLoader implements CommandLineRunner {
 
         // Create Portfolios using Builder Pattern
         List<Portfolio> portfolios = Arrays.asList(
-                Portfolio.builder().organization("웨딩컨설팅").plannerName("장영환").region(Region.SEOUL).introduction("친절한 상담")
-                        .contactInfo("010-1234-5678")
+                Portfolio.builder().organization("웨딩컨설팅").plannerName("장영환").region(Region.SEOUL)
+                        .introduction("친절한 상담").contactInfo("010-1234-5678")
                         .profileImageUrl("portfolio/dummy/636300258690471320-jordanharris.jpeg")
                         .weddingPhotoUrls(weddingPhotos1).services(services1)
                         .description("웨딩컨설팅을 통해 원하는 웨딩을 준비하세요!")
@@ -157,42 +147,46 @@ public class DataLoader implements CommandLineRunner {
                         .radarCount(1).radarSum(radar1)
                         .ratingSum(4.5f).ratingCount(1)
                         .consultingFee(500000).estimateCount(10).estimateSum(50000000).minEstimate(30000000).build(),
+
                 Portfolio.builder().organization("프리미엄 웨딩").plannerName("문종환").region(Region.SEOUL)
                         .introduction("정성을 다하는 서비스").contactInfo("010-2345-6789")
-                        .profileImageUrl("http://example.com/image2.jpg").consultingFee(600000).estimateCount(15)
-                        .estimateSum(9000000).minEstimate(550000).build(),
+                        .profileImageUrl("portfolio/dummy/636300258690471321-example2.jpeg")
+                        .weddingPhotoUrls(weddingPhotos2).services(services2)
+                        .description("프리미엄 웨딩과 함께하세요!")
+                        .accompanyType(AccompanyType.ACCOMPANY)
+                        .radarCount(1).radarSum(radar2)
+                        .ratingSum(4.7f).ratingCount(1)
+                        .consultingFee(600000).estimateCount(15).estimateSum(9000000).minEstimate(550000).build(),
+
                 Portfolio.builder().organization("럭셔리 웨딩").plannerName("전영서").region(Region.SEOUL)
                         .introduction("신뢰할 수 있는 웨딩 플래너").contactInfo("010-3456-7890")
-                        .profileImageUrl("http://example.com/image3.jpg").consultingFee(400000).estimateCount(7)
-                        .estimateSum(2800000).minEstimate(350000).build(),
+                        .profileImageUrl("portfolio/dummy/636300258690471322-example3.jpeg")
+                        .weddingPhotoUrls(weddingPhotos1).services(services1)
+                        .description("럭셔리 웨딩으로 특별한 날을 준비하세요!")
+                        .accompanyType(AccompanyType.ACCOMPANY)
+                        .radarCount(1).radarSum(radar1)
+                        .ratingSum(4.6f).ratingCount(1)
+                        .consultingFee(400000).estimateCount(7).estimateSum(2800000).minEstimate(350000).build(),
+
                 Portfolio.builder().organization("럭셔리 웨딩 컨설팅").plannerName("박현진").region(Region.SEOUL)
                         .introduction("프로페셔널한 플래닝").contactInfo("010-4567-8901")
-                        .profileImageUrl("http://example.com/image4.jpg").consultingFee(750000).estimateCount(20)
-                        .estimateSum(15000000).minEstimate(500000).build(),
+                        .profileImageUrl("portfolio/dummy/636300258690471323-example4.jpeg")
+                        .weddingPhotoUrls(weddingPhotos1).services(services1)
+                        .description("럭셔리 웨딩 컨설팅의 전문가와 함께하세요!")
+                        .accompanyType(AccompanyType.ACCOMPANY)
+                        .radarCount(1).radarSum(radar1)
+                        .ratingSum(4.8f).ratingCount(1)
+                        .consultingFee(750000).estimateCount(20).estimateSum(15000000).minEstimate(500000).build(),
+
                 Portfolio.builder().organization("친절한 웨딩").plannerName("최진우").region(Region.SEOUL)
                         .introduction("꿈같은 웨딩 준비").contactInfo("010-5678-9012")
-                        .profileImageUrl("http://example.com/image5.jpg").consultingFee(550000).estimateCount(12)
-                        .estimateSum(6600000).minEstimate(500000).build(),
-                Portfolio.builder().organization("신뢰의 웨딩").plannerName("김민수").region(Region.SEOUL)
-                        .introduction("고객 만족 우선").contactInfo("010-6789-0123")
-                        .profileImageUrl("http://example.com/image6.jpg").consultingFee(300000).estimateCount(5)
-                        .estimateSum(1500000).minEstimate(300000).build(),
-                Portfolio.builder().organization("정성 웨딩").plannerName("이서준").region(Region.SEOUL)
-                        .introduction("최고의 웨딩 플래너").contactInfo("010-7890-1234")
-                        .profileImageUrl("http://example.com/image7.jpg").consultingFee(700000).estimateCount(18)
-                        .estimateSum(12600000).minEstimate(600000).build(),
-                Portfolio.builder().organization("고급 웨딩 컨설팅").plannerName("박지민").region(Region.SEOUL)
-                        .introduction("차별화된 웨딩 서비스").contactInfo("010-8901-2345")
-                        .profileImageUrl("http://example.com/image8.jpg").consultingFee(650000).estimateCount(14)
-                        .estimateSum(9100000).minEstimate(600000).build(),
-                Portfolio.builder().organization("친절한 웨딩").plannerName("윤하준").region(Region.SEOUL)
-                        .introduction("정직한 서비스").contactInfo("010-9012-3456")
-                        .profileImageUrl("http://example.com/image9.jpg").consultingFee(500000).estimateCount(9)
-                        .estimateSum(4500000).minEstimate(450000).build(),
-                Portfolio.builder().organization("럭셔리 웨딩 플래닝").plannerName("정유진").region(Region.SEOUL)
-                        .introduction("맞춤형 서비스 제공").contactInfo("010-0123-4567")
-                        .profileImageUrl("http://example.com/image10.jpg").consultingFee(800000).estimateCount(25)
-                        .estimateSum(20000000).minEstimate(700000).build()
+                        .profileImageUrl("portfolio/dummy/636300258690471324-example5.jpeg")
+                        .weddingPhotoUrls(weddingPhotos2).services(services2)
+                        .description("친절한 웨딩과 함께하는 행복한 결혼 준비!")
+                        .accompanyType(AccompanyType.ACCOMPANY)
+                        .radarCount(1).radarSum(radar2)
+                        .ratingSum(4.4f).ratingCount(1)
+                        .consultingFee(550000).estimateCount(12).estimateSum(6600000).minEstimate(500000).build()
         );
 
         // Create Reviews
@@ -290,28 +284,6 @@ public class DataLoader implements CommandLineRunner {
 
         customerRepository.save(customer1);
         customerRepository.save(customer2);
-
-//        weddingPlannerRepository.save(planner1);
-//        weddingPlannerRepository.save(planner2);
-//
-//        portfolioRepository.save(portfolio1);
-//        portfolioRepository.save(portfolio2);
-//
-//        reviewRepository.save(review1);
-//        reviewRepository.save(review2);
-//
-//        WishList wishList1 = WishList.builder()
-//                .customer(customer1)
-//                .portfolio(portfolio1)
-//                .build();
-//
-//        WishList wishList2 = WishList.builder()
-//                .customer(customer2)
-//                .portfolio(portfolio2)
-//                .build();
-//
-//        wishListRepository.save(wishList1);
-//        wishListRepository.save(wishList2);
 
         Message message1 = Message.builder()
                 .content("웨딩플래너 님 안녕하세요!")
