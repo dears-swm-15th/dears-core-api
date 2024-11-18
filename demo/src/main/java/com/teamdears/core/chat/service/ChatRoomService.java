@@ -160,7 +160,7 @@ public class ChatRoomService {
 
         // get rid of from redis
         String Uuid = customUserDetailsService.getCurrentAuthenticatedCustomer().getUUID();
-//        redisService.deleteValueFromAllSets(Uuid);
+        redisService.deleteValueFromAllSets(Uuid);
 
         Customer customer = customUserDetailsService.getCurrentAuthenticatedCustomer();
         List<ChatRoom> chatRooms = chatRoomRepository.findByCustomerIdOrderByLastMessageCreatedAtDesc(customer.getId());
@@ -191,7 +191,7 @@ public class ChatRoomService {
 
         // get rid of from redis
         String Uuid = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner().getUUID();
-//        redisService.deleteValueFromAllSets(Uuid);
+        redisService.deleteValueFromAllSets(Uuid);
 
         WeddingPlanner weddingPlanner = customUserDetailsService.getCurrentAuthenticatedWeddingPlanner();
         List<ChatRoom> chatRooms = chatRoomRepository.findByWeddingPlannerIdOrderByLastMessageCreatedAtDesc(
