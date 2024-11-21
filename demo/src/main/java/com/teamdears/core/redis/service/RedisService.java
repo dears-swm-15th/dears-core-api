@@ -120,16 +120,30 @@ public class RedisService {
         return matchingKeys;
     }
 
-    // delete value from all sets
     public void deleteValueFromAllSets(String value) {
         // Get all keys that match the pattern "*"
         Set<String> allKeys = redisTemplate.keys("*");
 
+        if (allKeys == null || allKeys.isEmpty()) {
+            return; // No keys to process
+        }
+
         // Iterate over all keys
         for (String key : allKeys) {
-            // Check if the value exists in the set associated with this key
-            if (redisTemplate.opsForSet().isMember(key, value)) {
-                redisTemplate.opsForSet().remove(key, value);
+            try {
+                // Check the data type of the key
+                String type = redisTemplate.getConnectionFactory().getConnection().type(key.getBytes()).name();
+
+                // Only process keys that are of type "set"
+                if ("set".equalsIgnoreCase(type)) {
+                    // Check if the value exists in the set associated with this key
+                    if (redisTemplate.opsForSet().isMember(key, value)) {
+                        redisTemplate.opsForSet().remove(key, value);
+                    }
+                }
+            } catch (Exception e) {
+                // Log and handle any exceptions to avoid breaking the loop
+                System.err.println("Error processing key: " + key + " - " + e.getMessage());
             }
         }
     }
